@@ -1,0 +1,20 @@
+{
+    "name": "jca-backend",
+    "version": "1.0.0",
+    "description": "JCA-Backend",
+    "main": "app.js",
+    "scripts": {
+        "start": "nodemon app.js"
+    },
+    "dependencies": {
+        "body-parser": "^1.18.2",
+        "cors": "~2.8.3",
+        "express": "~4.15.3",
+        "mongoose": "~4.11.0"
+    },
+    "author": "Kerbyt Capote/Kenny Capote",
+    "license": "ISC",
+    "devDependencies": {
+        "nodemon": "^1.17.3"
+    }
+}
