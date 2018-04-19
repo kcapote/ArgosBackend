@@ -1,32 +1,32 @@
 const express = require('express');
 const router = express.Router();
 
-const Categoria = require('../models/categoria');
+const Task = require('../models/task');
 
 router.get('/', (req, res) => {
 
-    let paginacion = req.query.paginacion || 0;
-    paginacion = Number(paginacion);
+    let pagination = req.query.pagination || 0;
+    pagination = Number(pagination);
 
-    Categoria.find()
-        .skip(paginacion)
+    Task.find()
+        .skip(pagination)
         .limit(10)
         .exec(
-            (err, categorias) => {
+            (err, tasks) => {
                 if (err) {
                     res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar las Categoría',
+                        message: 'No se pueden consultar las tareas',
                         errors: err
                     });
                 } else {
 
-                    Categoria.count({}, (err, totalRegistros) => {
+                    Task.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            categorias: categorias,
-                            totalRegistros: totalRegistros,
-                            paginacion: paginacion
+                            tasks: tasks,
+                            totalRecords: totalRecords,
+                            pagination: pagination
                         }, null, 2));
                         res.end();
 
@@ -35,20 +35,20 @@ router.get('/', (req, res) => {
             });
 });
 
-router.get('/buscar/:termino', (req, res) => {
+router.get('/search/:term', (req, res) => {
 
-    let termino = req.params.termino;
-    var regex = new RegExp(termino, 'i');
+    let term = req.params.term;
+    var regex = new RegExp(term, 'i');
 
-    let paginacion = req.query.paginacion || 0;
-    paginacion = Number(paginacion);
+    let pagination = req.query.pagination || 0;
+    pagination = Number(pagination);
 
-    Categoria.find()
+    Task.find()
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
-        .skip(paginacion)
+        .skip(pagination)
         .limit(10)
         .exec(
-            (err, categorias) => {
+            (err, tasks) => {
                 if (err) {
                     res.status(500).json({
                         success: false,
@@ -57,12 +57,12 @@ router.get('/buscar/:termino', (req, res) => {
                     });
                 } else {
 
-                    Categoria.count({}, (err, totalRegistros) => {
+                    Task.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            categorias: categorias,
-                            totalRegistros: totalRegistros,
-                            paginacion: paginacion
+                            tasks: tasks,
+                            totalRecords: totalRecords,
+                            pagination: pagination
                         }, null, 2));
                         res.end();
 
@@ -73,22 +73,26 @@ router.get('/buscar/:termino', (req, res) => {
 
 
 router.post('/', (req, res, next) => {
-    let categoria = new Categoria({
+    
+    console.log(req.body);
+    
+    let task = new Task({
         name: req.body.name,
-        description: req.body.description
+        description: req.body.description,
+        subTask: [...req.body.subTask]
     });
-    categoria.save((err, categoriaSave) => {
+    task.save((err, taskSave) => {
         if (err) {
             res.status(400).json({
                 success: false,
-                message: 'No se puede crear la Categoría',
+                message: 'No se puede crear la tarea',
                 errors: err
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                categoria: categoriaSave
+                task: taskSave
             });
         }
     });
@@ -98,37 +102,37 @@ router.put('/:id', (req, res, next) => {
 
     let id = req.params.id;
 
-    Categoria.findById(id, (err, categoria) => {
+    Task.findById(id, (err, task) => {
         if (err) {
             res.status(500).json({
                 success: false,
-                message: 'No se puede actualizar la Categoría',
+                message: 'No se puede actualizar la tarea',
                 errors: err
             });
         }
 
-        if (!categoria) {
+        if (!task) {
             res.status(400).json({
                 success: false,
-                message: 'No existe una Categoría con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la Categoría para actualizar' }
+                message: 'No existe una tarea con el id: ' + id,
+                errors: { message: 'No se pudo encontrar la tarea para actualizar' }
             });
         } else {
-            categoria.name = req.body.name;
-            categoria.description = req.body.description;
+            task.name = req.body.name;
+            task.description = req.body.description;
 
-            categoria.save((err, categoriaSave) => {
+            task.save((err, taskSave) => {
                 if (err) {
                     res.status(400).json({
                         success: false,
-                        message: 'No se puede actualizar la Categoría',
+                        message: 'No se puede actualizar la tarea',
                         errors: err
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        categoria: categoriaSave
+                        task: taskSave
                     });
                 }
             });
@@ -142,24 +146,24 @@ router.delete('/:id', (req, res, next) => {
 
     let id = req.params.id;
 
-    Categoria.findByIdAndRemove(id, (err, categoriaRemove) => {
+    Task.findByIdAndRemove(id, (err, taskRemove) => {
         if (err) {
             res.status(500).json({
                 success: false,
-                message: 'No se puede eliminar la Categoría',
+                message: 'No se puede eliminar la tarea',
                 errors: err
             });
-        } else if (categoriaRemove) {
+        } else if (taskRemove) {
             res.status(200).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa',
-                categoria: categoriaRemove
+                task: taskRemove
             });
         } else {
             res.status(400).json({
                 success: false,
-                message: 'No existe una Categoría con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la Categoría para eliminar' }
+                message: 'No existe una tarea con el id: ' + id,
+                errors: { message: 'No se pudo encontrar la tarea para eliminar' }
             });
         }
     })

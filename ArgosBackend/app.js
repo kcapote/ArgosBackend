@@ -6,15 +6,14 @@ const mongoose = require('mongoose');
 const config = require('./config/database');
 
 //import of controllers
-const categoriaController = require('./controllers/categoriaController');
-const normaController = require('./controllers/normaController');
-const manualController = require('./controllers/manualController');
+const taskController = require('./controllers/taskController');
+const subTaskController = require('./controllers/subTaskController');
 
 //Connect mongoose to our database
 mongoose.connect(config.database);
 
 //Declaring Port
-const port = 3000;
+const port = 3001;
 
 //Initialize our app variable
 const app = express();
@@ -40,11 +39,10 @@ app.get('/', (req, res) => {
 
 
 //Routing all HTTP requests to all controllers
-app.use('/categoria', categoriaController);
-app.use('/norma', normaController);
-app.use('/manual', manualController);
+app.use('/task', taskController);
+app.use('/subtask', subTaskController);
 
-//Listen to port 3000
+//Listen to port 3001
 app.listen(port, () => {
     console.log(`Starting the server at port ${port}`);
 });

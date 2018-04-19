@@ -1,32 +1,32 @@
 const express = require('express');
 const router = express.Router();
 
-const Norma = require('../models/norma');
+const SubTask = require('../models/subTask');
 
 router.get('/', (req, res) => {
 
-    let paginacion = req.query.paginacion || 0;
-    paginacion = Number(paginacion);
+    let pagination = req.query.pagination || 0;
+    pagination = Number(pagination);
 
-    Norma.find()
-        .skip(paginacion)
+    SubTask.find()
+        .skip(pagination)
         .limit(10)
         .exec(
-            (err, normas) => {
+            (err, subTasks) => {
                 if (err) {
                     res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar las Norma',
+                        message: 'No se pueden consultar las sub tareas',
                         errors: err
                     });
                 } else {
 
-                    Norma.count({}, (err, totalRegistros) => {
+                    SubTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            normas: normas,
-                            totalRegistros: totalRegistros,
-                            paginacion: paginacion
+                            subTasks: subTasks,
+                            totalRecords: totalRecords,
+                            pagination: pagination
                         }, null, 2));
                         res.end();
 
@@ -35,20 +35,20 @@ router.get('/', (req, res) => {
             });
 });
 
-router.get('/buscar/:termino', (req, res) => {
+router.get('/search/:term', (req, res) => {
 
-    let termino = req.params.termino;
-    var regex = new RegExp(termino, 'i');
+    let term = req.params.term;
+    var regex = new RegExp(term, 'i');
 
-    let paginacion = req.query.paginacion || 0;
-    paginacion = Number(paginacion);
+    let pagination = req.query.pagination || 0;
+    pagination = Number(pagination);
 
-    Norma.find()
+    SubTask.find()
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
-        .skip(paginacion)
+        .skip(pagination)
         .limit(10)
         .exec(
-            (err, normas) => {
+            (err, subTasks) => {
                 if (err) {
                     res.status(500).json({
                         success: false,
@@ -57,12 +57,12 @@ router.get('/buscar/:termino', (req, res) => {
                     });
                 } else {
 
-                    Norma.count({}, (err, totalRegistros) => {
+                    SubTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            normas: normas,
-                            totalRegistros: totalRegistros,
-                            paginacion: paginacion
+                            subTasks: subTasks,
+                            totalRecords: totalRecords,
+                            pagination: pagination
                         }, null, 2));
                         res.end();
 
@@ -73,26 +73,22 @@ router.get('/buscar/:termino', (req, res) => {
 
 
 router.post('/', (req, res, next) => {
-    let norma = new Norma({
+    let subTask = new SubTask({
         name: req.body.name,
-        description: req.body.description,
-        version: req.body.version,
-        publicationDate: req.body.publicationDate,
-        linkFile: req.body.linkFile,
-        idFile: req.body.idFile
+        description: req.body.description
     });
-    Norma.save((err, normaSave) => {
+    subTask.save((err, subTaskSave) => {
         if (err) {
             res.status(400).json({
                 success: false,
-                message: 'No se puede crear la Norma',
+                message: 'No se puede crear la sub tarea',
                 errors: err
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                norma: normaSave
+                subTask: subTaskSave
             });
         }
     });
@@ -102,42 +98,37 @@ router.put('/:id', (req, res, next) => {
 
     let id = req.params.id;
 
-    Norma.findById(id, (err, norma) => {
+    SubTask.findById(id, (err, subTask) => {
         if (err) {
             res.status(500).json({
                 success: false,
-                message: 'No se puede actualizar la Norma',
+                message: 'No se puede actualizar la sub tarea',
                 errors: err
             });
         }
 
-        if (!norma) {
+        if (!subTask) {
             res.status(400).json({
                 success: false,
-                message: 'No existe una Norma con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la Norma para actualizar' }
+                message: 'No existe una sub tarea con el id: ' + id,
+                errors: { message: 'No se pudo encontrar la sub tarea para actualizar' }
             });
         } else {
+            subTask.name = req.body.name;
+            subTask.description = req.body.description;
 
-            norma.name = req.body.name;
-            norma.description = req.body.description;
-            norma.version = req.body.version;
-            norma.publicationDate = req.body.publicationDate;
-            norma.linkFile = req.body.linkFile;
-            norma.idFile = req.body.idFile
-
-            norma.save((err, normaSave) => {
+            subTask.save((err, subTaskSave) => {
                 if (err) {
                     res.status(400).json({
                         success: false,
-                        message: 'No se puede actualizar la Norma',
+                        message: 'No se puede actualizar la sub tarea',
                         errors: err
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        norma: normaSave
+                        subTask: subTaskSave
                     });
                 }
             });
@@ -151,24 +142,24 @@ router.delete('/:id', (req, res, next) => {
 
     let id = req.params.id;
 
-    Norma.findByIdAndRemove(id, (err, normaRemove) => {
+    SubTask.findByIdAndRemove(id, (err, subTaskRemove) => {
         if (err) {
             res.status(500).json({
                 success: false,
-                message: 'No se puede eliminar la Norma',
+                message: 'No se puede eliminar la sub tarea',
                 errors: err
             });
-        } else if (normaRemove) {
+        } else if (subTaskRemove) {
             res.status(200).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa',
-                norma: normaRemove
+                subTask: subTaskRemove
             });
         } else {
             res.status(400).json({
                 success: false,
-                message: 'No existe una Norma con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la Norma para eliminar' }
+                message: 'No existe una sub tarea con el id: ' + id,
+                errors: { message: 'No se pudo encontrar la sub tarea para eliminar' }
             });
         }
     })
