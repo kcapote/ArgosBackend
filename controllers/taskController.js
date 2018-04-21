@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
-
+const constants = require('../config/constants');
+const jwt = require('jsonwebtoken');
 const Task = require('../models/task');
+const authentication = require('../middlewares/authentication');
 
-router.get('/', (req, res) => {
+router.get('/', authentication.verifyToken, (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -11,11 +13,11 @@ router.get('/', (req, res) => {
     Task.find()
         .populate('subTask')
         .skip(pagination)
-        .limit(10)
+        .limit(constants.PAGINATION)
         .exec(
             (err, tasks) => {
                 if (err) {
-                    res.status(500).json({
+                    return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar las tareas',
                         errors: err
@@ -36,7 +38,7 @@ router.get('/', (req, res) => {
             });
 });
 
-router.get('/search/:term', (req, res) => {
+router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -48,11 +50,11 @@ router.get('/search/:term', (req, res) => {
         .populate('subTask')
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
-        .limit(10)
+        .limit(constants.PAGINATION)
         .exec(
             (err, tasks) => {
                 if (err) {
-                    res.status(500).json({
+                    return res.status(500).json({
                         success: false,
                         message: 'No se encontrarón resultados',
                         errors: err
@@ -74,7 +76,7 @@ router.get('/search/:term', (req, res) => {
 });
 
 
-router.post('/', (req, res, next) => {
+router.post('/', authentication.verifyToken, (req, res, next) => {
 
     let task = new Task({
         name: req.body.name,
@@ -83,7 +85,7 @@ router.post('/', (req, res, next) => {
     });
     task.save((err, taskSave) => {
         if (err) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: 'No se puede crear la tarea',
                 errors: err
@@ -98,13 +100,13 @@ router.post('/', (req, res, next) => {
     });
 });
 
-router.put('/:id', (req, res, next) => {
+router.put('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
     Task.findById(id, (err, task) => {
         if (err) {
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar la tarea',
                 errors: err
@@ -112,7 +114,7 @@ router.put('/:id', (req, res, next) => {
         }
 
         if (!task) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: 'No existe una tarea con el id: ' + id,
                 errors: { message: 'No se pudo encontrar la tarea para actualizar' }
@@ -123,7 +125,7 @@ router.put('/:id', (req, res, next) => {
 
             task.save((err, taskSave) => {
                 if (err) {
-                    res.status(400).json({
+                    return res.status(400).json({
                         success: false,
                         message: 'No se puede actualizar la tarea',
                         errors: err
@@ -142,13 +144,13 @@ router.put('/:id', (req, res, next) => {
 });
 
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
     Task.findByIdAndRemove(id, (err, taskRemove) => {
         if (err) {
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar la tarea',
                 errors: err
@@ -160,7 +162,7 @@ router.delete('/:id', (req, res, next) => {
                 task: taskRemove
             });
         } else {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: 'No existe una tarea con el id: ' + id,
                 errors: { message: 'No se pudo encontrar la tarea para eliminar' }

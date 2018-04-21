@@ -2,19 +2,22 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const constants = require('../config/constants');
+const jwt = require('jsonwebtoken');
+const authentication = require('../middlewares/authentication');
 
-router.get('/', (req, res) => {
+router.get('/', authentication.verifyToken, (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
     User.find({}, 'name lastName email role')
         .skip(pagination)
-        .limit(10)
+        .limit(constants.PAGINATION)
         .exec(
             (err, users) => {
                 if (err) {
-                    res.status(500).json({
+                    return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar las tareas',
                         errors: err
@@ -35,7 +38,7 @@ router.get('/', (req, res) => {
             });
 });
 
-router.get('/search/:term', (req, res) => {
+router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -44,13 +47,13 @@ router.get('/search/:term', (req, res) => {
     pagination = Number(pagination);
 
     User.find({}, 'name lastName email role')
-        .or([{ 'name': regex }, { 'lastName': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
+        .or([{ 'name': regex }, { 'lastName': regex }, { 'email': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
-        .limit(10)
+        .limit(constants.PAGINATION)
         .exec(
             (err, users) => {
                 if (err) {
-                    res.status(500).json({
+                    return res.status(500).json({
                         success: false,
                         message: 'No se encontrarón resultados',
                         errors: err
@@ -72,9 +75,7 @@ router.get('/search/:term', (req, res) => {
 });
 
 
-router.post('/', (req, res, next) => {
-
-    console.log(req.body);
+router.post('/', authentication.verifyToken, (req, res, next) => {
 
     let user = new User({
         name: req.body.name,
@@ -85,7 +86,7 @@ router.post('/', (req, res, next) => {
     });
     user.save((err, userSave) => {
         if (err) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: 'No se puede crear el usuario',
                 errors: err
@@ -100,13 +101,13 @@ router.post('/', (req, res, next) => {
     });
 });
 
-router.put('/:id', (req, res, next) => {
+router.put('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
     User.findById(id, (err, user) => {
         if (err) {
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar el usuario',
                 errors: err
@@ -114,7 +115,7 @@ router.put('/:id', (req, res, next) => {
         }
 
         if (!user) {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: 'No existe un usuario con el id: ' + id,
                 errors: { message: 'No se pudo encontrar el usuario para actualizar' }
@@ -128,7 +129,7 @@ router.put('/:id', (req, res, next) => {
 
             user.save((err, userSave) => {
                 if (err) {
-                    res.status(400).json({
+                    return res.status(400).json({
                         success: false,
                         message: 'No se puede actualizar el usuario',
                         errors: err
@@ -147,13 +148,13 @@ router.put('/:id', (req, res, next) => {
 });
 
 
-router.delete('/:id', (req, res, next) => {
+router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
     User.findByIdAndRemove(id, (err, userRemove) => {
         if (err) {
-            res.status(500).json({
+            return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el usuario',
                 errors: err
@@ -165,7 +166,7 @@ router.delete('/:id', (req, res, next) => {
                 user: userRemove
             });
         } else {
-            res.status(400).json({
+            return res.status(400).json({
                 success: false,
                 message: 'No existe una tarea con el id: ' + id,
                 errors: { message: 'No se pudo encontrar el usuario para eliminar' }

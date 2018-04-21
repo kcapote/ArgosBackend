@@ -9,7 +9,7 @@ const config = require('./config/database');
 const taskController = require('./controllers/taskController');
 const subTaskController = require('./controllers/subTaskController');
 const userController = require('./controllers/userController');
-
+const securityController = require('./controllers/securityController');
 
 //Connect mongoose to our database
 mongoose.connect(config.database);
@@ -44,6 +44,7 @@ app.get('/', (req, res) => {
 app.use('/task', taskController);
 app.use('/subtask', subTaskController);
 app.use('/user', userController);
+app.use('/security', securityController);
 
 //Listen to port 3001
 app.listen(port, () => {
