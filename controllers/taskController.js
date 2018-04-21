@@ -56,7 +56,7 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se encontrarón resultados',
+                        message: 'No se encontraron resultados',
                         errors: err
                     });
                 } else {

@@ -9,19 +9,19 @@ var validRoles = {
 const UserSchema = mongoose.Schema({
     name: {
         type: String,
-        required: [true, "El nombre del usuario es nesesario"]
+        required: [true, "El nombre del usuario es necesario"]
     },
     lastName: {
         type: String,
-        required: [true, "El apellido del usuario es nesesario"]
+        required: [true, "El apellido del usuario es necesario"]
     },
     email: {
         type: String,
-        required: [true, "El correo del usuario es nesesario"]
+        required: [true, "El correo del usuario es necesario"]
     },
     password: {
         type: String,
-        required: [true, "La contraseña del usuario es nesesario"]
+        required: [true, "La contraseña del usuario es necesario"]
     },
     role: {
         type: String,

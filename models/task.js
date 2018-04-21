@@ -4,7 +4,7 @@ var Schema = mongoose.Schema;
 const TaskSchema = mongoose.Schema({
     name: {
         type: String,
-        required: [true, "El nombre de la tarea es nesesario"]
+        required: [true, "El nombre de la tarea es necesario"]
     },
     subTask: [{
         type: Schema.Types.ObjectId,
