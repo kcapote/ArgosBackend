@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const User = require('../models/user');
+const Task = require('../models/task');
 
 router.get('/', (req, res) => {
 
@@ -9,6 +9,7 @@ router.get('/', (req, res) => {
     pagination = Number(pagination);
 
     Task.find()
+        .populate('subTask')
         .skip(pagination)
         .limit(10)
         .exec(
@@ -44,6 +45,7 @@ router.get('/search/:term', (req, res) => {
     pagination = Number(pagination);
 
     Task.find()
+        .populate('subTask')
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(10)
@@ -73,8 +75,6 @@ router.get('/search/:term', (req, res) => {
 
 
 router.post('/', (req, res, next) => {
-
-    console.log(req.body);
 
     let task = new Task({
         name: req.body.name,
