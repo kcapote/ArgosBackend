@@ -11,11 +11,7 @@ const TaskSchema = mongoose.Schema({
         type: String,
         required: [true, "El nombre de la tarea es necesario"]
     },
-    name: {
-        type: String,
-        required: [true, "El nombre de la tarea es necesario"]
-    },
-    role: {
+    type: {
         type: String,
         required: true,
         default: 'TYPE_DEPS',
