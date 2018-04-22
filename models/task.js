@@ -14,12 +14,11 @@ const TaskSchema = mongoose.Schema({
     type: {
         type: String,
         required: true,
-        default: 'TYPE_DEPS',
+        default: 'PISOS',
         enum: validTypesTasks
     },
     subTask: [{
-        type: Schema.Types.ObjectId,
-        ref: 'SubTask'
+        name: String
     }]
 });
 
