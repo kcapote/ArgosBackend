@@ -74,12 +74,45 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
 });
 
 
+router.get('/:id', authentication.verifyToken, (req, res, next) => {
+
+    let id = req.params.id;
+
+    Project.findById(id, (err, project) => {
+        if (err) {
+            return res.status(500).json({
+                success: false,
+                message: 'No se puede actualizar la tarea',
+                errors: err
+            });
+        }
+
+        if (!project) {
+            return res.status(400).json({
+                success: false,
+                message: 'No existe una tarea con el id: ' + id,
+                errors: { message: 'No se pudo encontrar la obra para actualizar' }
+            });
+        } else {
+
+            res.status(200).json({
+                success: true,
+                message: 'Operación realizada de forma exitosa.',
+                project: project
+            });
+
+        }
+    })
+});
+
 router.post('/', authentication.verifyToken, (req, res, next) => {
+
     let project = new Project({
         name: req.body.name,
         adress: req.body.adress,
         status: req.body.status,
-        floor: [...req.body.floor]
+        floors: [...req.body.floors],
+        undergrounds: [...req.body.undergrounds]
     });
     project.save((err, projectSave) => {
         if (err) {
@@ -119,12 +152,11 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            console.log(req.body);
-
             project.name = req.body.name;
-            project.description = req.body.description;
-            project.type = req.body.type;
-            project.subTask = [...req.body.subTask];
+            project.adress = req.body.adress;
+            project.status = req.body.status;
+            project.floors = [...req.body.floors];
+            project.undergrounds = [...req.body.undergrounds];
 
             project.save((err, projectSave) => {
                 if (err) {

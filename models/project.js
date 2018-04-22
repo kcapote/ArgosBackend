@@ -30,7 +30,7 @@ const ProjectSchema = mongoose.Schema({
             }
         }]
     }],
-    underground: [{
+    undergrounds: [{
         number: {
             type: Number,
             required: [true, "El número del subterraneo es necesario"]
