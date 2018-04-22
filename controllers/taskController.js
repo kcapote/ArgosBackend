@@ -77,7 +77,8 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
 
 
 router.post('/', authentication.verifyToken, (req, res, next) => {
-
+    console.log('El body es ********',req.body); 
+    
     let task = new Task({
         name: req.body.name,
         description: req.body.description,
