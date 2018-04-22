@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const constants = require('../config/constants');
 const jwt = require('jsonwebtoken');
-const Task = require('../models/task');
+const Project = require('../models/project');
 const authentication = require('../middlewares/authentication');
 
 router.get('/', authentication.verifyToken, (req, res, next) => {
@@ -10,23 +10,23 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
-    Task.find()
+    Project.find()
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
-            (err, tasks) => {
+            (err, projects) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar las tareas',
+                        message: 'No se pueden consultar las obras',
                         errors: err
                     });
                 } else {
 
-                    Task.count({}, (err, totalRecords) => {
+                    Project.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            tasks: tasks,
+                            projects: projects,
                             totalRecords: totalRecords,
                             pagination: pagination
                         }, null, 2));
@@ -45,12 +45,12 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
-    Task.find()
+    Project.find()
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
-            (err, tasks) => {
+            (err, projects) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
@@ -59,10 +59,10 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                     });
                 } else {
 
-                    Task.count({}, (err, totalRecords) => {
+                    Project.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            tasks: tasks,
+                            projects: projects,
                             totalRecords: totalRecords,
                             pagination: pagination
                         }, null, 2));
@@ -74,56 +74,25 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
 });
 
 
-router.get('/:id', authentication.verifyToken, (req, res, next) => {
-
-    let id = req.params.id;
-
-    Task.findById(id, (err, task) => {
-        if (err) {
-            return res.status(500).json({
-                success: false,
-                message: 'No se puede actualizar la tarea',
-                errors: err
-            });
-        }
-
-        if (!task) {
-            return res.status(400).json({
-                success: false,
-                message: 'No existe una tarea con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la tarea para actualizar' }
-            });
-        } else {
-
-            res.status(200).json({
-                success: true,
-                message: 'Operación realizada de forma exitosa.',
-                task: task
-            });
-
-        }
-    })
-});
-
 router.post('/', authentication.verifyToken, (req, res, next) => {
-    let task = new Task({
+    let project = new Project({
         name: req.body.name,
-        description: req.body.description,
-        type: req.body.type,
-        subTask: [...req.body.subTask]
+        adress: req.body.adress,
+        status: req.body.status,
+        floor: [...req.body.floor]
     });
-    task.save((err, taskSave) => {
+    project.save((err, projectSave) => {
         if (err) {
             return res.status(400).json({
                 success: false,
-                message: 'No se puede crear la tarea',
+                message: 'No se puede crear la obra',
                 errors: err
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                task: taskSave
+                project: projectSave
             });
         }
     });
@@ -133,40 +102,42 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Task.findById(id, (err, task) => {
+    Project.findById(id, (err, project) => {
         if (err) {
             return res.status(500).json({
                 success: false,
-                message: 'No se puede actualizar la tarea',
+                message: 'No se puede actualizar la obra',
                 errors: err
             });
         }
 
-        if (!task) {
+        if (!project) {
             return res.status(400).json({
                 success: false,
-                message: 'No existe una tarea con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la tarea para actualizar' }
+                message: 'No existe una obra con el id: ' + id,
+                errors: { message: 'No se pudo encontrar la obra para actualizar' }
             });
         } else {
 
-            task.name = req.body.name;
-            task.description = req.body.description;
-            task.type = req.body.type;
-            task.subTask = [...req.body.subTask];
+            console.log(req.body);
 
-            task.save((err, taskSave) => {
+            project.name = req.body.name;
+            project.description = req.body.description;
+            project.type = req.body.type;
+            project.subTask = [...req.body.subTask];
+
+            project.save((err, projectSave) => {
                 if (err) {
                     return res.status(400).json({
                         success: false,
-                        message: 'No se puede actualizar la tarea',
+                        message: 'No se puede actualizar la obra',
                         errors: err
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        task: taskSave
+                        project: projectSave
                     });
                 }
             });
@@ -180,24 +151,24 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Task.findByIdAndRemove(id, (err, taskRemove) => {
+    Project.findByIdAndRemove(id, (err, projectRemove) => {
         if (err) {
             return res.status(500).json({
                 success: false,
-                message: 'No se puede eliminar la tarea',
+                message: 'No se puede eliminar la obra',
                 errors: err
             });
-        } else if (taskRemove) {
+        } else if (projectRemove) {
             res.status(200).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa',
-                task: taskRemove
+                project: projectRemove
             });
         } else {
             return res.status(400).json({
                 success: false,
                 message: 'No existe una tarea con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la tarea para eliminar' }
+                errors: { message: 'No se pudo encontrar la obra para eliminar' }
             });
         }
     })
