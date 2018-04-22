@@ -5,8 +5,6 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const constants = require('../config/constants');
 
-const timeToken = 31536000;
-
 router.post('/login/', (req, res, next) => {
 
     console.log(req.body);
@@ -55,7 +53,7 @@ router.post('/login/', (req, res, next) => {
 
         //crear un token
         user.password = '';
-        var token = jwt.sign({ userToeken: user }, constants.SEED, { expiresIn: timeToken }); // un año
+        var token = jwt.sign({ userToeken: user }, constants.SEED, { expiresIn: constants.TIME_TOKEN_VALID }); // un año
         res.status(201).json({
             success: true,
             message: 'Operación realizada de forma exitosa.',

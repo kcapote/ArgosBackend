@@ -10,7 +10,6 @@ const TaskSchema = mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'SubTask'
     }]
-
 });
 
 const Task = module.exports = mongoose.model('Task', TaskSchema);
