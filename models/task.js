@@ -14,7 +14,7 @@ const TaskSchema = mongoose.Schema({
     type: {
         type: String,
         required: true,
-        default: 'TYPE_DEPS',
+        default: 'PISOS',
         enum: validTypesTasks
     },
     subTask: [{
