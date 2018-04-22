@@ -11,7 +11,6 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
     pagination = Number(pagination);
 
     Task.find()
-        .populate('subTask')
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
@@ -47,7 +46,6 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
     pagination = Number(pagination);
 
     Task.find()
-        .populate('subTask')
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
@@ -121,9 +119,13 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                 errors: { message: 'No se pudo encontrar la tarea para actualizar' }
             });
         } else {
+
+            console.log(req.body);
+
             task.name = req.body.name;
             task.description = req.body.description;
             task.type = req.body.type;
+            task.subTask = [...req.body.subTask];
 
             task.save((err, taskSave) => {
                 if (err) {
