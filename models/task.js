@@ -18,7 +18,8 @@ const TaskSchema = mongoose.Schema({
         enum: validTypesTasks
     },
     subTask: [{
-        name: String
+        type: Schema.Types.ObjectId,
+        ref: 'SubTask'
     }]
 });
 
