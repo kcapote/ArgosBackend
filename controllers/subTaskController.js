@@ -81,8 +81,6 @@ router.get('/task/:id', authentication.verifyToken, (req, res, next) => {
 
     SubTask.find({ 'task': id })
         .populate('task')
-        .skip(pagination)
-        .limit(constants.PAGINATION)
         .exec(
             (err, subTasks) => {
                 if (err) {
@@ -96,8 +94,7 @@ router.get('/task/:id', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
-                            totalRecords: totalRecords,
-                            pagination: pagination
+                            totalRecords: totalRecords
                         }, null, 2));
                         res.end();
 
@@ -112,8 +109,6 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 
     SubTask.find({ '_id': id })
         .populate('task')
-        .skip(pagination)
-        .limit(constants.PAGINATION)
         .exec(
             (err, subTasks) => {
                 if (err) {
@@ -127,8 +122,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
-                            totalRecords: totalRecords,
-                            pagination: pagination
+                            totalRecords: totalRecords
                         }, null, 2));
                         res.end();
 
