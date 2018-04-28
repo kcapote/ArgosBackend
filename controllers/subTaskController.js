@@ -142,7 +142,7 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
         name: req.body.name,
         task: req.body.task
     });
-    SubTask.save((err, subTask) => {
+    subTask.save((err, subTask) => {
         if (err) {
             return res.status(400).json({
                 success: false,
