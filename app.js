@@ -10,6 +10,7 @@ const taskController = require('./controllers/taskController');
 const userController = require('./controllers/userController');
 const securityController = require('./controllers/securityController');
 const projectController = require('./controllers/projectController');
+const subTaskController = require('./controllers/subTaskController');
 
 //Connect mongoose to our database
 mongoose.connect(config.database);
@@ -42,6 +43,7 @@ app.get('/', (req, res) => {
 
 //Routing all HTTP requests to all controllers
 app.use('/task', taskController);
+app.use('/subtask', subTaskController);
 app.use('/user', userController);
 app.use('/security', securityController);
 app.use('/project', projectController);

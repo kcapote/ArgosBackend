@@ -23,7 +23,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                         errors: err
                     });
                 } else {
-                    Task.count({}, (err, totalRecords) => {
+                    SubTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
@@ -60,7 +60,7 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                     });
                 } else {
 
-                    Task.count({}, (err, totalRecords) => {
+                    SubTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
@@ -92,7 +92,7 @@ router.get('/task/:id', authentication.verifyToken, (req, res, next) => {
                         errors: err
                     });
                 } else {
-                    Task.count({}, (err, totalRecords) => {
+                    SubTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
@@ -123,7 +123,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
                         errors: err
                     });
                 } else {
-                    Task.count({}, (err, totalRecords) => {
+                    SubTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
