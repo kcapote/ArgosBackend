@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
 const ProjectSchema = mongoose.Schema({
     name: {
@@ -7,47 +8,31 @@ const ProjectSchema = mongoose.Schema({
     },
     adress: {
         type: String,
-        required: [true, "La dirección es necesario"]
+        required: [true, "La dirección de la obra es necesario"]
+    },
+    builder: {
+        type: String,
+        required: [true, "La constructora de la obra es necesaria"]
+    },
+    supervisor1: {
+        type: Schema.Types.ObjectId,
+        ref: 'Employee',
+        required: [true, "El supervidor 1 de la obra es necesario"]
+    },
+    supervisor2: {
+        type: Schema.Types.ObjectId,
+        ref: 'Employee',
+        required: [true, "El supervidor 2 de la obra es necesario"]
     },
     status: {
         type: Number
     },
-    floors: [{
-        number: {
-            type: Number,
-            required: [true, "El número de piso es necesario"]
-        },
-        status: {
-            type: Number
-        },
-        departaments: [{
-            number: {
-                type: String,
-                required: [true, "El numero de departamento es necesario"]
-            },
-            status: {
-                type: Number
-            }
-        }]
-    }],
-    undergrounds: [{
-        number: {
-            type: Number,
-            required: [true, "El número del subterraneo es necesario"]
-        },
-        status: {
-            type: Number
-        },
-        departaments: [{
-            number: {
-                type: String,
-                required: [true, "El numero de departamento es necesario"]
-            },
-            status: {
-                type: Number
-            }
-        }]
-    }]
+    startDate: {
+        type: Date
+    },
+    endDate: {
+        type: Date
+    }
 });
 
 const Project = module.exports = mongoose.model('Project', ProjectSchema);

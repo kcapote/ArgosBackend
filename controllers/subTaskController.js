@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const constants = require('../config/constants');
 const jwt = require('jsonwebtoken');
-const Task = require('../models/task');
 const SubTask = require('../models/subTask');
 const authentication = require('../middlewares/authentication');
 
@@ -11,11 +10,12 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
-    Task.find()
+    SubTask.find()
+        .populate('task')
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
-            (err, tasks) => {
+            (err, subTasks) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
@@ -26,7 +26,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                     Task.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            tasks: tasks,
+                            subTasks: subTasks,
                             totalRecords: totalRecords,
                             pagination: pagination
                         }, null, 2));
@@ -45,12 +45,13 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
-    Task.find()
+    SubTask.find()
+        .populate('task')
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
-            (err, tasks) => {
+            (err, subTasks) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
@@ -62,7 +63,7 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                     Task.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            tasks: tasks,
+                            subTasks: subTasks,
                             totalRecords: totalRecords,
                             pagination: pagination
                         }, null, 2));
@@ -74,45 +75,74 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
 });
 
 
+router.get('/task/:id', authentication.verifyToken, (req, res, next) => {
+
+    let id = req.params.id;
+
+    SubTask.find({ 'task': id })
+        .populate('task')
+        .skip(pagination)
+        .limit(constants.PAGINATION)
+        .exec(
+            (err, subTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar las tareas',
+                        errors: err
+                    });
+                } else {
+                    Task.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            subTasks: subTasks,
+                            totalRecords: totalRecords,
+                            pagination: pagination
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Task.findById(id, (err, task) => {
-        if (err) {
-            return res.status(500).json({
-                success: false,
-                message: 'No se puede actualizar la tarea',
-                errors: err
-            });
-        }
+    SubTask.find({ '_id': id })
+        .populate('task')
+        .skip(pagination)
+        .limit(constants.PAGINATION)
+        .exec(
+            (err, subTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar las tareas',
+                        errors: err
+                    });
+                } else {
+                    Task.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            subTasks: subTasks,
+                            totalRecords: totalRecords,
+                            pagination: pagination
+                        }, null, 2));
+                        res.end();
 
-        if (!task) {
-            return res.status(400).json({
-                success: false,
-                message: 'No existe una tarea con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la tarea para actualizar' }
+                    });
+                }
             });
-        } else {
-
-            res.status(200).json({
-                success: true,
-                message: 'Operación realizada de forma exitosa.',
-                task: task
-            });
-
-        }
-    })
 });
 
 router.post('/', authentication.verifyToken, (req, res, next) => {
-    let task = new Task({
+    let subTask = new SubTask({
         name: req.body.name,
-        description: req.body.description,
-        type: req.body.type,
-        subTask: [...req.body.subTask]
+        task: req.body.task
     });
-    task.save((err, taskSave) => {
+    SubTask.save((err, subTask) => {
         if (err) {
             return res.status(400).json({
                 success: false,
@@ -123,7 +153,7 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                task: taskSave
+                subTask: subTask
             });
         }
     });
@@ -133,7 +163,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Task.findById(id, (err, task) => {
+    SubTask.findById(id, (err, subTask) => {
         if (err) {
             return res.status(500).json({
                 success: false,
@@ -142,7 +172,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             });
         }
 
-        if (!task) {
+        if (!subTask) {
             return res.status(400).json({
                 success: false,
                 message: 'No existe una tarea con el id: ' + id,
@@ -150,12 +180,9 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            task.name = req.body.name;
-            task.description = req.body.description;
-            task.type = req.body.type;
-            task.subTask = [...req.body.subTask];
+            subTask.name = req.body.name;
 
-            task.save((err, taskSave) => {
+            subTask.save((err, subTask) => {
                 if (err) {
                     return res.status(400).json({
                         success: false,
@@ -166,7 +193,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        task: taskSave
+                        subTask: subTask
                     });
                 }
             });
@@ -180,7 +207,7 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Task.findByIdAndRemove(id, (err, taskRemove) => {
+    SubTask.findByIdAndRemove(id, (err, subTask) => {
         if (err) {
             return res.status(500).json({
                 success: false,
@@ -191,7 +218,7 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             res.status(200).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa',
-                task: taskRemove
+                subTask: subTask
             });
         } else {
             return res.status(400).json({

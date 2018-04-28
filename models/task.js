@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var validTypesTasks = {
-    values: ['PISOS', 'SUBTERRANEOS', 'AREAS COMUNES'],
+    values: ['DEPARTAMENTOS', 'EMPLAZAMIENTO'],
     message: '{VALUE} no es un tipo de tarea permitido'
 }
 
@@ -14,12 +14,9 @@ const TaskSchema = mongoose.Schema({
     type: {
         type: String,
         required: true,
-        default: 'PISOS',
+        default: 'DEPARTAMENTOS',
         enum: validTypesTasks
-    },
-    subTask: [{
-        name: String
-    }]
+    }
 });
 
 const Task = module.exports = mongoose.model('Task', TaskSchema);
