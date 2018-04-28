@@ -4,12 +4,11 @@ var Schema = mongoose.Schema;
 const SubTaskSchema = mongoose.Schema({
     task: {
         type: Schema.Types.ObjectId,
-        ref: 'Task',
-        required: [true, "La tarea asociada es necesaria"]
+        ref: 'Task'
     },
     name: {
         type: String,
-        required: [true, "El nombre de la tarea es necesario"]
+        required: [true, "El nombre de la sub tarea es necesario"]
     }
 });
 
