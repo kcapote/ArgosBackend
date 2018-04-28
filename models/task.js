@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var validTypesTasks = {
-    values: ['DEPARTAMENTOS', 'EMPLAZAMIENTO'],
+    values: ['DEPARTAMENTOS', 'EMPLAZAMIENTOS'],
     message: '{VALUE} no es un tipo de tarea permitido'
 }
 

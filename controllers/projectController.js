@@ -110,9 +110,11 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
     let project = new Project({
         name: req.body.name,
         adress: req.body.adress,
+        builder: req.body.builder,
+        supervisor1: req.body.supervisor1,
+        supervisor2: req.body.supervisor2,
         status: req.body.status,
-        floors: [...req.body.floors],
-        undergrounds: [...req.body.undergrounds]
+        startDate: req.body.startDate
     });
     project.save((err, projectSave) => {
         if (err) {
@@ -154,9 +156,12 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 
             project.name = req.body.name;
             project.adress = req.body.adress;
+            project.builder = req.body.builder;
+            project.supervisor1 = req.body.supervisor1;
+            project.supervisor2 = req.body.supervisor2;
             project.status = req.body.status;
-            project.floors = [...req.body.floors];
-            project.undergrounds = [...req.body.undergrounds];
+            project.startDate = req.body.startDate;
+            project.endDate = req.body.endDate;
 
             project.save((err, projectSave) => {
                 if (err) {
