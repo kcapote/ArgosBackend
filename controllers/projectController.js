@@ -116,7 +116,7 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
         status: req.body.status,
         startDate: req.body.startDate
     });
-    project.save((err, projectSave) => {
+    project.save((err, project) => {
         if (err) {
             return res.status(400).json({
                 success: false,
@@ -127,7 +127,7 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                project: projectSave
+                project: project
             });
         }
     });
@@ -163,7 +163,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             project.startDate = req.body.startDate;
             project.endDate = req.body.endDate;
 
-            project.save((err, projectSave) => {
+            project.save((err, project) => {
                 if (err) {
                     return res.status(400).json({
                         success: false,
@@ -174,7 +174,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        project: projectSave
+                        project: project
                     });
                 }
             });
@@ -188,18 +188,18 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Project.findByIdAndRemove(id, (err, projectRemove) => {
+    Project.findByIdAndRemove(id, (err, project) => {
         if (err) {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar la obra',
                 errors: err
             });
-        } else if (projectRemove) {
+        } else if (project) {
             res.status(200).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa',
-                project: projectRemove
+                project: project
             });
         } else {
             return res.status(400).json({
