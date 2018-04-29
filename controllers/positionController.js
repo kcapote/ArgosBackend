@@ -77,8 +77,9 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
 router.post('/', authentication.verifyToken, (req, res, next) => {
     let position = new Position({
         name: req.body.name,
+        code: req.body.code,
         description: req.body.description,
-        percent: req.body.percent
+        performancePercentage: req.body.performancePercentage
     });
     position.save((err, positionSave) => {
         if (err) {
@@ -118,8 +119,9 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
             position.name = req.body.name;
+            position.code = req.body.code;
             position.description = req.body.description;
-            position.percent = req.body.percent;
+            position.performancePercentage = req.body.performancePercentage;
 
             position.save((err, positionSave) => {
                 if (err) {
