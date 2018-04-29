@@ -134,7 +134,8 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 router.post('/', authentication.verifyToken, (req, res, next) => {
     let subTask = new SubTask({
         name: req.body.name,
-        task: req.body.task
+        task: req.body.task,
+        position: req.body.position
     });
     subTask.save((err, subTask) => {
         if (err) {
@@ -175,6 +176,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
         } else {
 
             subTask.name = req.body.name;
+            subTask.position = req.body.position;
 
             subTask.save((err, subTask) => {
                 if (err) {
