@@ -12,6 +12,9 @@ const securityController = require('./controllers/securityController');
 const projectController = require('./controllers/projectController');
 const subTaskController = require('./controllers/subTaskController');
 const floorController = require('./controllers/floorController');
+const employeeController = require('./controllers/employeeController');
+const departmentController = require('./controllers/departmentController');
+const positionController = require('./controllers/positionController');
 
 //Connect mongoose to our database
 mongoose.connect(config.database);
@@ -49,6 +52,9 @@ app.use('/user', userController);
 app.use('/security', securityController);
 app.use('/project', projectController);
 app.use('/floor', floorController);
+app.use('/employee', employeeController);
+app.use('/department', departmentController);
+app.use('/position', positionController);
 
 //Listen to port 3001
 app.listen(port, () => {
