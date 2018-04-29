@@ -16,11 +16,15 @@ const FloorSchema = mongoose.Schema({
         type: Number,
         required: [true, "El número de piso es necesario"]
     },
+    quantityDepartment: {
+        type: Number,
+        required: [true, "El cantidad de departamentos del piso es necesario"]
+    },
     type: {
         type: String,
         required: true,
         default: 'RESIDENCIA',
-        enum: validRoles
+        enum: typesFloors
     },
     status: {
         type: Number

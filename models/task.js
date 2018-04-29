@@ -16,6 +16,9 @@ const TaskSchema = mongoose.Schema({
         required: true,
         default: 'DEPARTAMENTOS',
         enum: validTypesTasks
+    },
+    position: {
+        type: Number
     }
 });
 

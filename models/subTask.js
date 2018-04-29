@@ -9,6 +9,9 @@ const SubTaskSchema = mongoose.Schema({
     name: {
         type: String,
         required: [true, "El nombre de la sub tarea es necesario"]
+    },
+    position: {
+        type: Number
     }
 });
 
