@@ -73,6 +73,37 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
             });
 });
 
+router.get('/:id', authentication.verifyToken, (req, res, next) => {
+
+    let id = req.params.id;
+
+    Position.findById(id, (err, position) => {
+        if (err) {
+            return res.status(500).json({
+                success: false,
+                message: 'No se puede actualizar la tarea',
+                errors: err
+            });
+        }
+
+        if (!position) {
+            return res.status(400).json({
+                success: false,
+                message: 'No existe un cargo con el id: ' + id,
+                errors: { message: 'No se pudo encontrar el cargo' }
+            });
+        } else {
+
+            res.status(200).json({
+                success: true,
+                message: 'Operación realizada de forma exitosa.',
+                position: position
+            });
+
+        }
+    })
+});
+
 
 router.post('/', authentication.verifyToken, (req, res, next) => {
     let position = new Position({
