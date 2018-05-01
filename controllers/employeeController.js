@@ -135,7 +135,13 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
     let employee = new Floor({
         name: req.body.name,
         lastName: req.body.lastName,
-        position: req.body.position
+        position: req.body.position,
+        phone: req.body.phone,
+        mail: req.body.mail,
+        address: req.body.address,
+        sex: req.body.sex,
+        contractStartDate: req.body.contractStartDate,
+        contractEndDate: req.body.contractEndDate
     });
     employee.save((err, employee) => {
         if (err) {
@@ -178,6 +184,12 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             employee.name = req.body.name;
             employee.lastName = req.body.lastName;
             employee.position = req.body.position;
+            employee.phone = req.body.phone;
+            employee.mail = req.body.mail;
+            employee.address = req.body.address;
+            employee.sex = req.body.sex;
+            employee.contractStartDate = req.body.contractStartDate;
+            employee.contractEndDate = req.body.contractEndDate
 
             employee.save((err, employee) => {
                 if (err) {

@@ -10,8 +10,7 @@ const PositionkSchema = mongoose.Schema({
         required: [true, "El código es necesario"]
     },
     description: {
-        type: String,
-        required: [true, "La descripción del cargo es necesario"]
+        type: String
     },
     performancePercentage: {
         type: Number
