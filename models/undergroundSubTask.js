@@ -6,6 +6,10 @@ const UndergroundTaskSchema = mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Underground'
     },
+    subTask: {
+        type: Schema.Types.ObjectId,
+        ref: 'SubTask'
+    },
     task: {
         type: Schema.Types.ObjectId,
         ref: 'Task'
