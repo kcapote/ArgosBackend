@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const constants = require('../config/constants');
 const jwt = require('jsonwebtoken');
-const Underground = require('../models/underground');
+const Emplacement = require('../models/emplacement');
 const authentication = require('../middlewares/authentication');
 
 router.get('/', authentication.verifyToken, (req, res, next) => {
@@ -10,23 +10,23 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
-    Underground.find()
+    Emplacement.find()
         .populate('project')
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
-            (err, undergrounds) => {
+            (err, emplacements) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar los subterraneos',
+                        message: 'No se pueden consultar los emplazamientos',
                         errors: err
                     });
                 } else {
-                    Underground.count({}, (err, totalRecords) => {
+                    Emplacement.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            undergrounds: undergrounds,
+                            emplacements: emplacements,
                             totalRecords: totalRecords,
                             pagination: pagination
                         }, null, 2));
@@ -45,13 +45,13 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
-    Underground.find()
+    Emplacement.find()
         .populate('project')
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
-            (err, undergrounds) => {
+            (err, emplacements) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
@@ -60,10 +60,10 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                     });
                 } else {
 
-                    Underground.count({}, (err, totalRecords) => {
+                    Emplacement.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            undergrounds: undergrounds,
+                            emplacements: emplacements,
                             totalRecords: totalRecords,
                             pagination: pagination
                         }, null, 2));
@@ -79,21 +79,21 @@ router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Underground.find({ 'project': id })
+    Emplacement.find({ 'project': id })
         .populate('project')
         .exec(
-            (err, undergrounds) => {
+            (err, emplacements) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar los subterraneos',
+                        message: 'No se pueden consultar los emplazamientos',
                         errors: err
                     });
                 } else {
-                    Underground.count({}, (err, totalRecords) => {
+                    Emplacement.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            undergrounds: undergrounds,
+                            emplacements: emplacements,
                             totalRecords: totalRecords
                         }, null, 2));
                         res.end();
@@ -107,21 +107,21 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Underground.find({ '_id': id })
+    Emplacement.find({ '_id': id })
         .populate('project')
         .exec(
-            (err, undergrounds) => {
+            (err, emplacements) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar los subterraneos',
+                        message: 'No se pueden consultar los emplazamientos',
                         errors: err
                     });
                 } else {
-                    Underground.count({}, (err, totalRecords) => {
+                    Emplacement.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            undergrounds: undergrounds,
+                            emplacements: emplacements,
                             totalRecords: totalRecords
                         }, null, 2));
                         res.end();
@@ -132,23 +132,23 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 router.post('/', authentication.verifyToken, (req, res, next) => {
-    let underground = new Underground({
+    let emplacement = new Emplacement({
         project: req.body.project,
         number: req.body.number,
         status: req.body.status
     });
-    underground.save((err, underground) => {
+    emplacement.save((err, emplacement) => {
         if (err) {
             return res.status(400).json({
                 success: false,
-                message: 'No se puede crear el subterraneo',
+                message: 'No se puede crear el emplazamiento',
                 errors: err
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                underground: underground
+                emplacement: emplacement
             });
         }
     });
@@ -158,39 +158,39 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Underground.findById(id, (err, underground) => {
+    Emplacement.findById(id, (err, emplacement) => {
         if (err) {
             return res.status(500).json({
                 success: false,
-                message: 'No se puede actualizar el subterraneo',
+                message: 'No se puede actualizar el emplazamiento',
                 errors: err
             });
         }
 
-        if (!underground) {
+        if (!emplacement) {
             return res.status(400).json({
                 success: false,
-                message: 'No existe un subterraneo con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el subterraneo para actualizar' }
+                message: 'No existe un emplazamiento con el id: ' + id,
+                errors: { message: 'No se pudo encontrar el emplazamiento para actualizar' }
             });
         } else {
 
-            underground.project = req.body.project;
-            underground.number = req.body.number;
-            underground.status = req.body.status;
+            emplacement.project = req.body.project;
+            emplacement.number = req.body.number;
+            emplacement.status = req.body.status;
 
-            underground.save((err, underground) => {
+            emplacement.save((err, emplacement) => {
                 if (err) {
                     return res.status(400).json({
                         success: false,
-                        message: 'No se puede actualizar el subterraneo',
+                        message: 'No se puede actualizar el emplazamiento',
                         errors: err
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        underground: underground
+                        emplacement: emplacement
                     });
                 }
             });
@@ -204,24 +204,24 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Underground.findByIdAndRemove(id, (err, underground) => {
+    Emplacement.findByIdAndRemove(id, (err, emplacement) => {
         if (err) {
             return res.status(500).json({
                 success: false,
-                message: 'No se puede eliminar el subterraneo',
+                message: 'No se puede eliminar el emplazamiento',
                 errors: err
             });
-        } else if (underground) {
+        } else if (emplacement) {
             res.status(200).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa',
-                underground: underground
+                emplacement: emplacement
             });
         } else {
             return res.status(400).json({
                 success: false,
-                message: 'No existe un subterraneo con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el subterraneo para eliminar' }
+                message: 'No existe un emplazamiento con el id: ' + id,
+                errors: { message: 'No se pudo encontrar el emplazamiento para eliminar' }
             });
         }
     })
