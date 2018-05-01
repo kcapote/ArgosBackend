@@ -17,6 +17,9 @@ const departmentController = require('./controllers/departmentController');
 const positionController = require('./controllers/positionController');
 const undergroundController = require('./controllers/undergroundController');
 const emplacementController = require('./controllers/emplacementController');
+const departmentTaskController = require('./controllers/departmentTaskController');
+
+
 
 
 
@@ -62,6 +65,8 @@ app.use('/department', departmentController);
 app.use('/position', positionController);
 app.use('/underground', undergroundController);
 app.use('/emplacement', emplacementController);
+app.use('/departmentTask', departmentTaskController);
+
 
 
 

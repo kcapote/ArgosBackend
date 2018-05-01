@@ -1,10 +1,14 @@
 const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-const DepartmentTaskSchema = mongoose.Schema({
+const DepartmentSubTaskSchema = mongoose.Schema({
     department: {
         type: Schema.Types.ObjectId,
         ref: 'Department'
+    },
+    subTask: {
+        type: Schema.Types.ObjectId,
+        ref: 'SubTask'
     },
     task: {
         type: Schema.Types.ObjectId,
@@ -32,4 +36,4 @@ const DepartmentTaskSchema = mongoose.Schema({
     }
 });
 
-const DepartmentTask = module.exports = mongoose.model('DepartmentTask', DepartmentTaskSchema);
+const DepartmentSubTask = module.exports = mongoose.model('DepartmentSubTask', DepartmentSubTaskSchema);
