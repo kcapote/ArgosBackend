@@ -189,7 +189,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             employee.address = req.body.address;
             employee.sex = req.body.sex;
             employee.contractStartDate = req.body.contractStartDate;
-            employee.contractEndDate = req.body.contractEndDate
+            employee.contractEndDate = req.body.contractEndDate;
 
             employee.save((err, employee) => {
                 if (err) {
