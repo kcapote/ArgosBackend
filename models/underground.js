@@ -5,7 +5,7 @@ const UndergroundSchema = mongoose.Schema({
     project: {
         type: Schema.Types.ObjectId,
         ref: 'Project',
-        required: [true, "La obra asociada al piso es necesaria"]
+        required: [true, "La obra asociada al subterraneo es necesaria"]
     },
     number: {
         type: Number,

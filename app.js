@@ -15,6 +15,9 @@ const floorController = require('./controllers/floorController');
 const employeeController = require('./controllers/employeeController');
 const departmentController = require('./controllers/departmentController');
 const positionController = require('./controllers/positionController');
+const undergroundController = require('./controllers/undergroundController');
+
+
 
 //Connect mongoose to our database
 mongoose.connect(config.database);
@@ -55,6 +58,8 @@ app.use('/floor', floorController);
 app.use('/employee', employeeController);
 app.use('/department', departmentController);
 app.use('/position', positionController);
+app.use('/underground', undergroundController);
+
 
 //Listen to port 3001
 app.listen(port, () => {

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const constants = require('../config/constants');
 const jwt = require('jsonwebtoken');
-const Floor = require('../models/floor');
+const Underground = require('../models/underground');
 const authentication = require('../middlewares/authentication');
 
 router.get('/', authentication.verifyToken, (req, res, next) => {
@@ -10,23 +10,23 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
-    Floor.find()
+    Underground.find()
         .populate('project')
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
-            (err, floors) => {
+            (err, undergrounds) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar los pisos',
+                        message: 'No se pueden consultar los subterraneos',
                         errors: err
                     });
                 } else {
-                    Floor.count({}, (err, totalRecords) => {
+                    Underground.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            floors: floors,
+                            undergrounds: undergrounds,
                             totalRecords: totalRecords,
                             pagination: pagination
                         }, null, 2));
@@ -45,13 +45,13 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
-    Floor.find()
+    Underground.find()
         .populate('project')
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
-            (err, floors) => {
+            (err, undergrounds) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
@@ -60,10 +60,10 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                     });
                 } else {
 
-                    Floor.count({}, (err, totalRecords) => {
+                    Underground.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            floors: floors,
+                            undergrounds: undergrounds,
                             totalRecords: totalRecords,
                             pagination: pagination
                         }, null, 2));
@@ -79,21 +79,21 @@ router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Floor.find({ 'project': id })
+    Underground.find({ 'project': id })
         .populate('project')
         .exec(
-            (err, floors) => {
+            (err, underground) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar los pisos',
+                        message: 'No se pueden consultar los subterraneos',
                         errors: err
                     });
                 } else {
-                    Floor.count({}, (err, totalRecords) => {
+                    Underground.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            floors: floors,
+                            undergrounds: undergrounds,
                             totalRecords: totalRecords
                         }, null, 2));
                         res.end();
@@ -107,21 +107,21 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Floor.find({ '_id': id })
+    Underground.find({ '_id': id })
         .populate('project')
         .exec(
-            (err, floors) => {
+            (err, undergrounds) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar los pisos',
+                        message: 'No se pueden consultar los subterraneos',
                         errors: err
                     });
                 } else {
-                    Floor.count({}, (err, totalRecords) => {
+                    Underground.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            floors: floors,
+                            undergrounds: undergrounds,
                             totalRecords: totalRecords
                         }, null, 2));
                         res.end();
@@ -132,25 +132,23 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 router.post('/', authentication.verifyToken, (req, res, next) => {
-    let floor = new Floor({
+    let underground = new Underground({
         project: req.body.project,
         number: req.body.number,
-        quantityDepartment: req.body.number,
-        type: req.body.type,
         status: req.body.status
     });
-    floor.save((err, floor) => {
+    underground.save((err, underground) => {
         if (err) {
             return res.status(400).json({
                 success: false,
-                message: 'No se puede crear el piso',
+                message: 'No se puede crear el subterraneo',
                 errors: err
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                floor: floor
+                underground: underground
             });
         }
     });
@@ -160,41 +158,39 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Floor.findById(id, (err, floor) => {
+    Underground.findById(id, (err, underground) => {
         if (err) {
             return res.status(500).json({
                 success: false,
-                message: 'No se puede actualizar el piso',
+                message: 'No se puede actualizar el subterraneo',
                 errors: err
             });
         }
 
-        if (!floor) {
+        if (!underground) {
             return res.status(400).json({
                 success: false,
-                message: 'No existe un piso con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el piso para actualizar' }
+                message: 'No existe un subterraneo con el id: ' + id,
+                errors: { message: 'No se pudo encontrar el subterraneo para actualizar' }
             });
         } else {
 
-            floor.project = req.body.project;
-            floor.number = req.body.number;
-            floor.quantityDepartment = req.body.number;
-            floor.type = req.body.type;
-            floor.status = req.body.status;
+            underground.project = req.body.project;
+            underground.number = req.body.number;
+            underground.status = req.body.status;
 
-            floor.save((err, floor) => {
+            underground.save((err, underground) => {
                 if (err) {
                     return res.status(400).json({
                         success: false,
-                        message: 'No se puede actualizar el piso',
+                        message: 'No se puede actualizar el subterraneo',
                         errors: err
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        floor: floor
+                        underground: underground
                     });
                 }
             });
@@ -208,24 +204,24 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Floor.findByIdAndRemove(id, (err, floor) => {
+    Underground.findByIdAndRemove(id, (err, underground) => {
         if (err) {
             return res.status(500).json({
                 success: false,
-                message: 'No se puede eliminar el piso',
+                message: 'No se puede eliminar el subterraneo',
                 errors: err
             });
-        } else if (floor) {
+        } else if (underground) {
             res.status(200).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa',
-                floor: floor
+                underground: underground
             });
         } else {
             return res.status(400).json({
                 success: false,
-                message: 'No existe un piso con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el piso para eliminar' }
+                message: 'No existe un subterraneo con el id: ' + id,
+                errors: { message: 'No se pudo encontrar el subterraneo para eliminar' }
             });
         }
     })
