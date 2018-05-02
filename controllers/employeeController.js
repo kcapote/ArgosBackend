@@ -133,6 +133,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 
 router.post('/', authentication.verifyToken, (req, res, next) => {
     let employee = new Employee({
+        rut: req.body.rut,
         name: req.body.name,
         lastName: req.body.lastName,
         position: req.body.position,
@@ -181,6 +182,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
+            employee.rut = req.body.rut;
             employee.name = req.body.name;
             employee.lastName = req.body.lastName;
             employee.position = req.body.position;

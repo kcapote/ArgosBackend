@@ -7,6 +7,10 @@ var typesSex = {
 }
 
 const EmployeeSchema = mongoose.Schema({
+    rut: {
+        type: String,
+        required: [true, "El rut del empleado es necesario"]
+    },
     name: {
         type: String,
         required: [true, "El nombre del empleado es necesario"]
