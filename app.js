@@ -20,6 +20,7 @@ const emplacementController = require('./controllers/emplacementController');
 const departmentTaskController = require('./controllers/departmentTaskController');
 const departmentSubTaskController = require('./controllers/departmentSubTaskController');
 const undergroundTaskController = require('./controllers/undergroundTaskController');
+const undergroundSubTaskController = require('./controllers/undergroundSubTaskController');
 
 
 
@@ -68,6 +69,7 @@ app.use('/emplacement', emplacementController);
 app.use('/departmenttask', departmentTaskController);
 app.use('/departmentsubtask', departmentSubTaskController);
 app.use('/undergroundtask', undergroundTaskController);
+app.use('/undergroundsubtask', undergroundSubTaskController);
 
 
 
