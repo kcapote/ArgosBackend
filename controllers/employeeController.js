@@ -132,7 +132,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 router.post('/', authentication.verifyToken, (req, res, next) => {
-    let employee = new Floor({
+    let employee = new Employee({
         name: req.body.name,
         lastName: req.body.lastName,
         position: req.body.position,
