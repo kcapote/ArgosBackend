@@ -11,6 +11,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
     pagination = Number(pagination);
 
     Project.find()
+        .populate('supervisor1')
+        .populate('supervisor2')
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
@@ -46,6 +48,8 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
     pagination = Number(pagination);
 
     Project.find()
+        .populate('supervisor1')
+        .populate('supervisor2')
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
@@ -78,31 +82,37 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Project.findById(id, (err, project) => {
-        if (err) {
-            return res.status(500).json({
-                success: false,
-                message: 'No se puede actualizar la tarea',
-                errors: err
-            });
-        }
 
-        if (!project) {
-            return res.status(400).json({
-                success: false,
-                message: 'No existe una tarea con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la obra para actualizar' }
-            });
-        } else {
+    Project.find({ '_id': id })
+        .populate('supervisor1')
+        .populate('supervisor2')
+        .exec(
+            (err, projects) => {
 
-            res.status(200).json({
-                success: true,
-                message: 'Operación realizada de forma exitosa.',
-                project: project
-            });
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar la obra',
+                        errors: err
+                    });
+                }
 
-        }
-    })
+                if (!projects) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'No existe una obra con el id: ' + id,
+                        errors: { message: 'No se pudo encontrar la obra para actualizar' }
+                    });
+                } else {
+
+                    res.status(200).json({
+                        success: true,
+                        message: 'Operación realizada de forma exitosa.',
+                        projects: projects
+                    });
+
+                }
+            });
 });
 
 router.post('/', authentication.verifyToken, (req, res, next) => {
