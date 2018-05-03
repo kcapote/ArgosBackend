@@ -23,7 +23,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                         errors: err
                     });
                 } else {
-                    Department.count({}, (err, totalRecords) => {
+                    Employee.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employees: employees,
