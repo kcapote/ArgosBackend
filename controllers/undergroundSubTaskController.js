@@ -137,6 +137,36 @@ router.get('/underground/:idProject/:idUnderground', authentication.verifyToken,
             });
 });
 
+router.get('/project/:idProject', authentication.verifyToken, (req, res, next) => {
+
+    let idProject = req.params.idProject;
+
+    UndergroundSubTask.find({ 'project': idProject })
+        .populate('underground')
+        .populate('subTask')
+        .populate('task')
+        .populate('project')
+        .exec(
+            (err, undergroundSubTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar la información',
+                        errors: err
+                    });
+                } else {
+                    UndergroundSubTask.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            undergroundSubTasks: undergroundSubTasks,
+                            totalRecords: totalRecords
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
 
 router.post('/', authentication.verifyToken, (req, res, next) => {
     let undergroundSubTask = new UndergroundSubTask({

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const constants = require('../config/constants');
 const jwt = require('jsonwebtoken');
-const UndergroundTask = require('../models/undergroundTask');
+const EmplacementSubTask = require('../models/emplacementSubTask');
 const authentication = require('../middlewares/authentication');
 
 router.get('/', authentication.verifyToken, (req, res, next) => {
@@ -10,14 +10,15 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
-    UndergroundTask.find()
-        .populate('underground')
+    EmplacementSubTask.find()
+        .populate('subTask')
         .populate('task')
+        .populate('emplacement')
         .populate('project')
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
-            (err, undergroundTasks) => {
+            (err, emplacementSubTasks) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
@@ -25,10 +26,10 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                         errors: err
                     });
                 } else {
-                    UndergroundTask.count({}, (err, totalRecords) => {
+                    EmplacementSubTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            undergroundTasks: undergroundTasks,
+                            emplacementSubTasks: emplacementSubTasks,
                             totalRecords: totalRecords,
                             pagination: pagination
                         }, null, 2));
@@ -44,12 +45,13 @@ router.get('/task/:idProject/:idTask', authentication.verifyToken, (req, res, ne
     let idProject = req.params.idProject;
     let idTask = req.params.idTask;
 
-    UndergroundTask.find({ 'project': idProject, 'task': idTask })
-        .populate('underground')
+    EmplacementSubTask.find({ 'project': idProject, 'task': idTask })
+        .populate('subTask')
         .populate('task')
+        .populate('emplacement')
         .populate('project')
         .exec(
-            (err, undergroundTasks) => {
+            (err, emplacementSubTasks) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
@@ -57,10 +59,10 @@ router.get('/task/:idProject/:idTask', authentication.verifyToken, (req, res, ne
                         errors: err
                     });
                 } else {
-                    UndergroundTask.count({}, (err, totalRecords) => {
+                    EmplacementSubTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            undergroundTasks: undergroundTasks,
+                            emplacementSubTasks: emplacementSubTasks,
                             totalRecords: totalRecords
                         }, null, 2));
                         res.end();
@@ -70,18 +72,18 @@ router.get('/task/:idProject/:idTask', authentication.verifyToken, (req, res, ne
             });
 });
 
-
-router.get('/underground/:idProject/:idUnderground', authentication.verifyToken, (req, res, next) => {
+router.get('/subTask/:idProject/:idSubTask', authentication.verifyToken, (req, res, next) => {
 
     let idProject = req.params.idProject;
-    let idUnderground = req.params.idUnderground;
+    let idSubTask = req.params.idSubTask;
 
-    UndergroundTask.find({ 'project': idProject, 'underground': idUnderground })
-        .populate('underground')
+    EmplacementSubTask.find({ 'project': idProject, 'subTask': subTask })
+        .populate('subTask')
         .populate('task')
+        .populate('emplacement')
         .populate('project')
         .exec(
-            (err, undergroundTasks) => {
+            (err, emplacementSubTasks) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
@@ -89,10 +91,10 @@ router.get('/underground/:idProject/:idUnderground', authentication.verifyToken,
                         errors: err
                     });
                 } else {
-                    UndergroundTask.count({}, (err, totalRecords) => {
+                    EmplacementSubTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            undergroundTasks: undergroundTasks,
+                            emplacementSubTasks: emplacementSubTasks,
                             totalRecords: totalRecords
                         }, null, 2));
                         res.end();
@@ -106,12 +108,13 @@ router.get('/project/:idProject', authentication.verifyToken, (req, res, next) =
 
     let idProject = req.params.idProject;
 
-    UndergroundTask.find({ 'project': idProject })
-        .populate('underground')
+    EmplacementSubTask.find({ 'project': idProject })
+        .populate('subTask')
         .populate('task')
+        .populate('emplacement')
         .populate('project')
         .exec(
-            (err, undergroundTasks) => {
+            (err, emplacementSubTasks) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
@@ -119,10 +122,10 @@ router.get('/project/:idProject', authentication.verifyToken, (req, res, next) =
                         errors: err
                     });
                 } else {
-                    UndergroundTask.count({}, (err, totalRecords) => {
+                    EmplacementSubTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            undergroundTasks: undergroundTasks,
+                            emplacementSubTasks: emplacementSubTasks,
                             totalRecords: totalRecords
                         }, null, 2));
                         res.end();
@@ -132,17 +135,51 @@ router.get('/project/:idProject', authentication.verifyToken, (req, res, next) =
             });
 });
 
+router.get('/emplacement/:idProject/:idEmplacement', authentication.verifyToken, (req, res, next) => {
+
+    let idProject = req.params.idProject;
+    let idEmplacement = req.params.idEmplacement;
+
+    EmplacementSubTask.find({ 'project': idProject, 'emplacement': idEmplacement })
+        .populate('subTask')
+        .populate('task')
+        .populate('emplacement')
+        .populate('project')
+        .exec(
+            (err, emplacementSubTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar la información',
+                        errors: err
+                    });
+                } else {
+                    EmplacementSubTask.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            emplacementSubTasks: emplacementSubTasks,
+                            totalRecords: totalRecords
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
+
 router.post('/', authentication.verifyToken, (req, res, next) => {
-    let undergroundTask = new UndergroundTask({
+    let emplacementSubTask = new EmplacementSubTask({
         task: req.body.task,
-        underground: req.body.underground,
+        subTask: req.body.subTask,
+        emplacement: req.body.emplacement,
         project: req.body.project,
         startDate: req.body.startDate,
         updateDate: req.body.updateDate,
         endDate: req.body.endDate,
         status: req.body.status
     });
-    undergroundTask.save((err, undergroundTask) => {
+    emplacementSubTask.save((err, emplacementSubTask) => {
         if (err) {
             return res.status(400).json({
                 success: false,
@@ -153,7 +190,7 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                undergroundTask: undergroundTask
+                emplacementSubTask: emplacementSubTask
             });
         }
     });
@@ -163,7 +200,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    UndergroundTask.findById(id, (err, undergroundTask) => {
+    EmplacementSubTask.findById(id, (err, emplacementSubTask) => {
         if (err) {
             return res.status(500).json({
                 success: false,
@@ -172,7 +209,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             });
         }
 
-        if (!undergroundTask) {
+        if (!emplacementSubTask) {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un registro con el id: ' + id,
@@ -180,15 +217,16 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            undergroundTask.task = req.body.task;
-            undergroundTask.underground = req.body.underground;
-            undergroundTask.project = req.body.project;
-            undergroundTask.startDate = req.body.startDate;
-            undergroundTask.updateDate = req.body.updateDate;
-            undergroundTask.endDate = req.body.endDate;
-            undergroundTask.status = req.body.status;
+            emplacementSubTask.subTask = req.body.subTask;
+            emplacementSubTask.task = req.body.task;
+            emplacementSubTask.emplacement = req.body.emplacement;
+            emplacementSubTask.project = req.body.project;
+            emplacementSubTask.startDate = req.body.startDate;
+            emplacementSubTask.updateDate = req.body.updateDate;
+            emplacementSubTask.endDate = req.body.endDate;
+            emplacementSubTask.status = req.body.status;
 
-            undergroundTask.save((err, undergroundTask) => {
+            emplacementSubTask.save((err, emplacementSubTask) => {
                 if (err) {
                     return res.status(400).json({
                         success: false,
@@ -199,7 +237,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        undergroundTask: undergroundTask
+                        emplacementSubTask: emplacementSubTask
                     });
                 }
             });
@@ -213,18 +251,18 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    UndergroundTask.findByIdAndRemove(id, (err, undergroundTask) => {
+    EmplacementSubTask.findByIdAndRemove(id, (err, emplacementSubTask) => {
         if (err) {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el registro',
                 errors: err
             });
-        } else if (undergroundTask) {
+        } else if (emplacementSubTask) {
             res.status(200).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa',
-                undergroundTask: undergroundTask
+                emplacementSubTask: emplacementSubTask
             });
         } else {
             return res.status(400).json({

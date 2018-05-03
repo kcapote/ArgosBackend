@@ -6,6 +6,10 @@ const EmplacementTaskSchema = mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Emplacement'
     },
+    subTask: {
+        type: Schema.Types.ObjectId,
+        ref: 'SubTask'
+    },
     task: {
         type: Schema.Types.ObjectId,
         ref: 'Task'
