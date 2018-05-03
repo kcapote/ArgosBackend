@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-const UndergroundTaskSchema = mongoose.Schema({
+const UndergroundSubTaskSchema = mongoose.Schema({
     underground: {
         type: Schema.Types.ObjectId,
         ref: 'Underground'
@@ -32,4 +32,4 @@ const UndergroundTaskSchema = mongoose.Schema({
     }
 });
 
-const UndergroundTask = module.exports = mongoose.model('UndergroundTask', UndergroundTaskSchema);
+const UndergroundSubTask = module.exports = mongoose.model('UndergroundSubTask', UndergroundSubTaskSchema);

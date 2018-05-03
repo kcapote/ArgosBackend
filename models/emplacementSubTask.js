@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-const EmplacementTaskSchema = mongoose.Schema({
+const EmplacementSubTaskSchema = mongoose.Schema({
     emplacement: {
         type: Schema.Types.ObjectId,
         ref: 'Emplacement'
@@ -32,4 +32,4 @@ const EmplacementTaskSchema = mongoose.Schema({
     }
 });
 
-const EmplacementTask = module.exports = mongoose.model('EmplacementTask', EmplacementTaskSchema);
+const EmplacementSubTask = module.exports = mongoose.model('EmplacementSubTask', EmplacementSubTaskSchema);
