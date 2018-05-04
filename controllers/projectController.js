@@ -124,7 +124,8 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
         supervisor1: req.body.supervisor1,
         supervisor2: req.body.supervisor2,
         status: req.body.status,
-        startDate: req.body.startDate
+        startDate: req.body.startDate,
+        endDate: req.body.endDate
     });
     project.save((err, project) => {
         if (err) {
