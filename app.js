@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const config = require('./config/database');
 
 //import of controllers
+const collectionController = require('./controllers/collectionController');
 const taskController = require('./controllers/taskController');
 const userController = require('./controllers/userController');
 const securityController = require('./controllers/securityController');
@@ -57,6 +58,8 @@ app.get('/', (req, res) => {
 
 
 //Routing all HTTP requests to all controllers
+
+app.use('/collection', collectionController);
 app.use('/task', taskController);
 app.use('/subtask', subTaskController);
 app.use('/user', userController);
