@@ -210,7 +210,7 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
                 message: 'No se puede eliminar la tarea',
                 errors: err
             });
-        } else if (taskRemove) {
+        } else if (subTask) {
             res.status(200).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa',
