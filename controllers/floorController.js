@@ -135,7 +135,7 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
     let floor = new Floor({
         project: req.body.project,
         number: req.body.number,
-        quantityDepartment: req.body.number,
+        quantityDepartment: req.body.quantityDepartment,
         type: req.body.type,
         status: req.body.status
     });
