@@ -132,7 +132,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 router.post('/', authentication.verifyToken, (req, res, next) => {
-    let department = new Floor({
+    let department = new Department({
         floor: req.body.floor,
         number: req.body.number,
         status: req.body.status
