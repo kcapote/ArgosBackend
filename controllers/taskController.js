@@ -63,7 +63,7 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             tasks: tasks,
-                            totalRecords: totalRecords,
+                            totalRecords: tasks.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
