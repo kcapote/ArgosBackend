@@ -32,7 +32,10 @@ const ProjectSchema = mongoose.Schema({
     },
     endDate: {
         type: Date
-    }
+    },
+    estimatedDate: {
+        type: Date
+    },
 });
 
 const Project = module.exports = mongoose.model('Project', ProjectSchema);

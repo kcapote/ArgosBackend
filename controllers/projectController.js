@@ -125,7 +125,8 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
         supervisor2: req.body.supervisor2,
         status: req.body.status,
         startDate: req.body.startDate,
-        endDate: req.body.endDate
+        endDate: req.body.endDate,
+        estimatedDate: req.body.estimatedDate
     });
     project.save((err, project) => {
         if (err) {
@@ -173,6 +174,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             project.status = req.body.status;
             project.startDate = req.body.startDate;
             project.endDate = req.body.endDate;
+            project.estimatedDate = req.body.estimatedDate;
 
             project.save((err, project) => {
                 if (err) {

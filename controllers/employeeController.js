@@ -47,7 +47,7 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
 
     Employee.find()
         .populate('position')
-        .or([{ 'name': regex }, { 'lastName': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
+        .or([{ 'name': regex }, { 'lastName': regex }, { 'rut': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
