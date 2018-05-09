@@ -121,8 +121,8 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
                     SubTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            subTasks: subTasks.length,
-                            totalRecords: totalRecords
+                            subTasks: subTasks,
+                            totalRecords: subTasks.length
                         }, null, 2));
                         res.end();
 
