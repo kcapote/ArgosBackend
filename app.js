@@ -16,14 +16,12 @@ const floorController = require('./controllers/floorController');
 const employeeController = require('./controllers/employeeController');
 const departmentController = require('./controllers/departmentController');
 const positionController = require('./controllers/positionController');
-const undergroundController = require('./controllers/undergroundController');
-const emplacementController = require('./controllers/emplacementController');
+const commonServiceController = require('./controllers/commonServiceController');
 const departmentTaskController = require('./controllers/departmentTaskController');
 const departmentSubTaskController = require('./controllers/departmentSubTaskController');
-const undergroundTaskController = require('./controllers/undergroundTaskController');
-const undergroundSubTaskController = require('./controllers/undergroundSubTaskController');
-const emplacementTaskController = require('./controllers/emplacementTaskController');
-const emplacementSubTaskController = require('./controllers/emplacementSubTaskController');
+const commonServiceTaskController = require('./controllers/commonServiceTaskController');
+const commonServiceSubTaskController = require('./controllers/commonServiceSubTaskController');
+
 
 
 
@@ -69,14 +67,12 @@ app.use('/floor', floorController);
 app.use('/employee', employeeController);
 app.use('/department', departmentController);
 app.use('/position', positionController);
-app.use('/underground', undergroundController);
-app.use('/emplacement', emplacementController);
+app.use('/commonservice', commonServiceController);
 app.use('/departmenttask', departmentTaskController);
 app.use('/departmentsubtask', departmentSubTaskController);
-app.use('/undergroundtask', undergroundTaskController);
-app.use('/undergroundsubtask', undergroundSubTaskController);
-app.use('/emplacementtask', emplacementTaskController);
-app.use('/emplacementsubtask', emplacementSubTaskController);
+app.use('/commonservicetask', commonServiceTaskController);
+app.use('/commonservicesubtask', commonServiceSubTaskController);
+
 
 
 

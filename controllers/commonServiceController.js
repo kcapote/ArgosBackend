@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const constants = require('../config/constants');
 const jwt = require('jsonwebtoken');
-const UndergroundTask = require('../models/undergroundTask');
+const CommonService = require('../models/commonService');
 const authentication = require('../middlewares/authentication');
 
 router.get('/', authentication.verifyToken, (req, res, next) => {
@@ -10,25 +10,23 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
-    UndergroundTask.find()
-        .populate('underground')
-        .populate('task')
+    CommonService.find()
         .populate('project')
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
-            (err, undergroundTasks) => {
+            (err, commonServices) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar la información',
+                        message: 'No se pueden consultar los registros',
                         errors: err
                     });
                 } else {
-                    UndergroundTask.count({}, (err, totalRecords) => {
+                    CommonService.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            undergroundTasks: undergroundTasks,
+                            commonServices: commonServices,
                             totalRecords: totalRecords,
                             pagination: pagination
                         }, null, 2));
@@ -39,29 +37,35 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/task/:idProject/:idTask', authentication.verifyToken, (req, res, next) => {
+router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
 
-    let idProject = req.params.idProject;
-    let idTask = req.params.idTask;
+    let term = req.params.term;
+    var regex = new RegExp(term, 'i');
 
-    UndergroundTask.find({ 'project': idProject, 'task': idTask })
-        .populate('underground')
-        .populate('task')
+    let pagination = req.query.pagination || 0;
+    pagination = Number(pagination);
+
+    CommonService.find()
         .populate('project')
+        .or([{ 'type': regex }, { 'number': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
+        .skip(pagination)
+        .limit(constants.PAGINATION)
         .exec(
-            (err, undergroundTasks) => {
+            (err, commonServices) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar la información',
+                        message: 'No se encontraron resultados',
                         errors: err
                     });
                 } else {
-                    UndergroundTask.count({}, (err, totalRecords) => {
+
+                    CommonService.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            undergroundTasks: undergroundTasks,
-                            totalRecords: totalRecords
+                            commonServices: commonServices,
+                            totalRecords: commonServices.length,
+                            pagination: pagination
                         }, null, 2));
                         res.end();
 
@@ -71,28 +75,25 @@ router.get('/task/:idProject/:idTask', authentication.verifyToken, (req, res, ne
 });
 
 
-router.get('/underground/:idProject/:idUnderground', authentication.verifyToken, (req, res, next) => {
+router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
 
-    let idProject = req.params.idProject;
-    let idUnderground = req.params.idUnderground;
+    let id = req.params.id;
 
-    UndergroundTask.find({ 'project': idProject, 'underground': idUnderground })
-        .populate('underground')
-        .populate('task')
+    CommonService.find({ 'project': id })
         .populate('project')
         .exec(
-            (err, undergroundTasks) => {
+            (err, commonServices) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar la información',
+                        message: 'No se pueden consultar los registros',
                         errors: err
                     });
                 } else {
-                    UndergroundTask.count({}, (err, totalRecords) => {
+                    CommonService.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            undergroundTasks: undergroundTasks,
+                            commonServices: commonServices,
                             totalRecords: totalRecords
                         }, null, 2));
                         res.end();
@@ -102,28 +103,26 @@ router.get('/underground/:idProject/:idUnderground', authentication.verifyToken,
             });
 });
 
-router.get('/project/:idProject', authentication.verifyToken, (req, res, next) => {
+router.get('/:id', authentication.verifyToken, (req, res, next) => {
 
-    let idProject = req.params.idProject;
+    let id = req.params.id;
 
-    UndergroundTask.find({ 'project': idProject })
-        .populate('underground')
-        .populate('task')
+    CommonService.find({ '_id': id })
         .populate('project')
         .exec(
-            (err, undergroundTasks) => {
+            (err, commonService) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar la información',
+                        message: 'No se pueden consultar los registros',
                         errors: err
                     });
                 } else {
-                    UndergroundTask.count({}, (err, totalRecords) => {
+                    CommonService.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            undergroundTasks: undergroundTasks,
-                            totalRecords: totalRecords
+                            commonService: commonService,
+                            totalRecords: commonService.length
                         }, null, 2));
                         res.end();
 
@@ -133,27 +132,24 @@ router.get('/project/:idProject', authentication.verifyToken, (req, res, next) =
 });
 
 router.post('/', authentication.verifyToken, (req, res, next) => {
-    let undergroundTask = new UndergroundTask({
-        task: req.body.task,
-        underground: req.body.underground,
+    let commonService = new CommonService({
         project: req.body.project,
-        startDate: req.body.startDate,
-        updateDate: req.body.updateDate,
-        endDate: req.body.endDate,
+        number: req.body.number,
+        type: req.body.type,
         status: req.body.status
     });
-    undergroundTask.save((err, undergroundTask) => {
+    commonService.save((err, commonService) => {
         if (err) {
             return res.status(400).json({
                 success: false,
-                message: 'No se puede guardar el registro',
+                message: 'No se puede crear el registro',
                 errors: err
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                undergroundTask: undergroundTask
+                commonService: commonService
             });
         }
     });
@@ -163,7 +159,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    UndergroundTask.findById(id, (err, undergroundTask) => {
+    CommonService.findById(id, (err, commonService) => {
         if (err) {
             return res.status(500).json({
                 success: false,
@@ -172,7 +168,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             });
         }
 
-        if (!undergroundTask) {
+        if (!commonService) {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un registro con el id: ' + id,
@@ -180,15 +176,12 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            undergroundTask.task = req.body.task;
-            undergroundTask.underground = req.body.underground;
-            undergroundTask.project = req.body.project;
-            undergroundTask.startDate = req.body.startDate;
-            undergroundTask.updateDate = req.body.updateDate;
-            undergroundTask.endDate = req.body.endDate;
-            undergroundTask.status = req.body.status;
+            commonService.project = req.body.project;
+            commonService.number = req.body.number;
+            commonService.type = req.body.type;
+            commonService.status = req.body.status;
 
-            undergroundTask.save((err, undergroundTask) => {
+            commonService.save((err, commonService) => {
                 if (err) {
                     return res.status(400).json({
                         success: false,
@@ -199,7 +192,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        undergroundTask: undergroundTask
+                        commonService: commonService
                     });
                 }
             });
@@ -213,18 +206,18 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    UndergroundTask.findByIdAndRemove(id, (err, undergroundTask) => {
+    CommonService.findByIdAndRemove(id, (err, commonService) => {
         if (err) {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el registro',
                 errors: err
             });
-        } else if (undergroundTask) {
+        } else if (commonService) {
             res.status(200).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa',
-                undergroundTask: undergroundTask
+                commonService: commonService
             });
         } else {
             return res.status(400).json({

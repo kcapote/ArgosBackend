@@ -1,10 +1,15 @@
 const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-const UndergroundSubTaskSchema = mongoose.Schema({
-    underground: {
+var typesSC = {
+    values: ['SUBTERRANEOS', 'EMPLAZAMIENTOS', 'PISOS S.C'],
+    message: '{VALUE} no es un tipo permitido'
+}
+
+const CommonServiceSubTaskSchema = mongoose.Schema({
+    commonService: {
         type: Schema.Types.ObjectId,
-        ref: 'Underground'
+        ref: 'CommonService'
     },
     subTask: {
         type: Schema.Types.ObjectId,
@@ -13,6 +18,12 @@ const UndergroundSubTaskSchema = mongoose.Schema({
     task: {
         type: Schema.Types.ObjectId,
         ref: 'Task'
+    },
+    type: {
+        type: String,
+        required: true,
+        default: 'SUBTERRANEOS',
+        enum: typesSC
     },
     project: {
         type: Schema.Types.ObjectId,
@@ -32,4 +43,4 @@ const UndergroundSubTaskSchema = mongoose.Schema({
     }
 });
 
-const UndergroundSubTask = module.exports = mongoose.model('UndergroundSubTask', UndergroundSubTaskSchema);
+const CommonServiceSubTask = module.exports = mongoose.model('CommonServiceSubTask', CommonServiceSubTaskSchema);
