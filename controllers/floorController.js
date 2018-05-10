@@ -9,11 +9,15 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
-
+    let limit = 1;
+    if (pagination === -1) {
+        pagination = 0;
+        limit = 0;
+    }
     Floor.find()
         .populate('project')
         .skip(pagination)
-        .limit(constants.PAGINATION)
+        .limit(limit === 0 ? 0 : constants.PAGINATION)
         .exec(
             (err, floors) => {
                 if (err) {
@@ -44,12 +48,16 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
-
+    let limit = 1;
+    if (pagination === -1) {
+        pagination = 0;
+        limit = 0;
+    }
     Floor.find()
         .populate('project')
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
-        .limit(constants.PAGINATION)
+        .limit(limit === 0 ? 0 : constants.PAGINATION)
         .exec(
             (err, floors) => {
                 if (err) {
