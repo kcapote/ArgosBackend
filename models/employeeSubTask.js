@@ -18,21 +18,17 @@ const EmployeeSubTaskSchema = mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Floor'
     },
-    underground: {
+    department: {
         type: Schema.Types.ObjectId,
-        ref: 'Underground'
+        ref: 'Department'
     },
-    emplacement: {
+    commonService: {
         type: Schema.Types.ObjectId,
-        ref: 'Emplacement'
+        ref: 'CommonService'
     },
     project: {
         type: Schema.Types.ObjectId,
         ref: 'Project'
-    },
-    department: {
-        type: Schema.Types.ObjectId,
-        ref: 'Department'
     },
     createDate: {
         type: Date
@@ -45,6 +41,10 @@ const EmployeeSubTaskSchema = mongoose.Schema({
     },
     status: {
         type: Number
+    },
+    recordActive: {
+        type: Boolean,
+        default: true
     }
 });
 
