@@ -21,6 +21,7 @@ const departmentTaskController = require('./controllers/departmentTaskController
 const departmentSubTaskController = require('./controllers/departmentSubTaskController');
 const commonServiceTaskController = require('./controllers/commonServiceTaskController');
 const commonServiceSubTaskController = require('./controllers/commonServiceSubTaskController');
+const employeeProjectController = require('./controllers/employeeProjectController');
 
 
 
@@ -72,8 +73,7 @@ app.use('/departmenttask', departmentTaskController);
 app.use('/departmentsubtask', departmentSubTaskController);
 app.use('/commonservicetask', commonServiceTaskController);
 app.use('/commonservicesubtask', commonServiceSubTaskController);
-
-
+app.use('/employeeproject', employeeProjectController);
 
 
 //Listen to port 3001
