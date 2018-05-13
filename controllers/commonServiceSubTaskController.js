@@ -40,12 +40,51 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
+router.get('/:recordActive', authentication.verifyToken, (req, res, next) => {
+
+    let pagination = req.query.pagination || 0;
+    pagination = Number(pagination);
+    let recordActive = req.params.recordActive;
+    recordActive = Boolean(recordActive);
+
+    CommonServiceSubTask.find({ 'recordActive': recordActive })
+        .populate('commonService')
+        .populate('subTask')
+        .populate('task')
+        .populate('project')
+        .skip(pagination)
+        .limit(constants.PAGINATION)
+        .exec(
+            (err, commonServiceSubTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar la información',
+                        errors: err
+                    });
+                } else {
+                    CommonServiceSubTask.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            commonServiceSubTasks: commonServiceSubTasks,
+                            totalRecords: totalRecords,
+                            pagination: pagination
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/subtask/:idProject/:idSubTask', authentication.verifyToken, (req, res, next) => {
 
     let idProject = req.params.idProject;
     let idSubTask = req.params.idSubTask;
+    let recordActive = req.params.recordActive;
+    recordActive = Boolean(recordActive);
 
-    CommonServiceSubTask.find({ 'project': idProject, 'subTask': idSubTask })
+    CommonServiceSubTask.find({ 'project': idProject, 'subTask': idSubTask, 'recordActive': true })
         .populate('commonService')
         .populate('subTask')
         .populate('task')
@@ -78,7 +117,7 @@ router.get('/subtask/:idProject/:idSubTask/:type', authentication.verifyToken, (
     let idSubTask = req.params.idSubTask;
     let type = req.params.type;
 
-    CommonServiceSubTask.find({ 'project': idProject, 'subTask': idSubTask, 'type': type })
+    CommonServiceSubTask.find({ 'project': idProject, 'subTask': idSubTask, 'type': type, 'recordActive': true })
         .populate('commonService')
         .populate('subTask')
         .populate('task')
@@ -110,7 +149,7 @@ router.get('/task/:idProject/:idTask', authentication.verifyToken, (req, res, ne
     let idProject = req.params.idProject;
     let idTask = req.params.idTask;
 
-    CommonServiceSubTask.find({ 'project': idProject, 'task': idTask })
+    CommonServiceSubTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true })
         .populate('commonService')
         .populate('subTask')
         .populate('task')
@@ -143,7 +182,7 @@ router.get('/task/:idProject/:idTask/:type', authentication.verifyToken, (req, r
     let idTask = req.params.idTask;
     let type = req.params.type;
 
-    CommonServiceSubTask.find({ 'project': idProject, 'task': idTask, 'type': type })
+    CommonServiceSubTask.find({ 'project': idProject, 'task': idTask, 'type': type, 'recordActive': true })
         .populate('commonService')
         .populate('subTask')
         .populate('task')
@@ -175,7 +214,7 @@ router.get('/commonservice/:idProject/:idCommonservice', authentication.verifyTo
     let idProject = req.params.idProject;
     let idCommonservice = req.params.idCommonservice;
 
-    CommonServiceSubTask.find({ 'project': idProject, 'commonService': idCommonservice })
+    CommonServiceSubTask.find({ 'project': idProject, 'commonService': idCommonservice, 'recordActive': true })
         .populate('commonService')
         .populate('subTask')
         .populate('task')
@@ -206,7 +245,7 @@ router.get('/project/:idProject', authentication.verifyToken, (req, res, next) =
 
     let idProject = req.params.idProject;
 
-    CommonServiceSubTask.find({ 'project': idProject })
+    CommonServiceSubTask.find({ 'project': idProject, 'recordActive': true })
         .populate('commonService')
         .populate('subTask')
         .populate('task')
@@ -292,6 +331,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             commonServiceSubTask.updateDate = req.body.updateDate;
             commonServiceSubTask.endDate = req.body.endDate;
             commonServiceSubTask.status = req.body.status;
+            commonServiceSubTask.recordActive = req.body.recordActive;
 
             commonServiceSubTask.save((err, commonServiceSubTask) => {
                 if (err) {
@@ -318,25 +358,50 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    CommonServiceSubTask.findByIdAndRemove(id, (err, commonServiceSubTask) => {
+    CommonServiceSubTask.findById(id, (err, commonServiceSubTask) => {
         if (err) {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el registro',
                 errors: err
             });
-        } else if (commonServiceSubTask) {
-            res.status(200).json({
-                success: true,
-                message: 'Operación realizada de forma exitosa',
-                commonServiceSubTask: commonServiceSubTask
-            });
-        } else {
+        }
+
+        if (!commonServiceSubTask) {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un registro con el id: ' + id,
                 errors: { message: 'No se pudo encontrar el registro para eliminar' }
             });
+        } else {
+
+            commonServiceSubTask.task = req.body.task;
+            commonServiceSubTask.subTask = req.body.subTask;
+            commonServiceSubTask.underground = req.body.underground;
+            commonServiceSubTask.project = req.body.project;
+            commonServiceSubTask.type = req.body.type;
+            commonServiceSubTask.startDate = req.body.startDate;
+            commonServiceSubTask.updateDate = req.body.updateDate;
+            commonServiceSubTask.endDate = req.body.endDate;
+            commonServiceSubTask.status = req.body.status;
+            commonServiceSubTask.recordActive = false;
+
+            commonServiceSubTask.save((err, commonServiceSubTask) => {
+                if (err) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'No se puede eliminar el registro',
+                        errors: err
+                    });
+                } else {
+                    res.status(200).json({
+                        success: true,
+                        message: 'Operación realizada de forma exitosa.',
+                        commonServiceSubTask: commonServiceSubTask
+                    });
+                }
+            });
+
         }
     })
 });

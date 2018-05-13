@@ -36,6 +36,10 @@ const ProjectSchema = mongoose.Schema({
     estimatedDate: {
         type: Date
     },
+    recordActive: {
+        type: Number,
+        default: 1
+    }
 });
 
 const Project = module.exports = mongoose.model('Project', ProjectSchema);

@@ -44,6 +44,10 @@ const EmployeeSchema = mongoose.Schema({
     position: {
         type: Schema.Types.ObjectId,
         ref: 'Position'
+    },
+    recordActive: {
+        type: Number,
+        default: 1
     }
 
 });

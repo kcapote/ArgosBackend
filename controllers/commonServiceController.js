@@ -37,17 +37,15 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
-
-    let term = req.params.term;
-    var regex = new RegExp(term, 'i');
+router.get('/:recordActive', authentication.verifyToken, (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
+    let recordActive = req.params.recordActive;
+    recordActive = Boolean(recordActive);
 
-    CommonService.find()
+    CommonService.find({ 'recordActive': recordActive })
         .populate('project')
-        .or([{ 'type': regex }, { 'number': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
@@ -55,16 +53,15 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se encontraron resultados',
+                        message: 'No se pueden consultar los registros',
                         errors: err
                     });
                 } else {
-
                     CommonService.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServices: commonServices,
-                            totalRecords: commonServices.length,
+                            totalRecords: totalRecords,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -74,12 +71,13 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-
 router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
+    let recordActive = req.params.recordActive;
+    recordActive = Boolean(recordActive);
 
-    CommonService.find({ 'project': id })
+    CommonService.find({ 'project': id, 'recordActive': true })
         .populate('project')
         .exec(
             (err, commonServices) => {
@@ -180,6 +178,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             commonService.number = req.body.number;
             commonService.type = req.body.type;
             commonService.status = req.body.status;
+            commonService.recordActive = req.body.recordActive;
 
             commonService.save((err, commonService) => {
                 if (err) {
@@ -206,25 +205,45 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    CommonService.findByIdAndRemove(id, (err, commonService) => {
+    CommonService.findById(id, (err, commonService) => {
         if (err) {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el registro',
                 errors: err
             });
-        } else if (commonService) {
-            res.status(200).json({
-                success: true,
-                message: 'Operación realizada de forma exitosa',
-                commonService: commonService
-            });
-        } else {
+        }
+
+        if (!commonService) {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un registro con el id: ' + id,
                 errors: { message: 'No se pudo encontrar el registro para eliminar' }
             });
+        } else {
+
+            commonService.project = req.body.project;
+            commonService.number = req.body.number;
+            commonService.type = req.body.type;
+            commonService.status = req.body.status;
+            commonService.recordActive = false;
+
+            commonService.save((err, commonService) => {
+                if (err) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'No se puede eliminar el registro',
+                        errors: err
+                    });
+                } else {
+                    res.status(200).json({
+                        success: true,
+                        message: 'Operación realizada de forma exitosa.',
+                        commonService: commonService
+                    });
+                }
+            });
+
         }
     })
 });

@@ -24,6 +24,10 @@ const CommonServiceSchema = mongoose.Schema({
     },
     status: {
         type: Number
+    },
+    recordActive: {
+        type: Number,
+        default: 1
     }
 });
 

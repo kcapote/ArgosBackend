@@ -40,12 +40,49 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
+router.get('/:recordActive', authentication.verifyToken, (req, res, next) => {
+
+    let pagination = req.query.pagination || 0;
+    pagination = Number(pagination);
+    let recordActive = req.params.recordActive;
+    recordActive = Boolean(recordActive);
+
+    DepartmentTask.find({ 'recordActive': recordActive })
+        .populate('department')
+        .populate('task')
+        .populate('floor')
+        .populate('project')
+        .skip(pagination)
+        .limit(constants.PAGINATION)
+        .exec(
+            (err, departmentTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar la información',
+                        errors: err
+                    });
+                } else {
+                    DepartmentTask.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            departmentTasks: departmentTasks,
+                            totalRecords: totalRecords,
+                            pagination: pagination
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/task/:idProject/:idTask', authentication.verifyToken, (req, res, next) => {
 
     let idProject = req.params.idProject;
     let idTask = req.params.idTask;
 
-    DepartmentTask.find({ 'project': idProject, 'task': idTask })
+    DepartmentTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true })
         .populate('department')
         .populate('task')
         .populate('floor')
@@ -77,7 +114,7 @@ router.get('/department/:idProject/:idDepartment', authentication.verifyToken, (
     let idProject = req.params.idProject;
     let idDepartment = req.params.idDepartment;
 
-    DepartmentTask.find({ 'project': idProject, 'department': idDepartment })
+    DepartmentTask.find({ 'project': idProject, 'department': idDepartment, 'recordActive': true })
         .populate('department')
         .populate('task')
         .populate('floor')
@@ -109,7 +146,7 @@ router.get('/floor/:idProject/:idFloor', authentication.verifyToken, (req, res, 
     let idProject = req.params.idProject;
     let idFloor = req.params.idFloor;
 
-    DepartmentTask.find({ 'project': idProject, 'floor': idFloor })
+    DepartmentTask.find({ 'project': idProject, 'floor': idFloor, 'recordActive': true })
         .populate('department')
         .populate('task')
         .populate('floor')
@@ -194,6 +231,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             departmentTask.updateDate = req.body.updateDate;
             departmentTask.endDate = req.body.endDate;
             departmentTask.status = req.body.status;
+            departmentTask.recordActive = req.body.recordActive;
 
             departmentTask.save((err, departmentTask) => {
                 if (err) {
@@ -220,25 +258,49 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    DepartmentTask.findByIdAndRemove(id, (err, departmentTask) => {
+    DepartmentTask.findById(id, (err, departmentTask) => {
         if (err) {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el registro',
                 errors: err
             });
-        } else if (departmentTask) {
-            res.status(200).json({
-                success: true,
-                message: 'Operación realizada de forma exitosa',
-                departmentTask: departmentTask
-            });
-        } else {
+        }
+
+        if (!departmentTask) {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un registro con el id: ' + id,
                 errors: { message: 'No se pudo encontrar el registro para eliminar' }
             });
+        } else {
+
+            departmentTask.department = req.body.department;
+            departmentTask.task = req.body.task;
+            departmentTask.floor = req.body.floor;
+            departmentTask.project = req.body.project;
+            departmentTask.startDate = req.body.startDate;
+            departmentTask.updateDate = req.body.updateDate;
+            departmentTask.endDate = req.body.endDate;
+            departmentTask.status = req.body.status;
+            departmentTask.recordActive = false;
+
+            departmentTask.save((err, departmentTask) => {
+                if (err) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'No se puede eliminar el registro',
+                        errors: err
+                    });
+                } else {
+                    res.status(200).json({
+                        success: true,
+                        message: 'Operación realizada de forma exitosa.',
+                        departmentTask: departmentTask
+                    });
+                }
+            });
+
         }
     })
 });

@@ -19,6 +19,10 @@ const TaskSchema = mongoose.Schema({
     },
     position: {
         type: Number
+    },
+    recordActive: {
+        type: Number,
+        default: 1
     }
 });
 

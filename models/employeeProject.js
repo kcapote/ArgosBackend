@@ -17,8 +17,8 @@ const EmployeeProjectSchema = mongoose.Schema({
         type: Date
     },
     recordActive: {
-        type: Boolean,
-        default: true
+        type: Number,
+        default: 1
     }
 });
 

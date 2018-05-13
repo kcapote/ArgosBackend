@@ -37,17 +37,15 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
-
-    let term = req.params.term;
-    var regex = new RegExp(term, 'i');
+router.get('/:recordActive', authentication.verifyToken, (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
+    let recordActive = req.params.recordActive;
+    recordActive = Boolean(recordActive);
 
-    Department.find()
+    Department.find({ 'recordActive': recordActive })
         .populate('floor')
-        .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
@@ -55,16 +53,15 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se encontraron resultados',
+                        message: 'No se pueden consultar los departamentos',
                         errors: err
                     });
                 } else {
-
                     Department.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departments: departments,
-                            totalRecords: departments.length,
+                            totalRecords: totalRecords,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -74,12 +71,11 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-
 router.get('/floor/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Department.find({ 'floor': id })
+    Department.find({ 'floor': id, 'recordActive': true })
         .populate('floor')
         .exec(
             (err, departments) => {
@@ -177,7 +173,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 
             department.floor = req.body.floor;
             department.number = req.body.number;
-            department.status = req.body.status
+            department.status = req.body.status;
+            department.recordActive = req.body.recordActive;
 
             department.save((err, department) => {
                 if (err) {
@@ -204,25 +201,44 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Department.findByIdAndRemove(id, (err, department) => {
+    Department.findById(id, (err, department) => {
         if (err) {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el departamento',
                 errors: err
             });
-        } else if (department) {
-            res.status(200).json({
-                success: true,
-                message: 'Operación realizada de forma exitosa',
-                department: department
-            });
-        } else {
+        }
+
+        if (!department) {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un departamento con el id: ' + id,
                 errors: { message: 'No se pudo encontrar el departamento para eliminar' }
             });
+        } else {
+
+            department.floor = req.body.floor;
+            department.number = req.body.number;
+            department.status = req.body.status;
+            department.recordActive = false;
+
+            department.save((err, department) => {
+                if (err) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'No se puede eliminar el departamento',
+                        errors: err
+                    });
+                } else {
+                    res.status(200).json({
+                        success: true,
+                        message: 'Operación realizada de forma exitosa.',
+                        department: department
+                    });
+                }
+            });
+
         }
     })
 });

@@ -28,6 +28,10 @@ const UserSchema = mongoose.Schema({
         required: true,
         default: 'QUERY_ROLE',
         enum: validRoles
+    },
+    recordActive: {
+        type: Number,
+        default: 1
     }
 });
 

@@ -3,6 +3,7 @@ const router = express.Router();
 const constants = require('../config/constants');
 const jwt = require('jsonwebtoken');
 const EmployeeProject = require('../models/employeeProject');
+const Employee = require('../models/employee');
 const authentication = require('../middlewares/authentication');
 
 router.get('/', authentication.verifyToken, (req, res, next) => {
@@ -41,6 +42,62 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
 router.get('/project/:idProject', authentication.verifyToken, (req, res, next) => {
 
     let idProject = req.params.idProject;
+
+    EmployeeProject.find({ 'project': idProject })
+        .populate('employee')
+        .populate('project')
+        .exec(
+            (err, employeeProjects) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar los empleados',
+                        errors: err
+                    });
+                } else {
+                    EmployeeProject.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            employeeProjects: employeeProjects,
+                            totalRecords: employeeProjects.length
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
+router.get('/notproyect/', authentication.verifyToken, (req, res, next) => {
+
+    let idProject = req.params.idProject;
+
+    Employee.find()
+        .populate('position')
+        .skip(pagination)
+        .limit(constants.PAGINATION)
+        .exec(
+            (err, employees) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar los empleados',
+                        errors: err
+                    });
+                } else {
+                    Employee.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            employees: employees,
+                            totalRecords: totalRecords,
+                            pagination: pagination
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+
 
     EmployeeProject.find({ 'project': idProject })
         .populate('employee')
@@ -126,6 +183,10 @@ router.get('/employee/:idEmployee', authentication.verifyToken, (req, res, next)
                 }
             });
 });
+
+
+
+
 
 router.post('/', authentication.verifyToken, (req, res, next) => {
     let employeeProject = new EmployeeProject({

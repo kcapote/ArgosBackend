@@ -43,8 +43,8 @@ const EmployeeSubTaskSchema = mongoose.Schema({
         type: Number
     },
     recordActive: {
-        type: Boolean,
-        default: true
+        type: Number,
+        default: 1
     }
 });
 

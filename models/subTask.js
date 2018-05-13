@@ -12,6 +12,10 @@ const SubTaskSchema = mongoose.Schema({
     },
     position: {
         type: Number
+    },
+    recordActive: {
+        type: Number,
+        default: 1
     }
 });
 
