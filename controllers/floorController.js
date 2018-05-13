@@ -41,10 +41,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
-
-    let term = req.params.term;
-    var regex = new RegExp(term, 'i');
+router.get('/:recordActive', authentication.verifyToken, (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -53,9 +50,11 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
         pagination = 0;
         limit = 0;
     }
-    Floor.find()
+    let recordActive = req.params.recordActive;
+    recordActive = Boolean(recordActive);
+
+    Floor.find({ 'recordActive': recordActive })
         .populate('project')
-        .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(limit === 0 ? 0 : constants.PAGINATION)
         .exec(
@@ -63,16 +62,15 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se encontraron resultados',
+                        message: 'No se pueden consultar los pisos',
                         errors: err
                     });
                 } else {
-
                     Floor.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             floors: floors,
-                            totalRecords: floors.length,
+                            totalRecords: totalRecords,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -82,12 +80,11 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-
 router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Floor.find({ 'project': id })
+    Floor.find({ 'project': id, 'recordActive': true })
         .populate('project')
         .exec(
             (err, floors) => {
@@ -190,6 +187,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             floor.quantityDepartment = req.body.number;
             floor.type = req.body.type;
             floor.status = req.body.status;
+            floor.recordActive = req.body.recordActive;
 
             floor.save((err, floor) => {
                 if (err) {
@@ -216,25 +214,46 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Floor.findByIdAndRemove(id, (err, floor) => {
+    Floor.findById(id, (err, floor) => {
         if (err) {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el piso',
                 errors: err
             });
-        } else if (floor) {
-            res.status(200).json({
-                success: true,
-                message: 'Operación realizada de forma exitosa',
-                floor: floor
-            });
-        } else {
+        }
+
+        if (!floor) {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un piso con el id: ' + id,
                 errors: { message: 'No se pudo encontrar el piso para eliminar' }
             });
+        } else {
+
+            floor.project = req.body.project;
+            floor.number = req.body.number;
+            floor.quantityDepartment = req.body.number;
+            floor.type = req.body.type;
+            floor.status = req.body.status;
+            floor.recordActive = false;
+
+            floor.save((err, floor) => {
+                if (err) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'No se puede eliminar el piso',
+                        errors: err
+                    });
+                } else {
+                    res.status(200).json({
+                        success: true,
+                        message: 'Operación realizada de forma exitosa.',
+                        floor: floor
+                    });
+                }
+            });
+
         }
     })
 });

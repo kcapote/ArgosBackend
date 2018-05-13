@@ -38,15 +38,51 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
+router.get('/:recordActive', authentication.verifyToken, (req, res, next) => {
+
+    let pagination = req.query.pagination || 0;
+    pagination = Number(pagination);
+    let recordActive = req.params.recordActive;
+    recordActive = Boolean(recordActive);
+
+    User.find({ 'recordActive': recordActive }, 'name lastName email role')
+        .skip(pagination)
+        .limit(constants.PAGINATION)
+        .exec(
+            (err, users) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar las tareas',
+                        errors: err
+                    });
+                } else {
+
+                    User.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            users: users,
+                            totalRecords: totalRecords,
+                            pagination: pagination
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
+router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
+    let recordActive = req.params.recordActive;
+    recordActive = Boolean(recordActive);
 
-    User.find({}, 'name lastName email role')
+    User.find({ 'recordActive': recordActive }, 'name lastName email role')
         .or([{ 'name': regex }, { 'lastName': regex }, { 'email': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
@@ -126,6 +162,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             user.email = req.body.email;
             user.password = req.body.password;
             user.role = req.body.role;
+            user.recordActive = req.body.recordActive;
 
             user.save((err, userSave) => {
                 if (err) {
@@ -152,25 +189,45 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    User.findByIdAndRemove(id, (err, userRemove) => {
+    User.findById(id, (err, user) => {
         if (err) {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el usuario',
                 errors: err
             });
-        } else if (userRemove) {
-            res.status(200).json({
-                success: true,
-                message: 'Operación realizada de forma exitosa',
-                user: userRemove
-            });
-        } else {
+        }
+
+        if (!user) {
             return res.status(400).json({
                 success: false,
-                message: 'No existe una tarea con el id: ' + id,
+                message: 'No existe un usuario con el id: ' + id,
                 errors: { message: 'No se pudo encontrar el usuario para eliminar' }
             });
+        } else {
+            user.name = req.body.name;
+            user.lastName = req.body.lastName;
+            user.email = req.body.email;
+            user.password = req.body.password;
+            user.role = req.body.role;
+            user.recordActive = false;
+
+            user.save((err, userSave) => {
+                if (err) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'No se puede eliminar el usuario',
+                        errors: err
+                    });
+                } else {
+                    res.status(200).json({
+                        success: true,
+                        message: 'Operación realizada de forma exitosa.',
+                        user: userSave
+                    });
+                }
+            });
+
         }
     })
 });

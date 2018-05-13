@@ -37,6 +37,40 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
+router.get('/:recordActive', authentication.verifyToken, (req, res, next) => {
+
+    let pagination = req.query.pagination || 0;
+    pagination = Number(pagination);
+    let recordActive = req.params.recordActive;
+    recordActive = Boolean(recordActive);
+
+    SubTask.find({ 'recordActive': recordActive })
+        .populate('task')
+        .skip(pagination)
+        .limit(constants.PAGINATION)
+        .exec(
+            (err, subTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar las tareas',
+                        errors: err
+                    });
+                } else {
+                    SubTask.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            subTasks: subTasks,
+                            totalRecords: totalRecords,
+                            pagination: pagination
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
 
     let term = req.params.term;
@@ -74,12 +108,51 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
             });
 });
 
+router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res, next) => {
+
+    let term = req.params.term;
+    var regex = new RegExp(term, 'i');
+
+    let pagination = req.query.pagination || 0;
+    pagination = Number(pagination);
+    let recordActive = req.params.recordActive;
+    recordActive = Boolean(recordActive);
+
+    SubTask.find({ 'recordActive': recordActive })
+        .populate('task')
+        .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
+        .skip(pagination)
+        .limit(constants.PAGINATION)
+        .exec(
+            (err, subTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se encontraron resultados',
+                        errors: err
+                    });
+                } else {
+
+                    SubTask.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            subTasks: subTasks,
+                            totalRecords: subTasks.length,
+                            pagination: pagination
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 
 router.get('/task/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    SubTask.find({ 'task': id })
+    SubTask.find({ 'task': id, 'recordActive': true })
         .populate('task')
         .exec(
             (err, subTasks) => {
@@ -177,6 +250,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 
             subTask.name = req.body.name;
             subTask.position = req.body.position;
+            subTask.recordActive = req.body.recordActive;
 
             subTask.save((err, subTask) => {
                 if (err) {
@@ -203,25 +277,43 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    SubTask.findByIdAndRemove(id, (err, subTask) => {
+    SubTask.findById(id, (err, subTask) => {
         if (err) {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar la tarea',
                 errors: err
             });
-        } else if (subTask) {
-            res.status(200).json({
-                success: true,
-                message: 'Operación realizada de forma exitosa',
-                subTask: subTask
-            });
-        } else {
+        }
+
+        if (!subTask) {
             return res.status(400).json({
                 success: false,
                 message: 'No existe una tarea con el id: ' + id,
                 errors: { message: 'No se pudo encontrar la tarea para eliminar' }
             });
+        } else {
+
+            subTask.name = req.body.name;
+            subTask.position = req.body.position;
+            subTask.recordActive = false;
+
+            subTask.save((err, subTask) => {
+                if (err) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'No se puede eliminar la tarea',
+                        errors: err
+                    });
+                } else {
+                    res.status(200).json({
+                        success: true,
+                        message: 'Operación realizada de forma exitosa.',
+                        subTask: subTask
+                    });
+                }
+            });
+
         }
     })
 });

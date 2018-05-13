@@ -37,6 +37,40 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
+router.get('/:recordActive', authentication.verifyToken, (req, res, next) => {
+
+    let pagination = req.query.pagination || 0;
+    pagination = Number(pagination);
+    let recordActive = req.params.recordActive;
+    recordActive = Boolean(recordActive);
+
+    Position.find({ 'recordActive': recordActive })
+        .skip(pagination)
+        .limit(constants.PAGINATION)
+        .exec(
+            (err, positions) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar los cargos',
+                        errors: err
+                    });
+                } else {
+
+                    Position.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            positions: positions,
+                            totalRecords: positions.length,
+                            pagination: pagination
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
 
     let term = req.params.term;
@@ -46,6 +80,44 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
     pagination = Number(pagination);
 
     Position.find()
+        .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
+        .skip(pagination)
+        .limit(constants.PAGINATION)
+        .exec(
+            (err, positions) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se encontraron resultados',
+                        errors: err
+                    });
+                } else {
+
+                    Position.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            positions: positions,
+                            totalRecords: totalRecords,
+                            pagination: pagination
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
+router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res, next) => {
+
+    let term = req.params.term;
+    var regex = new RegExp(term, 'i');
+
+    let pagination = req.query.pagination || 0;
+    pagination = Number(pagination);
+    let recordActive = req.params.recordActive;
+    recordActive = Boolean(recordActive);
+
+    Position.find({ 'recordActive': recordActive })
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
@@ -153,6 +225,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             position.code = req.body.code;
             position.description = req.body.description;
             position.performancePercentage = req.body.performancePercentage;
+            position.recordActive = req.body.recordActive;
 
             position.save((err, positionSave) => {
                 if (err) {
@@ -179,25 +252,44 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    Position.findByIdAndRemove(id, (err, positionRemove) => {
+    Position.findById(id, (err, position) => {
         if (err) {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el cargo',
                 errors: err
             });
-        } else if (positionRemove) {
-            res.status(200).json({
-                success: true,
-                message: 'Operación realizada de forma exitosa',
-                position: positionRemove
-            });
-        } else {
+        }
+
+        if (!position) {
             return res.status(400).json({
                 success: false,
                 message: 'No existe el cargo con el id: ' + id,
                 errors: { message: 'No se pudo encontrar el cargo para eliminar' }
             });
+        } else {
+            position.name = req.body.name;
+            position.code = req.body.code;
+            position.description = req.body.description;
+            position.performancePercentage = req.body.performancePercentage;
+            position.recordActive = false;
+
+            position.save((err, positionSave) => {
+                if (err) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'No se puede eliminar el cargo',
+                        errors: err
+                    });
+                } else {
+                    res.status(200).json({
+                        success: true,
+                        message: 'Operación realizada de forma exitosa.',
+                        position: positionSave
+                    });
+                }
+            });
+
         }
     })
 });
