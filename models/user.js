@@ -30,8 +30,8 @@ const UserSchema = mongoose.Schema({
         enum: validRoles
     },
     recordActive: {
-        type: Number,
-        default: 1
+        type: Boolean,
+        default: true
     }
 });
 

@@ -46,8 +46,8 @@ const EmployeeSchema = mongoose.Schema({
         ref: 'Position'
     },
     recordActive: {
-        type: Number,
-        default: 1
+        type: Boolean,
+        default: true
     }
 
 });

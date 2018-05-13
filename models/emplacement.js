@@ -16,8 +16,8 @@ const EmplacementSchema = mongoose.Schema({
         type: Number
     },
     recordActive: {
-        type: Number,
-        default: 1
+        type: Boolean,
+        default: true
     }
 });
 

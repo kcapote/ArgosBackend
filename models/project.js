@@ -37,8 +37,8 @@ const ProjectSchema = mongoose.Schema({
         type: Date
     },
     recordActive: {
-        type: Number,
-        default: 1
+        type: Boolean,
+        default: true
     }
 });
 

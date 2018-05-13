@@ -18,8 +18,8 @@ const PositionkSchema = mongoose.Schema({
                     required: [true, "El porcentaje de rendimiento es necesario"]*/
     },
     recordActive: {
-        type: Number,
-        default: 1
+        type: Boolean,
+        default: true
     }
 });
 
