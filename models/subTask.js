@@ -4,7 +4,8 @@ var Schema = mongoose.Schema;
 const SubTaskSchema = mongoose.Schema({
     task: {
         type: Schema.Types.ObjectId,
-        ref: 'Task'
+        ref: 'Task',
+        index: true
     },
     name: {
         type: String,

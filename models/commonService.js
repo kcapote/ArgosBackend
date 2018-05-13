@@ -10,7 +10,8 @@ const CommonServiceSchema = mongoose.Schema({
     project: {
         type: Schema.Types.ObjectId,
         ref: 'Project',
-        required: [true, "La obra asociada es necesaria"]
+        required: [true, "La obra asociada es necesaria"],
+        index: true
     },
     number: {
         type: Number,

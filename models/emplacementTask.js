@@ -4,7 +4,8 @@ var Schema = mongoose.Schema;
 const EmplacementTaskSchema = mongoose.Schema({
     emplacement: {
         type: Schema.Types.ObjectId,
-        ref: 'Emplacement'
+        ref: 'Emplacement',
+        index: true
     },
     task: {
         type: Schema.Types.ObjectId,
@@ -12,7 +13,8 @@ const EmplacementTaskSchema = mongoose.Schema({
     },
     project: {
         type: Schema.Types.ObjectId,
-        ref: 'Project'
+        ref: 'Project',
+        index: true
     },
     createDate: {
         type: Date

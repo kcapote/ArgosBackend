@@ -4,7 +4,8 @@ var Schema = mongoose.Schema;
 const EmployeeSubTaskSchema = mongoose.Schema({
     employee: {
         type: Schema.Types.ObjectId,
-        ref: 'Employee'
+        ref: 'Employee',
+        index: true
     },
     subTask: {
         type: Schema.Types.ObjectId,
@@ -28,7 +29,8 @@ const EmployeeSubTaskSchema = mongoose.Schema({
     },
     project: {
         type: Schema.Types.ObjectId,
-        ref: 'Project'
+        ref: 'Project',
+        index: true
     },
     recordDate: {
         type: Date

@@ -4,11 +4,13 @@ var Schema = mongoose.Schema;
 const EmployeeProjectSchema = mongoose.Schema({
     employee: {
         type: Schema.Types.ObjectId,
-        ref: 'Employee'
+        ref: 'Employee',
+        index: true
     },
     project: {
         type: Schema.Types.ObjectId,
-        ref: 'Project'
+        ref: 'Project',
+        index: true
     },
     startDate: {
         type: Date

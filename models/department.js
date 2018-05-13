@@ -5,7 +5,8 @@ const DepartmentSchema = mongoose.Schema({
     floor: {
         type: Schema.Types.ObjectId,
         ref: 'Floor',
-        required: [true, "El piso asociado es necesario"]
+        required: [true, "El piso asociado es necesario"],
+        index: true
     },
     number: {
         type: Number,

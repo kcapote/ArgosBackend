@@ -9,7 +9,8 @@ var typesSC = {
 const CommonServiceTaskSchema = mongoose.Schema({
     commonService: {
         type: Schema.Types.ObjectId,
-        ref: 'CommonService'
+        ref: 'CommonService',
+        index: true
     },
     task: {
         type: Schema.Types.ObjectId,
@@ -23,7 +24,8 @@ const CommonServiceTaskSchema = mongoose.Schema({
     },
     project: {
         type: Schema.Types.ObjectId,
-        ref: 'Project'
+        ref: 'Project',
+        index: true
     },
     createDate: {
         type: Date

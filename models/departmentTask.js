@@ -4,7 +4,8 @@ var Schema = mongoose.Schema;
 const DepartmentTaskSchema = mongoose.Schema({
     department: {
         type: Schema.Types.ObjectId,
-        ref: 'Department'
+        ref: 'Department',
+        index: true
     },
     task: {
         type: Schema.Types.ObjectId,
@@ -12,11 +13,13 @@ const DepartmentTaskSchema = mongoose.Schema({
     },
     floor: {
         type: Schema.Types.ObjectId,
-        ref: 'Floor'
+        ref: 'Floor',
+        index: true
     },
     project: {
         type: Schema.Types.ObjectId,
-        ref: 'Project'
+        ref: 'Project',
+        index: true
     },
     startDate: {
         type: Date

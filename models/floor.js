@@ -10,7 +10,8 @@ const FloorSchema = mongoose.Schema({
     project: {
         type: Schema.Types.ObjectId,
         ref: 'Project',
-        required: [true, "La obra asociada al piso es necesaria"]
+        required: [true, "La obra asociada al piso es necesaria"],
+        index: true
     },
     number: {
         type: Number,

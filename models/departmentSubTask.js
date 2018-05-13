@@ -4,7 +4,8 @@ var Schema = mongoose.Schema;
 const DepartmentSubTaskSchema = mongoose.Schema({
     department: {
         type: Schema.Types.ObjectId,
-        ref: 'Department'
+        ref: 'Department',
+        index: true
     },
     subTask: {
         type: Schema.Types.ObjectId,
@@ -16,11 +17,13 @@ const DepartmentSubTaskSchema = mongoose.Schema({
     },
     floor: {
         type: Schema.Types.ObjectId,
-        ref: 'Floor'
+        ref: 'Floor',
+        index: true
     },
     project: {
         type: Schema.Types.ObjectId,
-        ref: 'Project'
+        ref: 'Project',
+        index: true
     },
     startDate: {
         type: Date
