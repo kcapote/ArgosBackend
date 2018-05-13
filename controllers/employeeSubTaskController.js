@@ -21,6 +21,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
         .populate('project')
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -61,6 +62,7 @@ router.get('/:recordActive', authentication.verifyToken, (req, res, next) => {
         .populate('project')
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -96,6 +98,7 @@ router.get('/project/:idProject', authentication.verifyToken, (req, res, next) =
         .populate('department')
         .populate('commonService')
         .populate('project')
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -132,6 +135,7 @@ router.get('/employee/:idProject/:idEmployee', authentication.verifyToken, (req,
         .populate('department')
         .populate('commonService')
         .populate('project')
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -167,6 +171,7 @@ router.get('/employee/calendar/:idEmployee', authentication.verifyToken, (req, r
         .populate('department')
         .populate('commonService')
         .populate('project')
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -196,7 +201,7 @@ router.get('/employee/calendar/:idEmployee/:initDate/:endDate', authentication.v
     let initDate = req.params.initDate;
     let endDate = req.params.endDate;
 
-    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true })
+    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] })
         .populate('employee')
         .populate('subTask')
         .populate('task')
@@ -204,6 +209,7 @@ router.get('/employee/calendar/:idEmployee/:initDate/:endDate', authentication.v
         .populate('department')
         .populate('commonService')
         .populate('project')
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -241,6 +247,7 @@ router.get('/employee/:idProject/:idFloor/:idDepartment/:idEmployee', authentica
         .populate('department')
         .populate('commonService')
         .populate('project')
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -277,6 +284,7 @@ router.get('/employee/:idProject/:idCommonService/:idEmployee', authentication.v
         .populate('department')
         .populate('commonService')
         .populate('project')
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -313,6 +321,7 @@ router.get('/department/:idProject/:idFloor/:idDepartment', authentication.verif
         .populate('department')
         .populate('commonService')
         .populate('project')
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -350,6 +359,7 @@ router.get('/department/:idProject/:idFloor/:idDepartment/:idTask', authenticati
         .populate('department')
         .populate('commonService')
         .populate('project')
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -388,6 +398,7 @@ router.get('/department/:idProject/:idFloor/:idDepartment/:idTask/:idSubTask', a
         .populate('department')
         .populate('commonService')
         .populate('project')
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -423,6 +434,7 @@ router.get('/commonService/:idProject/:idCommonService', authentication.verifyTo
         .populate('department')
         .populate('commonService')
         .populate('project')
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -459,6 +471,7 @@ router.get('/commonService/:idProject/:idCommonService/:idTask', authentication.
         .populate('department')
         .populate('commonService')
         .populate('project')
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -496,6 +509,7 @@ router.get('/commonService/:idProject/:idCommonService/:idTask/:idSubTask', auth
         .populate('department')
         .populate('commonService')
         .populate('project')
+        .sort({ recordDate: 1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -520,14 +534,18 @@ router.get('/commonService/:idProject/:idCommonService/:idTask/:idSubTask', auth
 
 
 router.post('/', authentication.verifyToken, (req, res, next) => {
-    let employeeProject = new EmployeeProject({
+    let employeeSubTask = new EmployeeSubTask({
         employee: req.body.employee,
+        subTask: req.body.subTask,
+        task: req.body.task,
+        floor: req.body.floor,
+        department: req.body.department,
+        commonService: req.body.commonService,
         project: req.body.project,
-        startDate: req.body.startDate,
-        endDate: req.body.endDate,
-        recordActive: req.body.recordActive
+        recordDate: req.body.recordDate,
+        hoursWorked: req.body.hoursWorked
     });
-    employeeProject.save((err, employeeProject) => {
+    employeeSubTask.save((err, employeeSubTask) => {
         if (err) {
             return res.status(400).json({
                 success: false,
@@ -538,7 +556,7 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                employeeProject: employeeProject
+                employeeSubTask: employeeSubTask
             });
         }
     });
@@ -548,7 +566,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    EmployeeProject.findById(id, (err, employeeProject) => {
+    EmployeeSubTask.findById(id, (err, employeeSubTask) => {
         if (err) {
             return res.status(500).json({
                 success: false,
@@ -557,7 +575,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             });
         }
 
-        if (!employeeProject) {
+        if (!employeeSubTask) {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un registro con el id: ' + id,
@@ -565,13 +583,18 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            employeeProject.employee = req.body.employee;
-            employeeProject.project = req.body.project;
-            employeeProject.startDate = req.body.startDate;
-            employeeProject.endDate = req.body.endDate;
-            employeeProject.recordActive = req.body.recordActive;
+            employeeSubTask.employee = req.body.employee;
+            employeeSubTask.subTask = req.body.subTask;
+            employeeSubTask.task = req.body.task;
+            employeeSubTask.floor = req.body.floor;
+            employeeSubTask.department = req.body.department;
+            employeeSubTask.commonService = req.body.commonService;
+            employeeSubTask.project = req.body.project;
+            employeeSubTask.recordDate = req.body.recordDate;
+            employeeSubTask.hoursWorked = req.body.hoursWorked;
+            employeeSubTask.recordActive = req.body.recordActive;
 
-            employeeProject.save((err, employeeProject) => {
+            employeeSubTask.save((err, employeeSubTask) => {
                 if (err) {
                     return res.status(400).json({
                         success: false,
@@ -582,7 +605,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        employeeProject: employeeProject
+                        employeeSubTask: employeeSubTask
                     });
                 }
             });
@@ -596,41 +619,46 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
 
     let id = req.params.id;
 
-    EmployeeProject.findById(id, (err, employeeProject) => {
+    EmployeeSubTask.findById(id, (err, employeeSubTask) => {
         if (err) {
             return res.status(500).json({
                 success: false,
-                message: 'No se puede actualizar el registro',
+                message: 'No se puede eliminar el registro',
                 errors: err
             });
         }
 
-        if (!employeeProject) {
+        if (!employeeSubTask) {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un registro con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el registro para actualizar' }
+                errors: { message: 'No se pudo encontrar el registro para eliminar' }
             });
         } else {
 
-            employeeProject.employee = req.body.employee;
-            employeeProject.project = req.body.project;
-            employeeProject.startDate = req.body.startDate;
-            employeeProject.endDate = req.body.endDate;
-            employeeProject.recordActive = false;
+            employeeSubTask.employee = req.body.employee;
+            employeeSubTask.subTask = req.body.subTask;
+            employeeSubTask.task = req.body.task;
+            employeeSubTask.floor = req.body.floor;
+            employeeSubTask.department = req.body.department;
+            employeeSubTask.commonService = req.body.commonService;
+            employeeSubTask.project = req.body.project;
+            employeeSubTask.recordDate = req.body.recordDate;
+            employeeSubTask.hoursWorked = req.body.hoursWorked;
+            employeeSubTask.recordActive = false;
 
-            employeeProject.save((err, employeeProject) => {
+            employeeSubTask.save((err, employeeSubTask) => {
                 if (err) {
                     return res.status(400).json({
                         success: false,
-                        message: 'No se puede actualizar el registro',
+                        message: 'No se puede eliminar el registro',
                         errors: err
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        employeeProject: employeeProject
+                        employeeSubTask: employeeSubTask
                     });
                 }
             });

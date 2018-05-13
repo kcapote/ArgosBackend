@@ -14,6 +14,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
     Task.find()
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ position: 1 })
         .exec(
             (err, tasks) => {
                 if (err) {
@@ -48,6 +49,7 @@ router.get('/:recordActive', authentication.verifyToken, (req, res, next) => {
     Task.find({ 'recordActive': recordActive })
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ position: 1 })
         .exec(
             (err, tasks) => {
                 if (err) {
@@ -83,6 +85,7 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ position: 1 })
         .exec(
             (err, tasks) => {
                 if (err) {
@@ -121,6 +124,7 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ position: 1 })
         .exec(
             (err, tasks) => {
                 if (err) {
