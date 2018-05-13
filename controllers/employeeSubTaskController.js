@@ -198,10 +198,10 @@ router.get('/employee/calendar/:idEmployee/:initDate/:endDate', authentication.v
 
     let idProject = req.params.idProject;
     let idEmployee = req.params.idEmployee;
-    let initDate = req.params.initDate;
-    let endDate = req.params.endDate;
+    let initDate = `${req.params.initDate} 00:00:00.000Z`;
+    let endDate = `${req.params.endDate} 00:00:00.000Z`;
 
-    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] })
+    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true, "$and": [{ "recordDate": { "$gte": ISODate(initDate) } }, { "recordDate": { "$lte": ISODate(endDate) } }] })
         .populate('employee')
         .populate('subTask')
         .populate('task')
