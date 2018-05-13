@@ -12,7 +12,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
     pagination = Number(pagination);
 
     EmployeeProject.find()
-        .populate('employee')
+        //.populate('employee')
         .populate('project')
         .skip(pagination)
         .limit(constants.PAGINATION)
@@ -47,7 +47,7 @@ router.get('/:recordActive', authentication.verifyToken, (req, res, next) => {
     recordActive = Boolean(recordActive);
 
     EmployeeProject.find({ 'recordActive': recordActive })
-        .populate('employee')
+        //.populate('employee')
         .populate('project')
         .skip(pagination)
         .limit(constants.PAGINATION)
@@ -79,7 +79,7 @@ router.get('/project/:idProject', authentication.verifyToken, (req, res, next) =
     let idProject = req.params.idProject;
 
     EmployeeProject.find({ 'project': idProject, 'recordActive': true })
-        .populate('employee')
+        //.populate('employee')
         .populate('project')
         .exec(
             (err, employeeProjects) => {
@@ -168,7 +168,7 @@ router.get('/project/:idProject/:recordActive', authentication.verifyToken, (req
     recordActive = Boolean(recordActive);
 
     EmployeeProject.find({ 'project': idProject, 'recordActive': recordActive })
-        .populate('employee')
+        //.populate('employee')
         .populate('project')
         .exec(
             (err, employeeProjects) => {
@@ -197,7 +197,7 @@ router.get('/employee/:idEmployee', authentication.verifyToken, (req, res, next)
     let idEmployee = req.params.idEmployee;
 
     EmployeeProject.find({ 'employee': idEmployee })
-        .populate('employee')
+        //.populate('employee')
         .populate('project')
         .exec(
             (err, employeeProjects) => {

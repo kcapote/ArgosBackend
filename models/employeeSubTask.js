@@ -30,16 +30,10 @@ const EmployeeSubTaskSchema = mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Project'
     },
-    createDate: {
+    recordDate: {
         type: Date
     },
-    updateDate: {
-        type: Date
-    },
-    endDate: {
-        type: Date
-    },
-    status: {
+    hoursWorked: {
         type: Number
     },
     recordActive: {
