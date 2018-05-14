@@ -37,7 +37,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
