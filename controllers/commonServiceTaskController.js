@@ -29,7 +29,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,
-                            totalRecords: totalRecords,
+                            totalRecords: commonServiceTasks.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -65,7 +65,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,
-                            totalRecords: totalRecords,
+                            totalRecords: commonServiceTasks.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -98,7 +98,7 @@ router.get('/task/:idProject/:idTask/:type', authentication.verifyToken, (req, r
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,
-                            totalRecords: totalRecords
+                            totalRecords: commonServiceTasks.length
                         }, null, 2));
                         res.end();
 
@@ -129,7 +129,7 @@ router.get('/task/:idProject/:idTask', authentication.verifyToken, (req, res, ne
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,
-                            totalRecords: totalRecords
+                            totalRecords: commonServiceTasks.length
                         }, null, 2));
                         res.end();
 
@@ -160,7 +160,7 @@ router.get('/commonservice/:idProject/:idcommonService', authentication.verifyTo
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,
-                            totalRecords: totalRecords
+                            totalRecords: commonServiceTasks.length
                         }, null, 2));
                         res.end();
 
@@ -190,7 +190,7 @@ router.get('/project/:idProject', authentication.verifyToken, (req, res, next) =
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,
-                            totalRecords: totalRecords
+                            totalRecords: commonServiceTasks.length
                         }, null, 2));
                         res.end();
 
@@ -221,7 +221,7 @@ router.get('/project/:idProject/:type', authentication.verifyToken, (req, res, n
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,
-                            totalRecords: totalRecords
+                            totalRecords: commonServiceTasks.length
                         }, null, 2));
                         res.end();
 

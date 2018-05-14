@@ -27,7 +27,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServices: commonServices,
-                            totalRecords: totalRecords,
+                            totalRecords: commonServices.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -61,7 +61,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServices: commonServices,
-                            totalRecords: totalRecords,
+                            totalRecords: commonServices.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -92,7 +92,7 @@ router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServices: commonServices,
-                            totalRecords: totalRecords
+                            totalRecords: commonServices.length
                         }, null, 2));
                         res.end();
 
