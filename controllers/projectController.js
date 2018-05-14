@@ -11,8 +11,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
     pagination = Number(pagination);
 
     Project.find()
-        //.populate('supervisor1')
-        //.populate('supervisor2')
+        .populate('supervisor1')
+        .populate('supervisor2')
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
@@ -47,8 +47,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
     recordActive = Boolean(recordActive);
 
     Project.find({ 'recordActive': recordActive })
-        //.populate('supervisor1')
-        //.populate('supervisor2')
+        .populate('supervisor1')
+        .populate('supervisor2')
         .skip(pagination)
         .limit(constants.PAGINATION)
         .exec(
@@ -84,8 +84,8 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
     pagination = Number(pagination);
 
     Project.find()
-        //.populate('supervisor1')
-        //.populate('supervisor2')
+        .populate('supervisor1')
+        .populate('supervisor2')
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
@@ -124,8 +124,8 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
     recordActive = Boolean(recordActive);
 
     Project.find({ 'recordActive': recordActive })
-        //.populate('supervisor1')
-        //.populate('supervisor2')
+        .populate('supervisor1')
+        .populate('supervisor2')
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
@@ -160,8 +160,8 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 
 
     Project.find({ '_id': id })
-        //.populate('supervisor1')
-        //.populate('supervisor2')
+        .populate('supervisor1')
+        .populate('supervisor2')
         .exec(
             (err, projects) => {
 
