@@ -187,7 +187,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             floor.quantityDepartment = req.body.number;
             floor.type = req.body.type;
             floor.status = req.body.status;
-            floor.recordActive = req.body.recordActive;
+            floor.recordActive = req.body.recordActive || true;
 
             floor.save((err, floor) => {
                 if (err) {

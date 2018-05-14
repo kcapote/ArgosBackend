@@ -331,7 +331,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             commonServiceSubTask.updateDate = req.body.updateDate;
             commonServiceSubTask.endDate = req.body.endDate;
             commonServiceSubTask.status = req.body.status;
-            commonServiceSubTask.recordActive = req.body.recordActive;
+            commonServiceSubTask.recordActive = req.body.recordActive || true;
 
             commonServiceSubTask.save((err, commonServiceSubTask) => {
                 if (err) {

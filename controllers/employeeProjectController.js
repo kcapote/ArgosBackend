@@ -275,7 +275,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             employeeProject.project = req.body.project;
             employeeProject.startDate = req.body.startDate;
             employeeProject.endDate = req.body.endDate;
-            employeeProject.recordActive = req.body.recordActive;
+            employeeProject.recordActive = req.body.recordActive || true;
 
             employeeProject.save((err, employeeProject) => {
                 if (err) {

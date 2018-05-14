@@ -231,7 +231,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             departmentTask.updateDate = req.body.updateDate;
             departmentTask.endDate = req.body.endDate;
             departmentTask.status = req.body.status;
-            departmentTask.recordActive = req.body.recordActive;
+            departmentTask.recordActive = req.body.recordActive || true;
 
             departmentTask.save((err, departmentTask) => {
                 if (err) {

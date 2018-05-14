@@ -174,7 +174,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             department.floor = req.body.floor;
             department.number = req.body.number;
             department.status = req.body.status;
-            department.recordActive = req.body.recordActive;
+            department.recordActive = req.body.recordActive || true;
 
             department.save((err, department) => {
                 if (err) {

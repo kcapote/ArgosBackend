@@ -592,7 +592,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             employeeSubTask.project = req.body.project;
             employeeSubTask.recordDate = req.body.recordDate;
             employeeSubTask.hoursWorked = req.body.hoursWorked;
-            employeeSubTask.recordActive = req.body.recordActive;
+            employeeSubTask.recordActive = req.body.recordActive || true;
 
             employeeSubTask.save((err, employeeSubTask) => {
                 if (err) {

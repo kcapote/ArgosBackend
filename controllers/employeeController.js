@@ -265,7 +265,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             employee.sex = req.body.sex;
             employee.contractStartDate = req.body.contractStartDate;
             employee.contractEndDate = req.body.contractEndDate;
-            employee.recordActive = req.body.recordActive;
+            employee.recordActive = req.body.recordActive || true;
 
             employee.save((err, employee) => {
                 if (err) {

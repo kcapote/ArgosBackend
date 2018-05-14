@@ -230,7 +230,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             task.name = req.body.name;
             task.type = req.body.type;
             task.position = req.body.position;
-            task.recordActive = req.body.recordActive;
+            task.recordActive = req.body.recordActive || true;
 
             task.save((err, taskSave) => {
                 if (err) {

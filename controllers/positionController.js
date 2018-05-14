@@ -225,7 +225,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             position.code = req.body.code;
             position.description = req.body.description;
             position.performancePercentage = req.body.performancePercentage;
-            position.recordActive = req.body.recordActive;
+            position.recordActive = req.body.recordActive || true;
 
             position.save((err, positionSave) => {
                 if (err) {

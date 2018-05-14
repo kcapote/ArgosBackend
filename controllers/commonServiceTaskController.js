@@ -287,7 +287,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             commonServiceTask.updateDate = req.body.updateDate;
             commonServiceTask.endDate = req.body.endDate;
             commonServiceTask.status = req.body.status;
-            commonServiceTask.recordActive = req.body.recordActive;
+            commonServiceTask.recordActive = req.body.recordActive || true;
 
             commonServiceTask.save((err, commonServiceTask) => {
                 if (err) {

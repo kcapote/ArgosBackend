@@ -251,7 +251,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             project.startDate = req.body.startDate;
             project.endDate = req.body.endDate;
             project.estimatedDate = req.body.estimatedDate;
-            project.recordActive = req.body.recordActive;
+            project.recordActive = req.body.recordActive || true;
 
             project.save((err, project) => {
                 if (err) {

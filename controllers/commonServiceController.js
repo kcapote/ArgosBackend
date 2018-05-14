@@ -178,7 +178,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             commonService.number = req.body.number;
             commonService.type = req.body.type;
             commonService.status = req.body.status;
-            commonService.recordActive = req.body.recordActive;
+            commonService.recordActive = req.body.recordActive || true;
 
             commonService.save((err, commonService) => {
                 if (err) {

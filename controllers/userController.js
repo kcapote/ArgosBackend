@@ -162,7 +162,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             user.email = req.body.email;
             user.password = req.body.password;
             user.role = req.body.role;
-            user.recordActive = req.body.recordActive;
+            user.recordActive = req.body.recordActive || true;
 
             user.save((err, userSave) => {
                 if (err) {
