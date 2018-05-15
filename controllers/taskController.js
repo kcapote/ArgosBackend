@@ -73,6 +73,34 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
             });
 });
 
+router.get('/type/:type', authentication.verifyToken, (req, res, next) => {
+
+    let type = req.params.type;
+
+    Task.find({ 'type': type, 'recordActive': true })
+        .sort({ position: 1 })
+        .exec(
+            (err, tasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar las tareas',
+                        errors: err
+                    });
+                } else {
+                    Task.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            tasks: tasks,
+                            totalRecords: totalRecords
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
 
     let term = req.params.term;
