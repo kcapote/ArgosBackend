@@ -16,8 +16,8 @@ const EmployeeSchema = mongoose.Schema({
         required: [true, "El nombre del empleado es necesario"]
     },
     lastName: {
-        type: String,
-        required: [true, "El apellido del empleado es necesario"]
+        type: String
+            //required: [true, "El apellido del empleado es necesario"]
     },
     phone: {
         type: String,
