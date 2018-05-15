@@ -268,10 +268,7 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
                 errors: { message: 'No se pudo encontrar el cargo para eliminar' }
             });
         } else {
-            position.name = req.body.name;
-            position.code = req.body.code;
-            position.description = req.body.description;
-            position.performancePercentage = req.body.performancePercentage;
+
             position.recordActive = false;
 
             position.save((err, positionSave) => {

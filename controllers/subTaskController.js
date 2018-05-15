@@ -298,8 +298,6 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            subTask.name = req.body.name;
-            subTask.position = req.body.position;
             subTask.recordActive = false;
 
             subTask.save((err, subTask) => {

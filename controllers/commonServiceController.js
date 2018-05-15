@@ -222,10 +222,6 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            commonService.project = req.body.project;
-            commonService.number = req.body.number;
-            commonService.type = req.body.type;
-            commonService.status = req.body.status;
             commonService.recordActive = false;
 
             commonService.save((err, commonService) => {

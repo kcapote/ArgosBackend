@@ -295,15 +295,6 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            project.name = req.body.name;
-            project.adress = req.body.adress;
-            project.builder = req.body.builder;
-            project.supervisor1 = req.body.supervisor1;
-            project.supervisor2 = req.body.supervisor2;
-            project.status = req.body.status;
-            project.startDate = req.body.startDate;
-            project.endDate = req.body.endDate;
-            project.estimatedDate = req.body.estimatedDate;
             project.recordActive = false;
 
             project.save((err, project) => {

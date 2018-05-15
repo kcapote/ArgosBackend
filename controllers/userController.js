@@ -205,11 +205,7 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
                 errors: { message: 'No se pudo encontrar el usuario para eliminar' }
             });
         } else {
-            user.name = req.body.name;
-            user.lastName = req.body.lastName;
-            user.email = req.body.email;
-            user.password = req.body.password;
-            user.role = req.body.role;
+
             user.recordActive = false;
 
             user.save((err, userSave) => {

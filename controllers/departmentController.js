@@ -218,9 +218,6 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            department.floor = req.body.floor;
-            department.number = req.body.number;
-            department.status = req.body.status;
             department.recordActive = false;
 
             department.save((err, department) => {

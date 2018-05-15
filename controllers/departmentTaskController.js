@@ -275,14 +275,6 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            departmentTask.department = req.body.department;
-            departmentTask.task = req.body.task;
-            departmentTask.floor = req.body.floor;
-            departmentTask.project = req.body.project;
-            departmentTask.startDate = req.body.startDate;
-            departmentTask.updateDate = req.body.updateDate;
-            departmentTask.endDate = req.body.endDate;
-            departmentTask.status = req.body.status;
             departmentTask.recordActive = false;
 
             departmentTask.save((err, departmentTask) => {

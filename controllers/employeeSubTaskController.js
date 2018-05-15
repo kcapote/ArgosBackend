@@ -636,15 +636,6 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            employeeSubTask.employee = req.body.employee;
-            employeeSubTask.subTask = req.body.subTask;
-            employeeSubTask.task = req.body.task;
-            employeeSubTask.floor = req.body.floor;
-            employeeSubTask.department = req.body.department;
-            employeeSubTask.commonService = req.body.commonService;
-            employeeSubTask.project = req.body.project;
-            employeeSubTask.recordDate = req.body.recordDate;
-            employeeSubTask.hoursWorked = req.body.hoursWorked;
             employeeSubTask.recordActive = false;
 
             employeeSubTask.save((err, employeeSubTask) => {

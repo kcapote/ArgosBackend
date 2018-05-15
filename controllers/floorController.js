@@ -231,11 +231,6 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            floor.project = req.body.project;
-            floor.number = req.body.number;
-            floor.quantityDepartment = req.body.number;
-            floor.type = req.body.type;
-            floor.status = req.body.status;
             floor.recordActive = false;
 
             floor.save((err, floor) => {

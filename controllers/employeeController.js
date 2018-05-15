@@ -309,16 +309,6 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            employee.rut = req.body.rut;
-            employee.name = req.body.name;
-            employee.lastName = req.body.lastName;
-            employee.position = req.body.position;
-            employee.phone = req.body.phone;
-            employee.mail = req.body.mail;
-            employee.address = req.body.address;
-            employee.sex = req.body.sex;
-            employee.contractStartDate = req.body.contractStartDate;
-            employee.contractEndDate = req.body.contractEndDate;
             employee.recordActive = false;
 
             employee.save((err, employee) => {

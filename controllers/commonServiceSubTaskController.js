@@ -375,15 +375,6 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            commonServiceSubTask.task = req.body.task;
-            commonServiceSubTask.subTask = req.body.subTask;
-            commonServiceSubTask.underground = req.body.underground;
-            commonServiceSubTask.project = req.body.project;
-            commonServiceSubTask.type = req.body.type;
-            commonServiceSubTask.startDate = req.body.startDate;
-            commonServiceSubTask.updateDate = req.body.updateDate;
-            commonServiceSubTask.endDate = req.body.endDate;
-            commonServiceSubTask.status = req.body.status;
             commonServiceSubTask.recordActive = false;
 
             commonServiceSubTask.save((err, commonServiceSubTask) => {

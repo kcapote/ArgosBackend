@@ -302,9 +302,6 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            task.name = req.body.name;
-            task.type = req.body.type;
-            task.position = req.body.position;
             task.recordActive = false;
 
             task.save((err, taskSave) => {

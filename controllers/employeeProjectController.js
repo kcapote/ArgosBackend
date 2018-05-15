@@ -319,10 +319,6 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             });
         } else {
 
-            employeeProject.employee = req.body.employee;
-            employeeProject.project = req.body.project;
-            employeeProject.startDate = req.body.startDate;
-            employeeProject.endDate = req.body.endDate;
             employeeProject.recordActive = false;
 
             employeeProject.save((err, employeeProject) => {
