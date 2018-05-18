@@ -28,7 +28,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
-                            totalRecords: totalRecords,
+                            totalRecords: subTasks.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -63,7 +63,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
-                            totalRecords: totalRecords,
+                            totalRecords: subTasks.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -171,7 +171,7 @@ router.get('/task/:id', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
-                            totalRecords: totalRecords
+                            totalRecords: subTasks.length
                         }, null, 2));
                         res.end();
 
@@ -199,7 +199,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
-                            totalRecords: totalRecords
+                            totalRecords: subTasks.length
                         }, null, 2));
                         res.end();
 

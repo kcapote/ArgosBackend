@@ -28,7 +28,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             users: users,
-                            totalRecords: totalRecords,
+                            totalRecords: users.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -62,7 +62,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                         res.status(200).write(JSON.stringify({
                             success: true,
                             users: users,
-                            totalRecords: totalRecords,
+                            totalRecords: users.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();

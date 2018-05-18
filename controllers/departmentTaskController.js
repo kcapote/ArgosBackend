@@ -30,7 +30,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
-                            totalRecords: totalRecords,
+                            totalRecords: departmentTasks.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -67,7 +67,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
-                            totalRecords: totalRecords,
+                            totalRecords: departmentTasks.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -100,7 +100,7 @@ router.get('/task/:idProject/:idTask', authentication.verifyToken, (req, res, ne
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
-                            totalRecords: totalRecords
+                            totalRecords: departmentTasks.length
                         }, null, 2));
                         res.end();
 
@@ -132,7 +132,7 @@ router.get('/department/:idProject/:idDepartment', authentication.verifyToken, (
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
-                            totalRecords: totalRecords
+                            totalRecords: departmentTasks.length
                         }, null, 2));
                         res.end();
 
@@ -164,7 +164,7 @@ router.get('/floor/:idProject/:idFloor', authentication.verifyToken, (req, res, 
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
-                            totalRecords: totalRecords
+                            totalRecords: departmentTasks.length
                         }, null, 2));
                         res.end();
 

@@ -28,7 +28,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             tasks: tasks,
-                            totalRecords: totalRecords,
+                            totalRecords: tasks.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -63,7 +63,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                         res.status(200).write(JSON.stringify({
                             success: true,
                             tasks: tasks,
-                            totalRecords: totalRecords,
+                            totalRecords: tasks.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -92,7 +92,7 @@ router.get('/type/:type', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             tasks: tasks,
-                            totalRecords: totalRecords
+                            totalRecords: tasks.length
                         }, null, 2));
                         res.end();
 

@@ -97,7 +97,7 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             positions: positions,
-                            totalRecords: totalRecords,
+                            totalRecords: positions.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
@@ -135,7 +135,7 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
                         res.status(200).write(JSON.stringify({
                             success: true,
                             positions: positions,
-                            totalRecords: totalRecords,
+                            totalRecords: positions.length,
                             pagination: pagination
                         }, null, 2));
                         res.end();
