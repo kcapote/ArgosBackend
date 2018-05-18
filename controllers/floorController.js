@@ -18,6 +18,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
         .populate('project')
         .skip(pagination)
         .limit(limit === 0 ? 0 : constants.PAGINATION)
+        .sort({ number: 1 })
         .exec(
             (err, floors) => {
                 if (err) {
@@ -56,6 +57,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
     Floor.find({ 'recordActive': recordActive })
         .populate('project')
         .skip(pagination)
+        .sort({ number: 1 })
         .limit(limit === 0 ? 0 : constants.PAGINATION)
         .exec(
             (err, floors) => {
@@ -86,6 +88,7 @@ router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
 
     Floor.find({ 'project': id, 'recordActive': true })
         .populate('project')
+        .sort({ number: 1 })
         .exec(
             (err, floors) => {
                 if (err) {
@@ -114,6 +117,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 
     Floor.find({ '_id': id })
         .populate('project')
+        .sort({ number: 1 })
         .exec(
             (err, floors) => {
                 if (err) {

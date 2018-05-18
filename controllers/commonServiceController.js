@@ -14,6 +14,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
         .populate('project')
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ number: 1 })
         .exec(
             (err, commonServices) => {
                 if (err) {
@@ -48,6 +49,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
         .populate('project')
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ number: 1 })
         .exec(
             (err, commonServices) => {
                 if (err) {
@@ -79,6 +81,7 @@ router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
 
     CommonService.find({ 'project': id, 'recordActive': true })
         .populate('project')
+        .sort({ number: 1 })
         .exec(
             (err, commonServices) => {
                 if (err) {
@@ -107,6 +110,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 
     CommonService.find({ '_id': id })
         .populate('project')
+        .sort({ number: 1 })
         .exec(
             (err, commonService) => {
                 if (err) {

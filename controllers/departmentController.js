@@ -14,6 +14,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
         .populate('floor')
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ number: 1 })
         .exec(
             (err, departments) => {
                 if (err) {
@@ -48,6 +49,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
         .populate('floor')
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ number: 1 })
         .exec(
             (err, departments) => {
                 if (err) {
@@ -77,6 +79,7 @@ router.get('/floor/:id', authentication.verifyToken, (req, res, next) => {
 
     Department.find({ 'floor': id, 'recordActive': true })
         .populate('floor')
+        .sort({ number: 1 })
         .exec(
             (err, departments) => {
                 if (err) {
@@ -105,6 +108,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 
     Department.find({ '_id': id })
         .populate('floor')
+        .sort({ number: 1 })
         .exec(
             (err, departments) => {
                 if (err) {
