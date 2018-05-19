@@ -53,6 +53,12 @@ router.post('/login/', (req, res, next) => {
 
         //crear un token
         user.password = '';
+        user._id = '';
+
+        let userJson = json({
+            user: user
+        });
+
         var token = jwt.sign({ userToeken: user }, constants.SEED, { expiresIn: constants.TIME_TOKEN_VALID }); // un año
         res.status(201).json({
             success: true,

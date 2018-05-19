@@ -23,6 +23,9 @@ const UserSchema = mongoose.Schema({
         type: String,
         required: [true, "La contraseña del usuario es necesario"]
     },
+    token: {
+        type: String
+    },
     role: {
         type: String,
         required: true,

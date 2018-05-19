@@ -255,6 +255,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             subTask.name = req.body.name;
             subTask.position = req.body.position;
             subTask.recordActive = req.body.recordActive || true;
+            subTask.task = req.body.task;
 
             subTask.save((err, subTask) => {
                 if (err) {
