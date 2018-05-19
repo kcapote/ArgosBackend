@@ -50,24 +50,33 @@ router.post('/login/', (req, res, next) => {
                 errors: { message: 'Usuario y/o contraseña incorrecta' }
             });
         }
-
+        let userTemp = user;
         //crear un token
-        user.password = '';
-        user._id = '';
+        userTemp.password = '';
+        userTemp._id = '';
+        userTemp.token = '';
+        let userJson = JSON.stringify(userTemp)
 
-        let userJson = json({
-            user: user
+        var token = jwt.sign({ userToeken: bcrypt.hashSync(userJson, 10) }, constants.SEED, { expiresIn: constants.TIME_TOKEN_VALID }); // un año
+
+        //ser guarda en BD el token del usuario activo
+        user.token = token;
+        user.save((err, user) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'No se puede actualizar el token',
+                    errors: err
+                });
+            } else {
+                user.password = '';
+                res.status(201).json({
+                    success: true,
+                    message: 'Operación realizada de forma exitosa.',
+                    user: user
+                });
+            }
         });
-
-        var token = jwt.sign({ userToeken: user }, constants.SEED, { expiresIn: constants.TIME_TOKEN_VALID }); // un año
-        res.status(201).json({
-            success: true,
-            message: 'Operación realizada de forma exitosa.',
-            user: user,
-            token: token
-        });
-
-
     });
 
 });
