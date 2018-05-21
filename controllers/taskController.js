@@ -11,6 +11,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
+    console.log(req.user);
+
     Task.find()
         .skip(pagination)
         .limit(constants.PAGINATION)
