@@ -75,4 +75,46 @@ router.post('/login/', (req, res, next) => {
 
 });
 
+router.get('/logon/:id', (req, res, next) => {
+
+    let id = req.params.id;
+
+    User.findOne({ _id: id }, (err, user) => {
+
+        if (err) {
+            return res.status(500).json({
+                success: false,
+                message: 'Existen problemas en este momento, favor intente más tarde',
+                errors: err
+            });
+        }
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: 'No se puede cerrar la sesión',
+                errors: { message: 'No se puede cerrar la sesión' }
+            });
+        }
+        user.token = '';
+        user.save((err, userSave) => {
+            if (err) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'No se puede cerrar la sesión',
+                    errors: err
+                });
+            } else {
+                userSave.password = '';
+                res.status(201).json({
+                    success: true,
+                    message: 'Operación realizada de forma exitosa.',
+                    user: userSave
+                });
+            }
+        });
+    });
+
+});
+
 module.exports = router;
