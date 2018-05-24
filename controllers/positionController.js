@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const Position = require('../models/position');
 const authentication = require('../middlewares/authentication');
 
-router.get('/', authentication.verifyToken, (req, res, next) => {
+router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -19,7 +19,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los cargos',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
 
@@ -28,7 +29,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                             success: true,
                             positions: positions,
                             totalRecords: positions.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -37,7 +39,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -53,7 +55,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los cargos',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
 
@@ -62,7 +65,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                             success: true,
                             positions: positions,
                             totalRecords: positions.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -71,7 +75,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
             });
 });
 
-router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
+router.get('/search/:term', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -89,7 +93,8 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se encontraron resultados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
 
@@ -98,7 +103,8 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                             success: true,
                             positions: positions,
                             totalRecords: positions.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -107,7 +113,7 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/search/:term/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -127,7 +133,8 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
                     return res.status(500).json({
                         success: false,
                         message: 'No se encontraron resultados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
 
@@ -136,7 +143,8 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
                             success: true,
                             positions: positions,
                             totalRecords: positions.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -145,7 +153,7 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
             });
 });
 
-router.get('/:id', authentication.verifyToken, (req, res, next) => {
+router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -154,7 +162,8 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar la tarea',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -162,14 +171,16 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un cargo con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el cargo' }
+                errors: { message: 'No se pudo encontrar el cargo' },
+                user: req.user
             });
         } else {
 
             res.status(200).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                position: position
+                position: position,
+                user: req.user
             });
 
         }
@@ -177,7 +188,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 
-router.post('/', authentication.verifyToken, (req, res, next) => {
+router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
     let position = new Position({
         name: req.body.name,
         code: req.body.code,
@@ -189,19 +200,21 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No se puede crear el cargo',
-                errors: err
+                errors: err,
+                user: req.user
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                position: positionSave
+                position: positionSave,
+                user: req.user
             });
         }
     });
 });
 
-router.put('/:id', authentication.verifyToken, (req, res, next) => {
+router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -210,7 +223,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar el cargo',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -218,7 +232,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe el cargo con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el cargo para actualizar' }
+                errors: { message: 'No se pudo encontrar el cargo para actualizar' },
+                user: req.user
             });
         } else {
             position.name = req.body.name;
@@ -232,13 +247,15 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede actualizar el cargo',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        position: positionSave
+                        position: positionSave,
+                        user: req.user
                     });
                 }
             });
@@ -248,7 +265,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 
-router.delete('/:id', authentication.verifyToken, (req, res, next) => {
+router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -257,7 +274,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el cargo',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -265,7 +283,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe el cargo con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el cargo para eliminar' }
+                errors: { message: 'No se pudo encontrar el cargo para eliminar' },
+                user: req.user
             });
         } else {
 
@@ -276,13 +295,15 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede eliminar el cargo',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        position: positionSave
+                        position: positionSave,
+                        user: req.user
                     });
                 }
             });

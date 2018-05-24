@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const DepartmentTask = require('../models/departmentTask');
 const authentication = require('../middlewares/authentication');
 
-router.get('/', authentication.verifyToken, (req, res, next) => {
+router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -23,7 +23,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar la información',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     DepartmentTask.count({}, (err, totalRecords) => {
@@ -31,7 +32,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                             success: true,
                             departmentTasks: departmentTasks,
                             totalRecords: departmentTasks.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -40,7 +42,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -60,7 +62,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar la información',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     DepartmentTask.count({}, (err, totalRecords) => {
@@ -68,7 +71,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                             success: true,
                             departmentTasks: departmentTasks,
                             totalRecords: departmentTasks.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -77,7 +81,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
             });
 });
 
-router.get('/task/:idProject/:idTask', authentication.verifyToken, (req, res, next) => {
+router.get('/task/:idProject/:idTask', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
     let idTask = req.params.idTask;
@@ -93,14 +97,16 @@ router.get('/task/:idProject/:idTask', authentication.verifyToken, (req, res, ne
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar la información',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     DepartmentTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
-                            totalRecords: departmentTasks.length
+                            totalRecords: departmentTasks.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -109,7 +115,7 @@ router.get('/task/:idProject/:idTask', authentication.verifyToken, (req, res, ne
             });
 });
 
-router.get('/department/:idProject/:idDepartment', authentication.verifyToken, (req, res, next) => {
+router.get('/department/:idProject/:idDepartment', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
     let idDepartment = req.params.idDepartment;
@@ -125,14 +131,16 @@ router.get('/department/:idProject/:idDepartment', authentication.verifyToken, (
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar la información',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     DepartmentTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
-                            totalRecords: departmentTasks.length
+                            totalRecords: departmentTasks.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -141,7 +149,7 @@ router.get('/department/:idProject/:idDepartment', authentication.verifyToken, (
             });
 });
 
-router.get('/floor/:idProject/:idFloor', authentication.verifyToken, (req, res, next) => {
+router.get('/floor/:idProject/:idFloor', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
     let idFloor = req.params.idFloor;
@@ -157,14 +165,16 @@ router.get('/floor/:idProject/:idFloor', authentication.verifyToken, (req, res, 
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar la información',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     DepartmentTask.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
-                            totalRecords: departmentTasks.length
+                            totalRecords: departmentTasks.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -174,7 +184,7 @@ router.get('/floor/:idProject/:idFloor', authentication.verifyToken, (req, res, 
 });
 
 
-router.post('/', authentication.verifyToken, (req, res, next) => {
+router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
     let departmentTask = new DepartmentTask({
         department: req.body.department,
         task: req.body.task,
@@ -190,19 +200,21 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No se puede guardar el registro',
-                errors: err
+                errors: err,
+                user: req.user
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                departmentTask: departmentTask
+                departmentTask: departmentTask,
+                user: req.user
             });
         }
     });
 });
 
-router.put('/:id', authentication.verifyToken, (req, res, next) => {
+router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -211,7 +223,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar el registro',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -219,7 +232,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un registro con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el registro para actualizar' }
+                errors: { message: 'No se pudo encontrar el registro para actualizar' },
+                user: req.user
             });
         } else {
 
@@ -238,13 +252,15 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede actualizar el registro',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        departmentTask: departmentTask
+                        departmentTask: departmentTask,
+                        user: req.user
                     });
                 }
             });
@@ -254,7 +270,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 
-router.delete('/:id', authentication.verifyToken, (req, res, next) => {
+router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -263,7 +279,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el registro',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -271,7 +288,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un registro con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el registro para eliminar' }
+                errors: { message: 'No se pudo encontrar el registro para eliminar' },
+                user: req.user
             });
         } else {
 
@@ -282,13 +300,15 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede eliminar el registro',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        departmentTask: departmentTask
+                        departmentTask: departmentTask,
+                        user: req.user
                     });
                 }
             });

@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const CommonService = require('../models/commonService');
 const authentication = require('../middlewares/authentication');
 
-router.get('/', authentication.verifyToken, (req, res, next) => {
+router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -21,7 +21,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los registros',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     CommonService.count({}, (err, totalRecords) => {
@@ -29,7 +30,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                             success: true,
                             commonServices: commonServices,
                             totalRecords: commonServices.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -38,7 +40,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -56,7 +58,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los registros',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     CommonService.count({}, (err, totalRecords) => {
@@ -64,7 +67,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                             success: true,
                             commonServices: commonServices,
                             totalRecords: commonServices.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -73,11 +77,9 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
             });
 });
 
-router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
+router.get('/project/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
-    let recordActive = req.params.recordActive;
-    recordActive = Boolean(recordActive);
 
     CommonService.find({ 'project': id, 'recordActive': true })
         .populate('project')
@@ -88,14 +90,16 @@ router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los registros',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     CommonService.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServices: commonServices,
-                            totalRecords: commonServices.length
+                            totalRecords: commonServices.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -104,7 +108,39 @@ router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/:id', authentication.verifyToken, (req, res, next) => {
+router.get('/project/:id/:type', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    let id = req.params.id;
+    let type = req.params.type;
+
+    CommonService.find({ 'project': id, 'type': type, 'recordActive': true })
+        .populate('project')
+        .sort({ number: 1 })
+        .exec(
+            (err, commonServices) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar los registros',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    CommonService.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            commonServices: commonServices,
+                            totalRecords: commonServices.length,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
+router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -117,14 +153,16 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los registros',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     CommonService.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonService: commonService,
-                            totalRecords: commonService.length
+                            totalRecords: commonService.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -133,7 +171,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.post('/', authentication.verifyToken, (req, res, next) => {
+router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
     let commonService = new CommonService({
         project: req.body.project,
         number: req.body.number,
@@ -145,19 +183,21 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No se puede crear el registro',
-                errors: err
+                errors: err,
+                user: req.user
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                commonService: commonService
+                commonService: commonService,
+                user: req.user
             });
         }
     });
 });
 
-router.put('/:id', authentication.verifyToken, (req, res, next) => {
+router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -166,7 +206,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar el registro',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -174,7 +215,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un registro con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el registro para actualizar' }
+                errors: { message: 'No se pudo encontrar el registro para actualizar' },
+                user: req.user
             });
         } else {
 
@@ -189,13 +231,15 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede actualizar el registro',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        commonService: commonService
+                        commonService: commonService,
+                        user: req.user
                     });
                 }
             });
@@ -205,7 +249,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 
-router.delete('/:id', authentication.verifyToken, (req, res, next) => {
+router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -214,7 +258,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el registro',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -222,7 +267,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un registro con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el registro para eliminar' }
+                errors: { message: 'No se pudo encontrar el registro para eliminar' },
+                user: req.user
             });
         } else {
 
@@ -233,13 +279,15 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede eliminar el registro',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        commonService: commonService
+                        commonService: commonService,
+                        user: req.user
                     });
                 }
             });

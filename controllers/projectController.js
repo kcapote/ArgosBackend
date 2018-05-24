@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const Project = require('../models/project');
 const authentication = require('../middlewares/authentication');
 
-router.get('/', authentication.verifyToken, (req, res, next) => {
+router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -21,7 +21,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar las obras',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
 
@@ -30,7 +31,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                             success: true,
                             projects: projects,
                             totalRecords: projects.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -39,7 +41,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -57,7 +59,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar las obras',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
 
@@ -66,7 +69,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                             success: true,
                             projects: projects,
                             totalRecords: projects.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -75,7 +79,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
             });
 });
 
-router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
+router.get('/search/:term', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -95,7 +99,8 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se encontraron resultados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
 
@@ -104,7 +109,8 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                             success: true,
                             projects: projects,
                             totalRecords: projects.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -113,7 +119,7 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/search/:term/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -135,7 +141,8 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
                     return res.status(500).json({
                         success: false,
                         message: 'No se encontraron resultados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
 
@@ -144,7 +151,8 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
                             success: true,
                             projects: projects,
                             totalRecords: projects.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -154,7 +162,7 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
 });
 
 
-router.get('/:id', authentication.verifyToken, (req, res, next) => {
+router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -169,7 +177,8 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar la obra',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 }
 
@@ -177,21 +186,23 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No existe una obra con el id: ' + id,
-                        errors: { message: 'No se pudo encontrar la obra para actualizar' }
+                        errors: { message: 'No se pudo encontrar la obra para actualizar' },
+                        user: req.user
                     });
                 } else {
 
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        projects: projects
+                        projects: projects,
+                        user: req.user
                     });
 
                 }
             });
 });
 
-router.post('/', authentication.verifyToken, (req, res, next) => {
+router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let project = new Project({
         name: req.body.name,
@@ -209,19 +220,21 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No se puede crear la obra',
-                errors: err
+                errors: err,
+                user: req.user
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                project: project
+                project: project,
+                user: req.user
             });
         }
     });
 });
 
-router.put('/:id', authentication.verifyToken, (req, res, next) => {
+router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -230,7 +243,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar la obra',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -238,7 +252,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe una obra con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la obra para actualizar' }
+                errors: { message: 'No se pudo encontrar la obra para actualizar' },
+                user: req.user
             });
         } else {
 
@@ -258,13 +273,15 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede actualizar la obra',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        project: project
+                        project: project,
+                        user: req.user
                     });
                 }
             });
@@ -274,7 +291,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 
-router.delete('/:id', authentication.verifyToken, (req, res, next) => {
+router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -283,7 +300,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar la obra',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -291,7 +309,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe una obra con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la obra para eliminar' }
+                errors: { message: 'No se pudo encontrar la obra para eliminar' },
+                user: req.user
             });
         } else {
 
@@ -302,13 +321,15 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede eliminar la obra',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        project: project
+                        project: project,
+                        user: req.user
                     });
                 }
             });

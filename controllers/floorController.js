@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const Floor = require('../models/floor');
 const authentication = require('../middlewares/authentication');
 
-router.get('/', authentication.verifyToken, (req, res, next) => {
+router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -25,7 +25,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los pisos',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Floor.count({}, (err, totalRecords) => {
@@ -33,7 +34,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                             success: true,
                             floors: floors,
                             totalRecords: floors.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -42,7 +44,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -65,7 +67,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los pisos',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Floor.count({}, (err, totalRecords) => {
@@ -73,7 +76,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                             success: true,
                             floors: floors,
                             totalRecords: floors.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -82,7 +86,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
             });
 });
 
-router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
+router.get('/project/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -95,14 +99,16 @@ router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los pisos',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Floor.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             floors: floors,
-                            totalRecords: floors.length
+                            totalRecords: floors.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -111,7 +117,7 @@ router.get('/project/:id', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/:id', authentication.verifyToken, (req, res, next) => {
+router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -124,14 +130,16 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los pisos',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Floor.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             floors: floors,
-                            totalRecords: floors.length
+                            totalRecords: floors.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -140,7 +148,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.post('/', authentication.verifyToken, (req, res, next) => {
+router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
     let floor = new Floor({
         project: req.body.project,
         number: req.body.number,
@@ -153,19 +161,21 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No se puede crear el piso',
-                errors: err
+                errors: err,
+                user: req.user
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                floor: floor
+                floor: floor,
+                user: req.user
             });
         }
     });
 });
 
-router.put('/:id', authentication.verifyToken, (req, res, next) => {
+router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -174,7 +184,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar el piso',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -182,7 +193,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un piso con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el piso para actualizar' }
+                errors: { message: 'No se pudo encontrar el piso para actualizar' },
+                user: req.user
             });
         } else {
 
@@ -198,13 +210,15 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede actualizar el piso',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        floor: floor
+                        floor: floor,
+                        user: req.user
                     });
                 }
             });
@@ -214,7 +228,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 
-router.delete('/:id', authentication.verifyToken, (req, res, next) => {
+router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -223,7 +237,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el piso',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -231,7 +246,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un piso con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el piso para eliminar' }
+                errors: { message: 'No se pudo encontrar el piso para eliminar' },
+                user: req.user
             });
         } else {
 
@@ -242,13 +258,15 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede eliminar el piso',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        floor: floor
+                        floor: floor,
+                        user: req.user
                     });
                 }
             });

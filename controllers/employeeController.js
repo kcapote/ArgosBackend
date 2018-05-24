@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const Employee = require('../models/employee');
 const authentication = require('../middlewares/authentication');
 
-router.get('/', authentication.verifyToken, (req, res, next) => {
+router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -20,7 +20,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los empleados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Employee.count({}, (err, totalRecords) => {
@@ -28,7 +29,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                             success: true,
                             employees: employees,
                             totalRecords: employees.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -37,7 +39,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -54,7 +56,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los empleados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Employee.count({}, (err, totalRecords) => {
@@ -62,7 +65,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                             success: true,
                             employees: employees,
                             totalRecords: employees.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -71,7 +75,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
             });
 });
 
-router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
+router.get('/search/:term', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -90,7 +94,8 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se encontraron resultados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
 
@@ -99,7 +104,8 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                             success: true,
                             employees: employees,
                             totalRecords: employees.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -108,7 +114,7 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/search/:term/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -129,7 +135,8 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
                     return res.status(500).json({
                         success: false,
                         message: 'No se encontraron resultados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
 
@@ -138,7 +145,8 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
                             success: true,
                             employees: employees,
                             totalRecords: employees.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -148,7 +156,7 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
 });
 
 
-router.get('/position/:id', authentication.verifyToken, (req, res, next) => {
+router.get('/position/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -160,14 +168,16 @@ router.get('/position/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los empleados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Employee.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employees: employees,
-                            totalRecords: employees.length
+                            totalRecords: employees.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -176,7 +186,7 @@ router.get('/position/:id', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/:id', authentication.verifyToken, (req, res, next) => {
+router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -188,14 +198,16 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los empleados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Employee.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employees: employees,
-                            totalRecords: employees.length
+                            totalRecords: employees.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -204,7 +216,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.post('/', authentication.verifyToken, (req, res, next) => {
+router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
     let employee = new Employee({
         rut: req.body.rut,
         name: req.body.name,
@@ -222,19 +234,21 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No se puede crear el empleado',
-                errors: err
+                errors: err,
+                user: req.user
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                employee: employee
+                employee: employee,
+                user: req.user
             });
         }
     });
 });
 
-router.put('/:id', authentication.verifyToken, (req, res, next) => {
+router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -243,7 +257,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar el empleado',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -251,7 +266,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un empleado con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el empleado para actualizar' }
+                errors: { message: 'No se pudo encontrar el empleado para actualizar' },
+                user: req.user
             });
         } else {
 
@@ -272,13 +288,15 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede actualizar el empleado',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        employee: employee
+                        employee: employee,
+                        user: req.user
                     });
                 }
             });
@@ -288,7 +306,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 
-router.delete('/:id', authentication.verifyToken, (req, res, next) => {
+router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -297,7 +315,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el empleado',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -305,7 +324,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un empleado con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el empleado para eliminar' }
+                errors: { message: 'No se pudo encontrar el empleado para eliminar' },
+                user: req.user
             });
         } else {
 
@@ -316,13 +336,15 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede eliminar el empleado',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        employee: employee
+                        employee: employee,
+                        user: req.user
                     });
                 }
             });

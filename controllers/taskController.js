@@ -6,7 +6,7 @@ const Task = require('../models/task');
 const SubTask = require('../models/subTask');
 const authentication = require('../middlewares/authentication');
 
-router.get('/', authentication.verifyToken, (req, res, next) => {
+router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -23,7 +23,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar las tareas',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Task.count({}, (err, totalRecords) => {
@@ -31,7 +32,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                             success: true,
                             tasks: tasks,
                             totalRecords: tasks.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -40,7 +42,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -58,7 +60,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar las tareas',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Task.count({}, (err, totalRecords) => {
@@ -66,7 +69,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                             success: true,
                             tasks: tasks,
                             totalRecords: tasks.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -75,7 +79,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
             });
 });
 
-router.get('/type/:type', authentication.verifyToken, (req, res, next) => {
+router.get('/type/:type', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let type = req.params.type;
 
@@ -87,14 +91,16 @@ router.get('/type/:type', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar las tareas',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Task.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             tasks: tasks,
-                            totalRecords: tasks.length
+                            totalRecords: tasks.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -103,7 +109,7 @@ router.get('/type/:type', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
+router.get('/search/:term', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -122,7 +128,8 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se encontraron resultados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
 
@@ -131,7 +138,8 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
                             success: true,
                             tasks: tasks,
                             totalRecords: tasks.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -140,7 +148,7 @@ router.get('/search/:term', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/search/:term/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -161,7 +169,8 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
                     return res.status(500).json({
                         success: false,
                         message: 'No se encontraron resultados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
 
@@ -170,7 +179,8 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
                             success: true,
                             tasks: tasks,
                             totalRecords: tasks.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -180,7 +190,7 @@ router.get('/search/:term/:recordActive', authentication.verifyToken, (req, res,
 });
 
 
-router.get('/:id', authentication.verifyToken, (req, res, next) => {
+router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -191,7 +201,8 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar la tarea',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -199,21 +210,23 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe una tarea con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la tarea para actualizar' }
+                errors: { message: 'No se pudo encontrar la tarea para actualizar' },
+                user: req.user
             });
         } else {
 
             res.status(200).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                task: task
+                task: task,
+                user: req.user
             });
 
         }
     })
 });
 
-router.post('/', authentication.verifyToken, (req, res, next) => {
+router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
     let task = new Task({
         name: req.body.name,
         type: req.body.type,
@@ -224,19 +237,21 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No se puede crear la tarea',
-                errors: err
+                errors: err,
+                user: req.user
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                task: taskSave
+                task: taskSave,
+                user: req.user
             });
         }
     });
 });
 
-router.put('/:id', authentication.verifyToken, (req, res, next) => {
+router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -245,7 +260,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar la tarea',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -253,7 +269,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe una tarea con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la tarea para actualizar' }
+                errors: { message: 'No se pudo encontrar la tarea para actualizar' },
+                user: req.user
             });
         } else {
 
@@ -267,13 +284,16 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede actualizar la tarea',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        task: taskSave
+                        task: taskSave,
+                        user: req.user,
+                        user: req.user
                     });
                 }
             });
@@ -283,7 +303,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 
-router.delete('/:id', authentication.verifyToken, (req, res, next) => {
+router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -292,7 +312,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar la tarea',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -300,7 +321,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe una tarea con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la tarea para eliminar' }
+                errors: { message: 'No se pudo encontrar la tarea para eliminar' },
+                user: req.user
             });
         } else {
 
@@ -311,13 +333,15 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede eliminar la tarea',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        task: taskSave
+                        task: taskSave,
+                        user: req.user
                     });
                 }
             });

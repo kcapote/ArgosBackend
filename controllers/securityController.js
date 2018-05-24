@@ -55,6 +55,9 @@ router.post('/login/', (req, res, next) => {
 
         //ser guarda en BD el token del usuario activo
         user.token = token;
+        console.log('======L=======');
+        console.log(user.token);
+        console.log('======L=======');
         user.save((err, userSave) => {
             if (err) {
                 return res.status(400).json({

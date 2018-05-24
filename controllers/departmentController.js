@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const Department = require('../models/department');
 const authentication = require('../middlewares/authentication');
 
-router.get('/', authentication.verifyToken, (req, res, next) => {
+router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -21,7 +21,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los departamentos',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Department.count({}, (err, totalRecords) => {
@@ -29,7 +30,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                             success: true,
                             departments: departments,
                             totalRecords: departments.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -38,7 +40,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -56,7 +58,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los departamentos',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Department.count({}, (err, totalRecords) => {
@@ -64,7 +67,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                             success: true,
                             departments: departments,
                             totalRecords: departments.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -73,7 +77,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
             });
 });
 
-router.get('/floor/:id', authentication.verifyToken, (req, res, next) => {
+router.get('/floor/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -86,14 +90,16 @@ router.get('/floor/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los departamentos',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Department.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departments: departments,
-                            totalRecords: departments.length
+                            totalRecords: departments.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -102,7 +108,7 @@ router.get('/floor/:id', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/:id', authentication.verifyToken, (req, res, next) => {
+router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -115,14 +121,16 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los departamentos',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     Department.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departments: departments,
-                            totalRecords: departments.length
+                            totalRecords: departments.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -131,7 +139,7 @@ router.get('/:id', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.post('/', authentication.verifyToken, (req, res, next) => {
+router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
     let department = new Department({
         floor: req.body.floor,
         number: req.body.number,
@@ -142,19 +150,21 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No se puede crear el departamento',
-                errors: err
+                errors: err,
+                user: req.user
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                department: department
+                department: department,
+                user: req.user
             });
         }
     });
 });
 
-router.put('/:id', authentication.verifyToken, (req, res, next) => {
+router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -163,7 +173,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar el departamento',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -171,7 +182,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un departamento con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el departamento para actualizar' }
+                errors: { message: 'No se pudo encontrar el departamento para actualizar' },
+                user: req.user
             });
         } else {
 
@@ -185,13 +197,15 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede actualizar el departamento',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        department: department
+                        department: department,
+                        user: req.user
                     });
                 }
             });
@@ -201,7 +215,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 
-router.delete('/:id', authentication.verifyToken, (req, res, next) => {
+router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -210,7 +224,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede eliminar el departamento',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -218,7 +233,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un departamento con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el departamento para eliminar' }
+                errors: { message: 'No se pudo encontrar el departamento para eliminar' },
+                user: req.user
             });
         } else {
 
@@ -229,13 +245,15 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede eliminar el departamento',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        department: department
+                        department: department,
+                        user: req.user
                     });
                 }
             });

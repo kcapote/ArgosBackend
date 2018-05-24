@@ -6,7 +6,7 @@ const EmployeeProject = require('../models/employeeProject');
 const Employee = require('../models/employee');
 const authentication = require('../middlewares/authentication');
 
-router.get('/', authentication.verifyToken, (req, res, next) => {
+router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -22,7 +22,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los empleados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     EmployeeProject.count({}, (err, totalRecords) => {
@@ -30,7 +31,8 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                             success: true,
                             employeeProjects: employeeProjects,
                             totalRecords: employeeProjects.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -39,7 +41,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
             });
 });
 
-router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -57,7 +59,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los empleados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     EmployeeProject.count({}, (err, totalRecords) => {
@@ -65,7 +68,8 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
                             success: true,
                             employeeProjects: employeeProjects,
                             totalRecords: employeeProjects.length,
-                            pagination: pagination
+                            pagination: pagination,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -74,7 +78,7 @@ router.get('/recordActive/:recordActive', authentication.verifyToken, (req, res,
             });
 });
 
-router.get('/project/:idProject', authentication.verifyToken, (req, res, next) => {
+router.get('/project/:idProject', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
 
@@ -87,14 +91,16 @@ router.get('/project/:idProject', authentication.verifyToken, (req, res, next) =
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los empleados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     EmployeeProject.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,
-                            totalRecords: employeeProjects.length
+                            totalRecords: employeeProjects.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -103,7 +109,7 @@ router.get('/project/:idProject', authentication.verifyToken, (req, res, next) =
             });
 });
 
-router.get('/notproyect/', authentication.verifyToken, (req, res, next) => {
+router.get('/notproyect/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
 
@@ -117,7 +123,8 @@ router.get('/notproyect/', authentication.verifyToken, (req, res, next) => {
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los datos',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
 
@@ -130,7 +137,8 @@ router.get('/notproyect/', authentication.verifyToken, (req, res, next) => {
                                     return res.status(500).json({
                                         success: false,
                                         message: 'No se pueden consultar los datos',
-                                        errors: err
+                                        errors: err,
+                                        user: req.user
                                     });
                                 } else {
 
@@ -151,7 +159,8 @@ router.get('/notproyect/', authentication.verifyToken, (req, res, next) => {
                                     res.status(200).write(JSON.stringify({
                                         success: true,
                                         freeEmployees: freeEmployees,
-                                        totalRecords: freeEmployees.length
+                                        totalRecords: freeEmployees.length,
+                                        user: req.user
                                     }, null, 2));
                                     res.end();
                                 }
@@ -161,7 +170,7 @@ router.get('/notproyect/', authentication.verifyToken, (req, res, next) => {
 
 });
 
-router.get('/project/:idProject/:recordActive', authentication.verifyToken, (req, res, next) => {
+router.get('/project/:idProject/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
     let recordActive = req.params.recordActive;
@@ -176,14 +185,16 @@ router.get('/project/:idProject/:recordActive', authentication.verifyToken, (req
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los empleados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     EmployeeProject.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,
-                            totalRecords: employeeProjects.length
+                            totalRecords: employeeProjects.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -192,7 +203,7 @@ router.get('/project/:idProject/:recordActive', authentication.verifyToken, (req
             });
 });
 
-router.get('/employee/:idEmployee', authentication.verifyToken, (req, res, next) => {
+router.get('/employee/:idEmployee', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idEmployee = req.params.idEmployee;
 
@@ -205,14 +216,16 @@ router.get('/employee/:idEmployee', authentication.verifyToken, (req, res, next)
                     return res.status(500).json({
                         success: false,
                         message: 'No se pueden consultar los empleados',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     EmployeeProject.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,
-                            totalRecords: employeeProjects.length
+                            totalRecords: employeeProjects.length,
+                            user: req.user
                         }, null, 2));
                         res.end();
 
@@ -225,7 +238,7 @@ router.get('/employee/:idEmployee', authentication.verifyToken, (req, res, next)
 
 
 
-router.post('/', authentication.verifyToken, (req, res, next) => {
+router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
     let employeeProject = new EmployeeProject({
         employee: req.body.employee,
         project: req.body.project,
@@ -238,19 +251,21 @@ router.post('/', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No se puede crear el registro',
-                errors: err
+                errors: err,
+                user: req.user
             });
         } else {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                employeeProject: employeeProject
+                employeeProject: employeeProject,
+                user: req.user
             });
         }
     });
 });
 
-router.put('/:id', authentication.verifyToken, (req, res, next) => {
+router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -259,7 +274,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar el registro',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -267,7 +283,8 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un registro con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el registro para actualizar' }
+                errors: { message: 'No se pudo encontrar el registro para actualizar' },
+                user: req.user
             });
         } else {
 
@@ -282,13 +299,15 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede actualizar el registro',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        employeeProject: employeeProject
+                        employeeProject: employeeProject,
+                        user: req.user
                     });
                 }
             });
@@ -298,7 +317,7 @@ router.put('/:id', authentication.verifyToken, (req, res, next) => {
 });
 
 
-router.delete('/:id', authentication.verifyToken, (req, res, next) => {
+router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
@@ -307,7 +326,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(500).json({
                 success: false,
                 message: 'No se puede actualizar el registro',
-                errors: err
+                errors: err,
+                user: req.user
             });
         }
 
@@ -315,7 +335,8 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
             return res.status(400).json({
                 success: false,
                 message: 'No existe un registro con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el registro para actualizar' }
+                errors: { message: 'No se pudo encontrar el registro para actualizar' },
+                user: req.user
             });
         } else {
 
@@ -326,13 +347,15 @@ router.delete('/:id', authentication.verifyToken, (req, res, next) => {
                     return res.status(400).json({
                         success: false,
                         message: 'No se puede actualizar el registro',
-                        errors: err
+                        errors: err,
+                        user: req.user
                     });
                 } else {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        employeeProject: employeeProject
+                        employeeProject: employeeProject,
+                        user: req.user
                     });
                 }
             });
