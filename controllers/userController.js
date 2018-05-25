@@ -138,7 +138,7 @@ router.post('/', [authentication.verifyToken, authentication.refreshToken], (req
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                user: userSave,
+                userSave: userSave,
                 user: req.user
             });
         }
@@ -186,7 +186,7 @@ router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (r
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        user: userSave,
+                        userSave: userSave,
                         user: req.user
                     });
                 }
@@ -234,7 +234,7 @@ router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        user: userSave,
+                        userSave: userSave,
                         user: req.user
                     });
                 }
