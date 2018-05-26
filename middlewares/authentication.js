@@ -4,9 +4,7 @@ const User = require('../models/user');
 
 exports.verifyToken = function(req, res, next) {
     var token = req.query.token;
-    console.log('======A=======');
     console.log(token);
-    console.log('======A=======');
     jwt.verify(token, constants.SEED, (err, decoded) => {
         if (err) {
             return res.status(401).json({
@@ -22,9 +20,7 @@ exports.verifyToken = function(req, res, next) {
 exports.refreshToken = function(req, res, next) {
     var token = req.query.token;
     let tokenInfo = jwt.decode(token);
-    console.log('======N=======');
     console.log(token);
-    console.log('======N=======');
     User.findOne({ _id: tokenInfo.info }, (err, user) => {
 
         if (err) {
@@ -66,9 +62,7 @@ exports.refreshToken = function(req, res, next) {
             } else {
                 userSave.password = '';
                 req.user = userSave;
-                console.log('======G=======');
                 console.log(userSave.token);
-                console.log('======G=======');
                 next();
             }
         });
