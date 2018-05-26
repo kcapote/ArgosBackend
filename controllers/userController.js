@@ -170,7 +170,7 @@ router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (r
             user.name = req.body.name;
             user.lastName = req.body.lastName;
             user.email = req.body.email;
-            user.password = req.body.password;
+            //user.password = req.body.password;
             user.role = req.body.role;
             user.recordActive = req.body.recordActive || true;
 
