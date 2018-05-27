@@ -116,6 +116,33 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
             });
 });
 
+router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    let id = req.params.id;
+    User.find({ '_id': id }, 'name lastName email role')
+        .exec(
+            (err, users) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se encontraron resultados',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    User.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            users: users,
+                            totalRecords: users.length,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
 
 router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
@@ -124,7 +151,8 @@ router.post('/', [authentication.verifyToken, authentication.refreshToken], (req
         lastName: req.body.lastName,
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password, 10),
-        role: req.body.role
+        role: req.body.role,
+        token: ''
     });
     user.save((err, userSave) => {
         if (err) {
