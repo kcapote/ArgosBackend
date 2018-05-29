@@ -20,6 +20,8 @@ exports.verifyToken = function(req, res, next) {
 exports.refreshToken = function(req, res, next) {
     var token = req.query.token;
     let tokenInfo = jwt.decode(token);
+    let generate = req.query.generate || 1;
+    generate = Number(generate);
     console.log(token);
     User.findOne({ _id: tokenInfo.info }, (err, user) => {
 
@@ -47,11 +49,13 @@ exports.refreshToken = function(req, res, next) {
             });
         }
 
-        //crear un token
-        var tokenNew = jwt.sign({ info: user._id }, constants.SEED, { expiresIn: constants.TIME_TOKEN_VALID }); // un año
+        if (generate > 0) {
+            //crear un token
+            var tokenNew = jwt.sign({ info: user._id }, constants.SEED, { expiresIn: constants.TIME_TOKEN_VALID }); // un año
+            //ser guarda en BD el token del usuario activo
+            user.token = tokenNew;
+        }
 
-        //ser guarda en BD el token del usuario activo
-        user.token = tokenNew;
         user.save((err, userSave) => {
             if (err) {
                 return res.status(401).json({
