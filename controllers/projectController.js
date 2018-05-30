@@ -30,7 +30,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                         res.status(200).write(JSON.stringify({
                             success: true,
                             projects: projects,
-                            totalRecords: projects.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -64,11 +64,12 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                     });
                 } else {
 
-                    Project.count({}, (err, totalRecords) => {
+                    Project.find({ 'recordActive': recordActive })
+                           .count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             projects: projects,
-                            totalRecords: projects.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -104,11 +105,13 @@ router.get('/search/:term', [authentication.verifyToken, authentication.refreshT
                     });
                 } else {
 
-                    Project.count({}, (err, totalRecords) => {
+                    Project.find()
+                           .or([{ 'name': regex }])     
+                           .count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             projects: projects,
-                            totalRecords: projects.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -146,11 +149,13 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
                     });
                 } else {
 
-                    Project.count({}, (err, totalRecords) => {
+                    Project.find({ 'recordActive': recordActive })
+                        .or([{ 'name': regex }]) 
+                        .count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             projects: projects,
-                            totalRecords: projects.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
