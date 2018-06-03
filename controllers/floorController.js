@@ -154,7 +154,7 @@ router.post('/', [authentication.verifyToken, authentication.refreshToken], (req
         number: req.body.number,
         quantityDepartment: req.body.quantityDepartment,
         type: req.body.type,
-        status: req.body.status
+        status: 0
     });
     floor.save((err, floor) => {
         if (err) {
