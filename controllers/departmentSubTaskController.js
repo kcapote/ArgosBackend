@@ -188,6 +188,42 @@ router.get('/floor/:idProject/:idFloor', [authentication.verifyToken, authentica
             });
 });
 
+router.get('/floor/:idProject/:idFloor/:idTask', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    let idProject = req.params.idProject;
+    let idFloor = req.params.idFloor;
+    let idTask = req.params.idTask;
+
+    DepartmentSubTask.find({ 'project': idProject, 'floor': idFloor, 'task': idTask, 'recordActive': true })
+        .populate('department')
+        .populate('task')
+        .populate('subTask')
+        .populate('floor')
+        .populate('project')
+        .exec(
+            (err, departmentSubTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar la información',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    DepartmentSubTask.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            departmentSubTasks: departmentSubTasks,
+                            totalRecords: departmentSubTasks.length,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 
 router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
     let departmentSubTask = new DepartmentSubTask({
