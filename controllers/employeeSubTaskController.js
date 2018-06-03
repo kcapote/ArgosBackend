@@ -283,6 +283,45 @@ router.get('/employee/calendar/:idProject/:idEmployee/:initDate/:endDate', [auth
             });
 });
 
+router.get('/employee/calendar/project/:idProject/:initDate/:endDate', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    let idProject = req.params.idProject;
+    let initDate = `${req.params.initDate} 00:00:00.000Z`;
+    let endDate = `${req.params.endDate} 00:00:00.000Z`;
+
+    EmployeeSubTask.find({ 'project': idProject, 'recordActive': true, "$and": [{ "recordDate": { "$gte": ISODate(initDate) } }, { "recordDate": { "$lte": ISODate(endDate) } }] })
+        .populate('employee')
+        .populate('subTask')
+        .populate('task')
+        .populate('floor')
+        .populate('department')
+        .populate('commonService')
+        .populate('project')
+        .sort({ recordDate: 1 })
+        .exec(
+            (err, employeeSubTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar los datos',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            employeeSubTasks: employeeSubTasks,
+                            totalRecords: employeeSubTasks.length,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/employee/:idProject/:idFloor/:idDepartment/:idEmployee', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
