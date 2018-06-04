@@ -223,6 +223,48 @@ router.get('/task/:idProject/:idTask/:type', [authentication.verifyToken, authen
             });
 });
 
+router.get('/task/:idProject/:idTask/:type/:idCommonService', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    let idProject = req.params.idProject;
+    let idTask = req.params.idTask;
+    let idCommonService = req.params.idCommonService;
+    let type = req.params.type;
+    console.log("********************");
+    console.log(idProject);
+    console.log(idTask);
+    console.log(idCommonService);
+    console.log(type);
+    console.log("********************");
+
+    CommonServiceSubTask.find({ 'project': idProject, 'task': idTask, 'commonService': idCommonService, 'type': type, 'recordActive': true })
+        .populate('commonService')
+        .populate('subTask')
+        .populate('task')
+        .populate('project')
+        .exec(
+            (err, commonServiceSubTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar la información',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    CommonServiceSubTask.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            commonServiceSubTasks: commonServiceSubTasks,
+                            totalRecords: commonServiceSubTasks.length,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/commonservice/:idProject/:idCommonservice', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
