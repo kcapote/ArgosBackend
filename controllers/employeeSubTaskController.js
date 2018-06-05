@@ -210,7 +210,7 @@ router.get('/employee/calendar/:idEmployee/:initDate/:endDate', [authentication.
     let initDate = `${req.params.initDate} 00:00:00.000Z`;
     let endDate = `${req.params.endDate} 00:00:00.000Z`;
 
-    EmployeeSubTask.find({ 'employee': idEmployee, 'recordActive': true, "$and": [{ "recordDate": { "$gte": ISODate(initDate) } }, { "recordDate": { "$lte": ISODate(endDate) } }] })
+    EmployeeSubTask.find({ 'employee': idEmployee, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] })
         .populate('employee')
         .populate('subTask')
         .populate('task')
@@ -243,14 +243,14 @@ router.get('/employee/calendar/:idEmployee/:initDate/:endDate', [authentication.
             });
 });
 
-router.get('/employee/calendar/:idProject/:idEmployee/:initDate/:endDate', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/employee/calendar/project/:idProject/:idEmployee/:initDate/:endDate', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
     let idEmployee = req.params.idEmployee;
     let initDate = `${req.params.initDate} 00:00:00.000Z`;
     let endDate = `${req.params.endDate} 00:00:00.000Z`;
 
-    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true, "$and": [{ "recordDate": { "$gte": ISODate(initDate) } }, { "recordDate": { "$lte": ISODate(endDate) } }] })
+    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] })
         .populate('employee')
         .populate('subTask')
         .populate('task')
@@ -289,7 +289,7 @@ router.get('/employee/calendar/project/:idProject/:initDate/:endDate', [authenti
     let initDate = `${req.params.initDate} 00:00:00.000Z`;
     let endDate = `${req.params.endDate} 00:00:00.000Z`;
 
-    EmployeeSubTask.find({ 'project': idProject, 'recordActive': true, "$and": [{ "recordDate": { "$gte": ISODate(initDate) } }, { "recordDate": { "$lte": ISODate(endDate) } }] })
+    EmployeeSubTask.find({ 'project': idProject, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] })
         .populate('employee')
         .populate('subTask')
         .populate('task')
