@@ -17,7 +17,8 @@ const UserSchema = mongoose.Schema({
     },
     email: {
         type: String,
-        required: [true, "El correo del usuario es necesario"]
+        required: [true, "El correo del usuario es necesario"],
+        unique: true
     },
     password: {
         type: String,
@@ -38,6 +39,6 @@ const UserSchema = mongoose.Schema({
     }
 });
 
-UserSchema.plugin(uniqueValidator, { message: 'El correo {PATH} ya existe' });
+UserSchema.plugin(uniqueValidator, { message: '"El correo indicado ya existe registrado"' });
 
 const User = module.exports = mongoose.model('User', UserSchema);
