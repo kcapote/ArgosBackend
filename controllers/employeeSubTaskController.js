@@ -651,23 +651,53 @@ router.post('/', [authentication.verifyToken, authentication.refreshToken], (req
         recordDate: req.body.recordDate,
         hoursWorked: req.body.hoursWorked
     });
-    employeeSubTask.save((err, employeeSubTask) => {
-        if (err) {
-            return res.status(400).json({
-                success: false,
-                message: 'No se puede crear el registro',
-                errors: err,
-                user: req.user
-            });
-        } else {
-            res.status(201).json({
-                success: true,
-                message: 'Operación realizada de forma exitosa.',
-                employeeSubTask: employeeSubTask,
-                user: req.user
-            });
-        }
-    });
+
+    console.log(req.body.recordDate);
+
+    let dateRecord = `${req.body.recordDate} 00:00:00.000Z`;
+
+    EmployeeSubTask.findOne({ 'project': req.body.project, 'employee': req.body.employee, 'task': req.body.task, 'subTask': req.body.subTask, "$and": [{ "recordDate": { "$gte": dateRecord } }, { "recordDate": { "$lte": dateRecord } }] })
+        .populate('employee')
+        .exec(
+            (err, employee) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se puede eliminar el registro',
+                        errors: err,
+                        user: req.user
+                    });
+                }
+
+                if (employee) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'El empleado ya posee registros para la fecha ' + dateRecord,
+                        errors: { message: 'El empleado id ' + "(" + req.body.employee + ") ya posee registros para la fecha indicada" },
+                        user: req.user,
+                        employee: employee
+                    });
+                } else {
+                    employeeSubTask.save((err, employeeSubTask) => {
+                        if (err) {
+                            return res.status(400).json({
+                                success: false,
+                                message: 'No se puede crear el registro',
+                                errors: err,
+                                user: req.user
+                            });
+                        } else {
+                            res.status(201).json({
+                                success: true,
+                                message: 'Operación realizada de forma exitosa.',
+                                employeeSubTask: employeeSubTask,
+                                user: req.user
+                            });
+                        }
+                    });
+                }
+            })
+
 });
 
 router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
