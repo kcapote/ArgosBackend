@@ -656,7 +656,7 @@ router.post('/', [authentication.verifyToken, authentication.refreshToken], (req
 
     let dateRecord = `${req.body.recordDate} 00:00:00.000Z`;
 
-    EmployeeSubTask.findOne({ 'project': req.body.project, 'employee': req.body.employee, 'task': req.body.task, 'subTask': req.body.subTask, "$and": [{ "recordDate": { "$gte": dateRecord } }, { "recordDate": { "$lte": dateRecord } }] })
+    EmployeeSubTask.findOne({ 'project': req.body.project, 'employee': req.body.employee, "$and": [{ "recordDate": { "$gte": dateRecord } }, { "recordDate": { "$lte": dateRecord } }] })
         .populate('employee')
         .exec(
             (err, employee) => {
