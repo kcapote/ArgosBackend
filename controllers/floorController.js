@@ -86,7 +86,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
             });
 });
 
-router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/all', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     Floor.find({ 'recordActive': true })
         .populate('project')
@@ -106,7 +106,6 @@ router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (
                             success: true,
                             floors: floors,
                             totalRecords: floors.length,
-                            pagination: pagination,
                             user: req.user
                         }, null, 2));
                         res.end();

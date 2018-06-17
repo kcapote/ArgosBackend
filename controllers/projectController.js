@@ -41,7 +41,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
             });
 });
 
-router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/all', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     Project.find({ 'recordActive': true })
         .populate('supervisor1')
@@ -63,7 +63,6 @@ router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (
                                 success: true,
                                 projects: projects,
                                 totalRecords: totalRecords,
-                                pagination: pagination,
                                 user: req.user
                             }, null, 2));
                             res.end();

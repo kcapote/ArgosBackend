@@ -39,7 +39,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
             });
 });
 
-router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/all', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     Employee.find({ 'recordActive': true })
         .populate('position')
@@ -58,7 +58,6 @@ router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (
                             success: true,
                             employees: employees,
                             totalRecords: employees.length,
-                            pagination: pagination,
                             user: req.user
                         }, null, 2));
                         res.end();

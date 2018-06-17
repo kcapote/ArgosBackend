@@ -40,7 +40,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
             });
 });
 
-router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/all', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     Department.find({ 'recordActive': true })
         .populate('floor')
@@ -60,7 +60,6 @@ router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (
                             success: true,
                             departments: departments,
                             totalRecords: departments.length,
-                            pagination: pagination,
                             user: req.user
                         }, null, 2));
                         res.end();

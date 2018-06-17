@@ -40,7 +40,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
             });
 });
 
-router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/all', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     User.find({ 'recordActive': true }, 'name lastName email role')
         .exec(
@@ -59,7 +59,6 @@ router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (
                             success: true,
                             users: users,
                             totalRecords: users.length,
-                            pagination: pagination,
                             user: req.user
                         }, null, 2));
                         res.end();

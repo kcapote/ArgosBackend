@@ -42,7 +42,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
             });
 });
 
-router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/all', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     Task.find({ 'recordActive': true })
         .sort({ position: 1 })
@@ -61,7 +61,6 @@ router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (
                             success: true,
                             tasks: tasks,
                             totalRecords: tasks.length,
-                            pagination: pagination,
                             user: req.user
                         }, null, 2));
                         res.end();

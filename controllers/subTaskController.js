@@ -77,7 +77,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
             });
 });
 
-router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/all', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     SubTask.find({ 'recordActive': true })
         .populate('task')
@@ -97,7 +97,6 @@ router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (
                             success: true,
                             subTasks: subTasks,
                             totalRecords: subTasks.length,
-                            pagination: pagination,
                             user: req.user
                         }, null, 2));
                         res.end();
