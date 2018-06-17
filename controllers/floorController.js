@@ -86,6 +86,36 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
             });
 });
 
+router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    Floor.find({ 'recordActive': true })
+        .populate('project')
+        .sort({ number: 1 })
+        .exec(
+            (err, floors) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar los pisos',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    Floor.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            floors: floors,
+                            totalRecords: floors.length,
+                            pagination: pagination,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/project/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;

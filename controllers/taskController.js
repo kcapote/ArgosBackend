@@ -42,6 +42,35 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
             });
 });
 
+router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    Task.find({ 'recordActive': true })
+        .sort({ position: 1 })
+        .exec(
+            (err, tasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar las tareas',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    Task.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            tasks: tasks,
+                            totalRecords: tasks.length,
+                            pagination: pagination,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;

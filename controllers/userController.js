@@ -40,6 +40,35 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
             });
 });
 
+router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    User.find({ 'recordActive': true }, 'name lastName email role')
+        .exec(
+            (err, users) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar las tareas',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+
+                    User.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            users: users,
+                            totalRecords: users.length,
+                            pagination: pagination,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;

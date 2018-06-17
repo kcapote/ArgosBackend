@@ -40,6 +40,36 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
             });
 });
 
+router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    Department.find({ 'recordActive': true })
+        .populate('floor')
+        .sort({ number: 1 })
+        .exec(
+            (err, departments) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar los departamentos',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    Department.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            departments: departments,
+                            totalRecords: departments.length,
+                            pagination: pagination,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;

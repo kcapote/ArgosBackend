@@ -39,6 +39,36 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
             });
 });
 
+router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    Employee.find({ 'recordActive': true })
+        .populate('position')
+        .exec(
+            (err, employees) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar los empleados',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    Employee.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            employees: employees,
+                            totalRecords: employees.length,
+                            pagination: pagination,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
+
 router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;

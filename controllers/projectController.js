@@ -41,6 +41,38 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
             });
 });
 
+router.get('/all/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    Project.find({ 'recordActive': true })
+        .populate('supervisor1')
+        .populate('supervisor2')
+        .exec(
+            (err, projects) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar las obras',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+
+                    Project.find({ 'recordActive': recordActive })
+                        .count({}, (err, totalRecords) => {
+                            res.status(200).write(JSON.stringify({
+                                success: true,
+                                projects: projects,
+                                totalRecords: totalRecords,
+                                pagination: pagination,
+                                user: req.user
+                            }, null, 2));
+                            res.end();
+
+                        });
+                }
+            });
+});
+
 router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
@@ -65,17 +97,17 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                 } else {
 
                     Project.find({ 'recordActive': recordActive })
-                           .count({}, (err, totalRecords) => {
-                        res.status(200).write(JSON.stringify({
-                            success: true,
-                            projects: projects,
-                            totalRecords: totalRecords,
-                            pagination: pagination,
-                            user: req.user
-                        }, null, 2));
-                        res.end();
+                        .count({}, (err, totalRecords) => {
+                            res.status(200).write(JSON.stringify({
+                                success: true,
+                                projects: projects,
+                                totalRecords: totalRecords,
+                                pagination: pagination,
+                                user: req.user
+                            }, null, 2));
+                            res.end();
 
-                    });
+                        });
                 }
             });
 });
@@ -106,18 +138,18 @@ router.get('/search/:term', [authentication.verifyToken, authentication.refreshT
                 } else {
 
                     Project.find()
-                           .or([{ 'name': regex }])     
-                           .count({}, (err, totalRecords) => {
-                        res.status(200).write(JSON.stringify({
-                            success: true,
-                            projects: projects,
-                            totalRecords: totalRecords,
-                            pagination: pagination,
-                            user: req.user
-                        }, null, 2));
-                        res.end();
+                        .or([{ 'name': regex }])
+                        .count({}, (err, totalRecords) => {
+                            res.status(200).write(JSON.stringify({
+                                success: true,
+                                projects: projects,
+                                totalRecords: totalRecords,
+                                pagination: pagination,
+                                user: req.user
+                            }, null, 2));
+                            res.end();
 
-                    });
+                        });
                 }
             });
 });
@@ -150,18 +182,18 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
                 } else {
 
                     Project.find({ 'recordActive': recordActive })
-                        .or([{ 'name': regex }]) 
+                        .or([{ 'name': regex }])
                         .count({}, (err, totalRecords) => {
-                        res.status(200).write(JSON.stringify({
-                            success: true,
-                            projects: projects,
-                            totalRecords: totalRecords,
-                            pagination: pagination,
-                            user: req.user
-                        }, null, 2));
-                        res.end();
+                            res.status(200).write(JSON.stringify({
+                                success: true,
+                                projects: projects,
+                                totalRecords: totalRecords,
+                                pagination: pagination,
+                                user: req.user
+                            }, null, 2));
+                            res.end();
 
-                    });
+                        });
                 }
             });
 });
