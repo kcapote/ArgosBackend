@@ -155,14 +155,13 @@ router.get('/department/:idProject/:idDepartment', [authentication.verifyToken, 
 
 
 //Retorna las subtareas de un departamento
-
-
-router.get('/department/:idProject/:idFloor/:idDepartment/:idTask/:idSubTask', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/department/:idProject/:idDepartment/:idTask', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
     let idDepartment = req.params.idDepartment;
+    let idTask = req.params.idTask;
 
-    DepartmentSubTask.find({ 'project': idProject,'floor': idFloor, 'department': idDepartment,'task': idTask,'subTask': idSubTask  ,'recordActive': true })
+    DepartmentSubTask.find({ 'project': idProject, 'department': idDepartment,'task': idTask  ,'recordActive': true })
         .populate('department')
         .populate('task')
         .populate('subTask')
