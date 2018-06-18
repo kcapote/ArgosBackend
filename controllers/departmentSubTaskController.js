@@ -153,6 +153,45 @@ router.get('/department/:idProject/:idDepartment', [authentication.verifyToken, 
             });
 });
 
+
+//Retorna las subtareas de un departamento
+
+
+router.get('/department/:idProject/:idFloor/:idDepartment/:idTask/:idSubTask', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    let idProject = req.params.idProject;
+    let idDepartment = req.params.idDepartment;
+
+    DepartmentSubTask.find({ 'project': idProject,'floor': idFloor, 'department': idDepartment,'task': idTask,'subTask': idSubTask  ,'recordActive': true })
+        .populate('department')
+        .populate('task')
+        .populate('subTask')
+        .populate('floor')
+        .populate('project')
+        .exec(
+            (err, departmentSubTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar la información',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    DepartmentSubTask.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            departmentSubTasks: departmentSubTasks,
+                            totalRecords: departmentSubTasks.length,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/floor/:idProject/:idFloor', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
