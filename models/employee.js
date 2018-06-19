@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+const uniqueValidator = require('mongoose-unique-validator');
 
 var typesSex = {
     values: ['MASCULINO', 'FEMENINO'],
@@ -9,7 +10,8 @@ var typesSex = {
 const EmployeeSchema = mongoose.Schema({
     rut: {
         type: String,
-        required: [true, "El rut del empleado es necesario"]
+        required: [true, "El rut del empleado es necesario"],
+        unique: true
     },
     name: {
         type: String,
@@ -52,4 +54,5 @@ const EmployeeSchema = mongoose.Schema({
 
 });
 
+EmployeeSchema.plugin(uniqueValidator, { message: '"El rut indicado ya esta registrado"' });
 const Employee = module.exports = mongoose.model('Employee', EmployeeSchema);
