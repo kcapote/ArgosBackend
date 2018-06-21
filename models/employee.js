@@ -54,5 +54,5 @@ const EmployeeSchema = mongoose.Schema({
 
 });
 
-EmployeeSchema.plugin(uniqueValidator, { message: '"El rut indicado ya esta registrado"' });
+EmployeeSchema.plugin(uniqueValidator, { message: 'El rut indicado ya esta registrado' });
 const Employee = module.exports = mongoose.model('Employee', EmployeeSchema);

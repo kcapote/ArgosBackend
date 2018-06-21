@@ -39,6 +39,6 @@ const UserSchema = mongoose.Schema({
     }
 });
 
-UserSchema.plugin(uniqueValidator, { message: '"El correo indicado ya existe registrado"' });
+UserSchema.plugin(uniqueValidator, { message: 'El correo indicado ya existe registrado' });
 
 const User = module.exports = mongoose.model('User', UserSchema);
