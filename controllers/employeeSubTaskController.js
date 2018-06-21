@@ -127,6 +127,42 @@ router.get('/project/:idProject', [authentication.verifyToken, authentication.re
             });
 });
 
+router.get('/employee/:idEmployee', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    let idEmployee = req.params.idEmployee;
+
+    EmployeeSubTask.find({ 'employee': idEmployee, 'recordActive': true })
+        .populate('employee')
+        .populate('subTask')
+        .populate('task')
+        .populate('floor')
+        .populate('department')
+        .populate('commonService')
+        .populate('project')
+        .sort({ recordDate: 1 })
+        .exec(
+            (err, employeeSubTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar los datos',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            employeeSubTasks: employeeSubTasks,
+                            totalRecords: employeeSubTasks.length,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
 
 router.get('/employee/:idProject/:idEmployee', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
