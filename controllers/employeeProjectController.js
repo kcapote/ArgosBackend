@@ -56,11 +56,11 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                         user: req.user
                     });
                 } else {
-                    EmployeeProject.count({}, (err, totalRecords) => {
+                    EmployeeProject.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,
-                            totalRecords: employeeProjects.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -92,11 +92,11 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    EmployeeProject.count({}, (err, totalRecords) => {
+                    EmployeeProject.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,
-                            totalRecords: employeeProjects.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -124,11 +124,11 @@ router.get('/project/:idProject', [authentication.verifyToken, authentication.re
                         user: req.user
                     });
                 } else {
-                    EmployeeProject.count({}, (err, totalRecords) => {
+                    EmployeeProject.find({ 'project': idProject, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,
-                            totalRecords: employeeProjects.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -218,11 +218,11 @@ router.get('/project/:idProject/:recordActive', [authentication.verifyToken, aut
                         user: req.user
                     });
                 } else {
-                    EmployeeProject.count({}, (err, totalRecords) => {
+                    EmployeeProject.find({ 'project': idProject, 'recordActive': recordActive }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,
-                            totalRecords: employeeProjects.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -249,11 +249,11 @@ router.get('/employee/:idEmployee', [authentication.verifyToken, authentication.
                         user: req.user
                     });
                 } else {
-                    EmployeeProject.count({}, (err, totalRecords) => {
+                    EmployeeProject.find({ 'employee': idEmployee }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,
-                            totalRecords: employeeProjects.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();

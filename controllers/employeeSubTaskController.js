@@ -75,11 +75,11 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -113,11 +113,11 @@ router.get('/project/:idProject', [authentication.verifyToken, authentication.re
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -150,11 +150,11 @@ router.get('/employee/:idEmployee', [authentication.verifyToken, authentication.
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'employee': idEmployee, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -188,11 +188,11 @@ router.get('/employee/:idProject/:idEmployee', [authentication.verifyToken, auth
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -226,11 +226,11 @@ router.get('/employee/calendar/:idEmployee', [authentication.verifyToken, authen
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -265,11 +265,11 @@ router.get('/employee/calendar/:idEmployee/:initDate/:endDate', [authentication.
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'employee': idEmployee, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -305,11 +305,11 @@ router.get('/employee/calendar/project/:idProject/:idEmployee/:initDate/:endDate
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -344,11 +344,11 @@ router.get('/employee/calendar/project/:idProject/:initDate/:endDate', [authenti
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -384,11 +384,11 @@ router.get('/employee/:idProject/:idFloor/:idDepartment/:idEmployee', [authentic
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'floor': idFloor, 'department': idDepartment, 'employee': idEmployee, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -423,11 +423,11 @@ router.get('/employee/:idProject/:idCommonService/:idEmployee', [authentication.
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'commonService': idCommonService, 'employee': idEmployee, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -462,11 +462,11 @@ router.get('/department/:idProject/:idFloor/:idDepartment', [authentication.veri
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'floor': idFloor, 'department': idDepartment, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -502,11 +502,11 @@ router.get('/department/:idProject/:idFloor/:idDepartment/:idTask', [authenticat
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'floor': idFloor, 'department': idDepartment, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -543,11 +543,11 @@ router.get('/department/:idProject/:idFloor/:idDepartment/:idTask/:idSubTask', [
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'floor': idFloor, 'department': idDepartment, 'task': idTask, 'subTask': idSubTask, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -581,11 +581,11 @@ router.get('/commonService/:idProject/:idCommonService', [authentication.verifyT
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'commonService': idCommonService, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -620,11 +620,11 @@ router.get('/commonService/:idProject/:idCommonService/:idTask', [authentication
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'commonService': idCommonService, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -660,11 +660,11 @@ router.get('/commonService/:idProject/:idCommonService/:idTask/:idSubTask', [aut
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'commonService': idCommonService, 'task': idTask, 'subTask': idSubTask, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
-                            totalRecords: employeeSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();

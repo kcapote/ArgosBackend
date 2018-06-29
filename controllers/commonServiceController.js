@@ -29,7 +29,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServices: commonServices,
-                            totalRecords: commonServices.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -55,11 +55,11 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                         user: req.user
                     });
                 } else {
-                    CommonService.count({}, (err, totalRecords) => {
+                    CommonService.find({ 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServices: commonServices,
-                            totalRecords: commonServices.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -91,11 +91,11 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    CommonService.count({}, (err, totalRecords) => {
+                    CommonService.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServices: commonServices,
-                            totalRecords: commonServices.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -123,11 +123,11 @@ router.get('/project/:id', [authentication.verifyToken, authentication.refreshTo
                         user: req.user
                     });
                 } else {
-                    CommonService.count({}, (err, totalRecords) => {
+                    CommonService.find({ 'project': id, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServices: commonServices,
-                            totalRecords: commonServices.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -155,11 +155,11 @@ router.get('/project/:id/:type', [authentication.verifyToken, authentication.ref
                         user: req.user
                     });
                 } else {
-                    CommonService.count({}, (err, totalRecords) => {
+                    CommonService.find({ 'project': id, 'type': type, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServices: commonServices,
-                            totalRecords: commonServices.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();

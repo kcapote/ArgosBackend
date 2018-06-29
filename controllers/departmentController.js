@@ -55,11 +55,11 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                         user: req.user
                     });
                 } else {
-                    Department.count({}, (err, totalRecords) => {
+                    Department.find({ 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departments: departments,
-                            totalRecords: departments.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -91,11 +91,11 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    Department.count({}, (err, totalRecords) => {
+                    Department.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departments: departments,
-                            totalRecords: departments.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -123,11 +123,11 @@ router.get('/floor/:id', [authentication.verifyToken, authentication.refreshToke
                         user: req.user
                     });
                 } else {
-                    Department.count({}, (err, totalRecords) => {
+                    Department.find({ 'floor': id, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departments: departments,
-                            totalRecords: departments.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();

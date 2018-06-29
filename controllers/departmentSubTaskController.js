@@ -68,11 +68,11 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
-                            totalRecords: departmentSubTasks.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -104,11 +104,11 @@ router.get('/task/:idProject/:idTask', [authentication.verifyToken, authenticati
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
-                            totalRecords: departmentSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -139,11 +139,11 @@ router.get('/department/:idProject/:idDepartment', [authentication.verifyToken, 
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'project': idProject, 'department': idDepartment, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
-                            totalRecords: departmentSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -161,7 +161,7 @@ router.get('/department/:idProject/:idDepartment/:idTask', [authentication.verif
     let idDepartment = req.params.idDepartment;
     let idTask = req.params.idTask;
 
-    DepartmentSubTask.find({ 'project': idProject, 'department': idDepartment,'task': idTask  ,'recordActive': true })
+    DepartmentSubTask.find({ 'project': idProject, 'department': idDepartment, 'task': idTask, 'recordActive': true })
         .populate('department')
         .populate('task')
         .populate('subTask')
@@ -177,11 +177,11 @@ router.get('/department/:idProject/:idDepartment/:idTask', [authentication.verif
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'project': idProject, 'department': idDepartment, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
-                            totalRecords: departmentSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -212,11 +212,11 @@ router.get('/floor/:idProject/:idFloor', [authentication.verifyToken, authentica
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'project': idProject, 'floor': idFloor, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
-                            totalRecords: departmentSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -248,11 +248,11 @@ router.get('/floor/:idProject/:idFloor/:idTask', [authentication.verifyToken, au
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'project': idProject, 'floor': idFloor, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
-                            totalRecords: departmentSubTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();

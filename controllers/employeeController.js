@@ -53,11 +53,11 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                         user: req.user
                     });
                 } else {
-                    Employee.count({}, (err, totalRecords) => {
+                    Employee.find({ 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employees: employees,
-                            totalRecords: employees.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -89,11 +89,11 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    Employee.count({}, (err, totalRecords) => {
+                    Employee.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employees: employees,
-                            totalRecords: employees.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -128,11 +128,11 @@ router.get('/search/:term', [authentication.verifyToken, authentication.refreshT
                     });
                 } else {
 
-                    Employee.count({}, (err, totalRecords) => {
+                    Employee.find().or([{ 'name': regex }, { 'lastName': regex }, { 'rut': regex }]).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employees: employees,
-                            totalRecords: employees.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -169,11 +169,11 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
                     });
                 } else {
 
-                    Employee.count({}, (err, totalRecords) => {
+                    Employee.find().or([{ 'name': regex }, { 'lastName': regex }, { 'rut': regex }]).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employees: employees,
-                            totalRecords: employees.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));

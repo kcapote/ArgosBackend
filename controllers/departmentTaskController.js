@@ -66,11 +66,11 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    DepartmentTask.count({}, (err, totalRecords) => {
+                    DepartmentTask.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
-                            totalRecords: departmentTasks.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -101,11 +101,11 @@ router.get('/task/:idProject/:idTask', [authentication.verifyToken, authenticati
                         user: req.user
                     });
                 } else {
-                    DepartmentTask.count({}, (err, totalRecords) => {
+                    DepartmentTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
-                            totalRecords: departmentTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -134,11 +134,11 @@ router.get('/project/:idProject', [authentication.verifyToken, authentication.re
                         user: req.user
                     });
                 } else {
-                    DepartmentTask.count({}, (err, totalRecords) => {
+                    DepartmentTask.find({ 'project': idProject, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
-                            totalRecords: departmentTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -168,11 +168,11 @@ router.get('/department/:idProject/:idDepartment', [authentication.verifyToken, 
                         user: req.user
                     });
                 } else {
-                    DepartmentTask.count({}, (err, totalRecords) => {
+                    DepartmentTask.find({ 'project': idProject, 'department': idDepartment, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
-                            totalRecords: departmentTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -202,11 +202,11 @@ router.get('/floor/:idProject/:idFloor', [authentication.verifyToken, authentica
                         user: req.user
                     });
                 } else {
-                    DepartmentTask.count({}, (err, totalRecords) => {
+                    DepartmentTask.find({ 'project': idProject, 'floor': idFloor, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
-                            totalRecords: departmentTasks.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
