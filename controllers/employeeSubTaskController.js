@@ -688,8 +688,6 @@ router.post('/', [authentication.verifyToken, authentication.refreshToken], (req
         hoursWorked: req.body.hoursWorked
     });
 
-    console.log(req.body.recordDate);
-
     let dateRecord = `${req.body.recordDate} 00:00:00.000Z`;
 
     EmployeeSubTask.findOne({ 'project': req.body.project, 'employee': req.body.employee, "$and": [{ "recordDate": { "$gte": dateRecord } }, { "recordDate": { "$lte": dateRecord } }] })
@@ -708,8 +706,8 @@ router.post('/', [authentication.verifyToken, authentication.refreshToken], (req
                 if (employee) {
                     return res.status(400).json({
                         success: false,
-                        message: 'El empleado ya posee registros para la fecha ' + dateRecord,
-                        errors: { message: 'El empleado id ' + "(" + req.body.employee + ") ya posee registros para la fecha indicada" },
+                        message: 'El empleado ya posee registros para la fecha ' + req.body.recordDate,
+                        errors: { message: 'El empleado ' + employee.employee.rut + ': ' + employee.employee.name + " ya posee registros para la fecha " + req.body.recordDate },
                         user: req.user,
                         employee: employee
                     });
