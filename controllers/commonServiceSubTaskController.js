@@ -2,8 +2,14 @@ const express = require('express');
 const router = express.Router();
 const constants = require('../config/constants');
 const jwt = require('jsonwebtoken');
+const ObjectId = require('mongodb').ObjectID;
+
 const CommonServiceSubTask = require('../models/commonServiceSubTask');
 const authentication = require('../middlewares/authentication');
+const CommonServicesTask = require('../models/commonServiceTask');
+const Project = require('../models/project');
+
+
 
 router.get('/', [
     [authentication.verifyToken, authentication.refreshToken], authentication.refreshToken
@@ -229,13 +235,13 @@ router.get('/task/:idProject/:idTask/:type/:idCommonService', [authentication.ve
     let idTask = req.params.idTask;
     let idCommonService = req.params.idCommonService;
     let type = req.params.type;
-    console.log("********************");
-    console.log(idProject);
-    console.log(idTask);
-    console.log(idCommonService);
-    console.log(type);
-    console.log("********************");
-
+    // console.log("********************");
+    // console.log(idProject);
+    // console.log(idTask);
+    // console.log(idCommonService);
+    // console.log(type);
+    // console.log("********************");
+ 
     CommonServiceSubTask.find({ 'project': idProject, 'task': idTask, 'commonService': idCommonService, 'type': type, 'recordActive': true })
         .populate('commonService')
         .populate('subTask')
@@ -353,12 +359,15 @@ router.post('/', [authentication.verifyToken, authentication.refreshToken], (req
                 user: req.user
             });
         } else {
+            console.log('****************************');
+            
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
                 commonServiceSubTask: commonServiceSubTask,
                 user: req.user
             });
+            //sumTask(task);
         }
     });
 });
@@ -466,5 +475,147 @@ router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
         }
     })
 });
+
+
+
+
+
+
+router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+    
+    let projectId = '5b15fa31a3a8711d8011557a';
+    let idTask = '5b00976acdb619173b5c13e4';        
+    let commonService = '5b15fa59a3a8711d80115648';
+    
+
+
+let totalSubTaskCommon = 0;
+    
+    
+     CommonServiceSubTask.aggregate(
+        { $match: 
+           { $and: [{ "task": ObjectId(idTask) },
+                    { "commonService": ObjectId(commonService) },
+                    { "project": ObjectId(projectId)} ]}
+    
+        },
+        { $group: {
+            _id: null,
+            total: { $sum: '$status'},
+            cantidad: {$sum: 1} 
+            }
+        }
+     ).exec(function ( e, d ) {
+         if(d){
+             console.log('el d es ', d);
+             
+             d.totalTask = d[0].total/d[0].cantidad;
+             totalSubTaskCommon = d[0].total/d[0].cantidad;             
+
+             console.log('***',totalSubTaskCommon);
+
+             //Actualizo la tarea con el total de subtask**************************************************
+             CommonServicesTask.update(
+               {$and: [{"task":'5b00976acdb619173b5c13e4'},{ "commonService": '5b15fa59a3a8711d80115648' },
+                       {"project": ObjectId('5b15fa31a3a8711d8011557a')}]}
+               ,{
+                    $set: {
+                        status: totalSubTaskCommon
+                    } 
+                }
+             ).exec(function ( er, r ) {
+                 if(d){
+                    //Sumo el avance al proyecto
+                    
+
+                     
+                 }
+
+             });
+
+
+
+         }else {
+             console.log(e);
+             
+         }
+        
+    });
+
+
+    // db.books.update(
+    //     { _id: 1 },
+    //     {
+    //       $inc: { stock: 5 },
+    //       $set: {
+    //         item: "ABC123",
+    //         "info.publisher": "2222",
+    //         tags: [ "software" ],
+    //         "ratings.1": { by: "xyz", rating: 3 }
+    //       }
+    //     }
+    //  )
+     console.log('---',totalSubTaskCommon);
+    
+
+// let totalTaskCommon = 0;
+
+//     CommonServicesTask.aggregate(
+//         { $match: 
+//             { $and: [{ "task": ObjectId(idTask) },
+//             { "commonService": ObjectId('5b32fb02a7dcec42aa0d95db') }] }
+
+//         },
+//         { $group: {
+//             _id: null,
+//             total: { $sum: '$status'},
+//             cantidad: {$sum: 1} 
+//             }
+//         }
+//     ).exec(function ( e, d ) {
+//         if(d){
+//             d.totalTask = d[0].total/d[0].cantidad;
+//             totalTaskCommon = d[0].total/d[0].cantidad;
+//             console.log('***',totalTaskCommon);
+//         }    
+//     });    
+
+    
+ 
+    
+
+});
+
+
+
+function sumCommonSubTask(idTask, idCommonService) {
+    var totalSubTaskCommon ;
+   CommonServiceSubTask.aggregate(
+        { $match: 
+           { $and: [{ "task": ObjectId(idTask) },
+                    { "commonService": ObjectId(idCommonService) }]}
+    
+        },
+        { $group: {
+            _id: null,
+            total: { $sum: '$status'},
+            cantidad: {$sum: 1} 
+            }
+        }
+     ).exec(function ( e, d ) {
+         if(d){
+             d.totalTask = d[0].total/d[0].cantidad;
+             totalSubTaskCommon = d[0].total/d[0].cantidad;
+             console.log('***',d);
+             this.kenny = totalSubTaskCommon;
+             return d;
+             
+         }
+        
+    });
+
+    
+} 
+
 
 module.exports = router;
