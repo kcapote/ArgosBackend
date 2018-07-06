@@ -54,11 +54,11 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                     });
                 } else {
 
-                    User.count({}, (err, totalRecords) => {
+                    User.find({ 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             users: users,
-                            totalRecords: users.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -89,11 +89,11 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                     });
                 } else {
 
-                    User.count({}, (err, totalRecords) => {
+                    User.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             users: users,
-                            totalRecords: users.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -129,11 +129,11 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
                     });
                 } else {
 
-                    User.count({}, (err, totalRecords) => {
+                    User.find({ 'recordActive': recordActive }).or([{ 'name': regex }, { 'lastName': regex }, { 'email': regex }]).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             users: users,
-                            totalRecords: users.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));

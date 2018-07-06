@@ -71,11 +71,11 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    Floor.count({}, (err, totalRecords) => {
+                    Floor.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             floors: floors,
-                            totalRecords: floors.length,
+                            totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -101,11 +101,11 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                         user: req.user
                     });
                 } else {
-                    Floor.count({}, (err, totalRecords) => {
+                    Floor.find({ 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             floors: floors,
-                            totalRecords: floors.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -132,11 +132,11 @@ router.get('/project/:id', [authentication.verifyToken, authentication.refreshTo
                         user: req.user
                     });
                 } else {
-                    Floor.count({}, (err, totalRecords) => {
+                    Floor.find({ 'project': id, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             floors: floors,
-                            totalRecords: floors.length,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
