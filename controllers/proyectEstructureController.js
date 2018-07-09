@@ -125,6 +125,12 @@ router.post('/floors', [authentication.verifyToken, authentication.refreshToken]
         });
     }
 
+    res.status(200).json({
+        success: true,
+        message: 'Operación realizada de forma exitosa.',
+        user: req.user
+    });
+
 });
 
 
@@ -220,6 +226,12 @@ router.post('/commonServices', [authentication.verifyToken, authentication.refre
             }
         });
     }
+
+    res.status(200).json({
+        success: true,
+        message: 'Operación realizada de forma exitosa.',
+        user: req.user
+    });
 
 });
 
