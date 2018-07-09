@@ -484,11 +484,18 @@ router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
 
 router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
     
-    let projectId = '5b15fa31a3a8711d8011557a';
-    let idTask = '5b00976acdb619173b5c13e4';        
-    let commonService = '5b15fa59a3a8711d80115648';
+    console.log(req.body);
     
 
+    let projectId = req.body.projectId;
+    let idTask = req.body.idTask;
+    let commonService = req.body.commonService;
+    // let projectId = '5b15fa31a3a8711d8011557a';
+    // let idTask = '5b00976acdb619173b5c13e4';        
+    // let commonService = '5b15fa59a3a8711d80115648';
+    
+    console.log('projectId:',projectId,' idTask:', idTask, ' commonService:',commonService  );
+    
 
 let totalSubTaskCommon = 0;
     
@@ -517,8 +524,9 @@ let totalSubTaskCommon = 0;
 
              //Actualizo la tarea con el total de subtask**************************************************
              CommonServicesTask.update(
-               {$and: [{"task":'5b00976acdb619173b5c13e4'},{ "commonService": '5b15fa59a3a8711d80115648' },
-                       {"project": ObjectId('5b15fa31a3a8711d8011557a')}]}
+                { $and: [{ "task": ObjectId(idTask) },
+                { "commonService": ObjectId(commonService) },
+                { "project": ObjectId(projectId)} ]}
                ,{
                     $set: {
                         status: totalSubTaskCommon
@@ -526,25 +534,28 @@ let totalSubTaskCommon = 0;
                 }
              ).exec(function ( er, r ) {
                  if(r){
+                    console.log(r);
+                    
+
                     //Sumo El total de subtask por departamento **********************************
-                    DepartmentSubTask.aggregate(
-                        { $match: 
-                            { $and: [{ "task": ObjectId(idTask) },
-                                     { "commonService": ObjectId(commonService) },
-                                     { "project": ObjectId(projectId)} ]}
+                    // DepartmentSubTask.aggregate(
+                    //     { $match: 
+                    //         { $and: [{ "task": ObjectId(idTask) },
+                    //                  { "commonService": ObjectId(commonService) },
+                    //                  { "project": ObjectId(projectId)} ]}
                      
-                         },
-                         { $group: {
-                             _id: null,
-                             total: { $sum: '$status'},
-                             cantidad: {$sum: 1} 
-                             }
-                         }
-                    ).exec(function ( e, dep ) {
-                        if(dep){
-                            console.log('El numero de departamento ', dep);
-                        }
-                    })
+                    //      },
+                    //      { $group: {
+                    //          _id: null,
+                    //          total: { $sum: '$status'},
+                    //          cantidad: {$sum: 1} 
+                    //          }
+                    //      }
+                    // ).exec(function ( e, dep ) {
+                    //     if(dep){
+                    //         console.log('El numero de departamento ', dep);
+                    //     }
+                    // })
 
                      
                  }
