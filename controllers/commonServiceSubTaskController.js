@@ -7,6 +7,7 @@ const ObjectId = require('mongodb').ObjectID;
 const CommonServiceSubTask = require('../models/commonServiceSubTask');
 const authentication = require('../middlewares/authentication');
 const CommonServicesTask = require('../models/commonServiceTask');
+const DepartmentSubTask = require('../models/departmentSubTask');
 const Project = require('../models/project');
 
 
@@ -524,9 +525,26 @@ let totalSubTaskCommon = 0;
                     } 
                 }
              ).exec(function ( er, r ) {
-                 if(d){
-                    //Sumo el avance al proyecto
-                    
+                 if(r){
+                    //Sumo El total de subtask por departamento **********************************
+                    DepartmentSubTask.aggregate(
+                        { $match: 
+                            { $and: [{ "task": ObjectId(idTask) },
+                                     { "commonService": ObjectId(commonService) },
+                                     { "project": ObjectId(projectId)} ]}
+                     
+                         },
+                         { $group: {
+                             _id: null,
+                             total: { $sum: '$status'},
+                             cantidad: {$sum: 1} 
+                             }
+                         }
+                    ).exec(function ( e, dep ) {
+                        if(dep){
+                            console.log('El numero de departamento ', dep);
+                        }
+                    })
 
                      
                  }
