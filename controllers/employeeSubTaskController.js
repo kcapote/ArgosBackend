@@ -21,7 +21,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
         .populate('project')
         .skip(pagination)
         .limit(constants.PAGINATION)
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -64,7 +64,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
         .populate('project')
         .skip(pagination)
         .limit(constants.PAGINATION)
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -102,7 +102,7 @@ router.get('/project/:idProject', [authentication.verifyToken, authentication.re
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -139,7 +139,7 @@ router.get('/employee/:idEmployee', [authentication.verifyToken, authentication.
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -177,7 +177,7 @@ router.get('/employee/:idProject/:idEmployee', [authentication.verifyToken, auth
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -215,7 +215,7 @@ router.get('/employee/calendar/:idEmployee', [authentication.verifyToken, authen
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -254,7 +254,7 @@ router.get('/employee/calendar/:idEmployee/:initDate/:endDate', [authentication.
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -294,7 +294,7 @@ router.get('/employee/calendar/project/:idProject/:idEmployee/:initDate/:endDate
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -333,7 +333,7 @@ router.get('/employee/calendar/project/:idProject/:initDate/:endDate', [authenti
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -373,7 +373,7 @@ router.get('/employee/:idProject/:idFloor/:idDepartment/:idEmployee', [authentic
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -412,7 +412,7 @@ router.get('/employee/:idProject/:idCommonService/:idEmployee', [authentication.
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -451,7 +451,7 @@ router.get('/department/:idProject/:idFloor/:idDepartment', [authentication.veri
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -491,7 +491,7 @@ router.get('/department/:idProject/:idFloor/:idDepartment/:idTask', [authenticat
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -532,7 +532,7 @@ router.get('/department/:idProject/:idFloor/:idDepartment/:idTask/:idSubTask', [
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -570,7 +570,7 @@ router.get('/commonService/:idProject/:idCommonService', [authentication.verifyT
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -609,7 +609,7 @@ router.get('/commonService/:idProject/:idCommonService/:idTask', [authentication
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
@@ -649,7 +649,7 @@ router.get('/commonService/:idProject/:idCommonService/:idTask/:idSubTask', [aut
         .populate('department')
         .populate('commonService')
         .populate('project')
-        .sort({ recordDate: 1 })
+        .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
                 if (err) {
