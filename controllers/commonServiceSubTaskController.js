@@ -569,7 +569,7 @@ let totalFloor = 0;
                                 }
                             ).exec(function ( er, common ) {
                                 if(common){
-                                    console.log('el commonServices es ', common);
+                                    //console.log('el commonServices es ', common);
 
                                     //Sumo el total de common service***********************************************
                                     CommonService.aggregate( 
@@ -584,6 +584,8 @@ let totalFloor = 0;
                                     ).exec(function ( er, resc ) {
                                         if(resc){
                                             totalCommonService  = resc[0].total/resc[0].cantidad;
+                                            console.log('El total de los common es ', totalCommonService);
+                                            
                                             Floor.aggregate(
                                                 {$match: { "project": ObjectId(projectId)}},
                                                 { $group: {
@@ -593,10 +595,13 @@ let totalFloor = 0;
                                                     }
                                                 }
                                             ).exec(function(er, resd ){
-
                                                 if(resd){
+                                                    console.log('el total de floor es, ', totalFloor);
+                                                    
                                                     totalFloor = resd[0].total/resd[0].cantidad;
-                                                    let total = (totalCommonService + totalFloor)/(resd[0].cantidad+resc[0].cantidad);
+                                                    let total = ((totalCommonService + totalFloor)/(resd[0].cantidad+resc[0].cantidad));
+                                                    console.log('total common es ', resc[0].cantidad,' total floor es ',resd[0].cantidad );
+                                                    
                                                     //Actualizo el total del proyecto
                                                     Project.update(
                                                         { "_id": ObjectId(projectId)},{
@@ -611,7 +616,7 @@ let totalFloor = 0;
                                                 }
 
                                             }
-                                            );
+                                            ); 
 
                                         }
                                                                                      
@@ -628,26 +633,6 @@ let totalFloor = 0;
                         }
                     });     
 
-
-                    //Sumo El total de subtask por departamento **********************************
-                    // DepartmentSubTask.aggregate(
-                    //     { $match: 
-                    //         { $and: [{ "task": ObjectId(idTask) },
-                    //                  { "commonService": ObjectId(commonService) },
-                    //                  { "project": ObjectId(projectId)} ]}
-                     
-                    //      },
-                    //      { $group: {
-                    //          _id: null,
-                    //          total: { $sum: '$status'},
-                    //          cantidad: {$sum: 1} 
-                    //          }
-                    //      }
-                    // ).exec(function ( e, dep ) {
-                    //     if(dep){
-                    //         console.log('El numero de departamento ', dep);
-                    //     }
-                    // })
 
                      
                  }
