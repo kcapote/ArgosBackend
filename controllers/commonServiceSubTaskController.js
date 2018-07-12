@@ -519,12 +519,8 @@ let totalFloor = 0;
         }
      ).exec(function ( e, d ) {
          if(d){
-             console.log('el d es ', d);
-             
-             //d.totalTask = d[0].total/d[0].cantidad;
+           
              totalSubTaskCommon = d[0].total/d[0].cantidad;             
-
-             console.log('***',totalSubTaskCommon);
 
              //Actualizo la tarea con el total de subtask**************************************************
              CommonServicesTask.update(
@@ -538,7 +534,6 @@ let totalFloor = 0;
                 }
              ).exec(function ( er, r ) {
                  if(r){
-                    console.log(r);
                     CommonServicesTask.aggregate(
                         { $match: 
                             { $and: [
@@ -554,9 +549,7 @@ let totalFloor = 0;
                          }
                     ).exec(function ( er, res ) {
                         if(res){
-                            //res.totalTask = res[0].total/res[0].cantidad;
                             totalTaskCommon = res[0].total/res[0].cantidad;         
-                            console.log('totalTaskCommon', totalTaskCommon, ' cantidad', res[0].cantidad );
                             
                             //Actualizo el monto en commonServices************************************************                            
                             CommonService.update(
@@ -569,9 +562,7 @@ let totalFloor = 0;
                                 }
                             ).exec(function ( er, common ) {
                                 if(common){
-                                    //console.log('el commonServices es ', common);
-
-                                    //Sumo el total de common service***********************************************
+                                //Sumo el total de common service***********************************************
                                     CommonService.aggregate( 
                                         {$match: { "project": ObjectId(projectId)}},
                                         { $group: {
@@ -584,8 +575,7 @@ let totalFloor = 0;
                                     ).exec(function ( er, resc ) {
                                         if(resc){
                                             totalCommonService  = resc[0].total;
-                                            console.log('El total de los common es ', totalCommonService);
-                                            
+                            
                                             Floor.aggregate(
                                                 {$match: { "project": ObjectId(projectId)}},
                                                 { $group: {
@@ -596,12 +586,10 @@ let totalFloor = 0;
                                                 }
                                             ).exec(function(er, resd ){
                                                 if(resd){
-                                                    console.log('el total de floor es, ', totalFloor);
                                                     
                                                     totalFloor = resd[0].total/resd[0].cantidad;
                                                     let total = ((totalCommonService + totalFloor)/(resd[0].cantidad+resc[0].cantidad));
-                                                    console.log('total common es ', resc[0].cantidad,' total floor es ',resd[0].cantidad );
-                                                    
+                                                   
                                                     //Actualizo el total del proyecto
                                                     Project.update(
                                                         { "_id": ObjectId(projectId)},{
