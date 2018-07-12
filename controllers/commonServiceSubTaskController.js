@@ -583,7 +583,7 @@ let totalFloor = 0;
                                     
                                     ).exec(function ( er, resc ) {
                                         if(resc){
-                                            totalCommonService  = resc[0].total/resc[0].cantidad;
+                                            totalCommonService  = resc[0].total;
                                             console.log('El total de los common es ', totalCommonService);
                                             
                                             Floor.aggregate(
