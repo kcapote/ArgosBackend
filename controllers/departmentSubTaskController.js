@@ -571,7 +571,13 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
 
         }
 
-     });   
+     }); 
+     
+     res.status(200).json({
+        success: true,
+        message: 'Operación realizada de forma exitosa.',
+        user: req.user
+    });
 
 
 });
