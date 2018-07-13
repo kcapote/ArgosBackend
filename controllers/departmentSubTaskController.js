@@ -8,6 +8,8 @@ const DepartmentTask = require('../models/departmentTask');
 const Department = require('../models/department');
 const Floor = require('../models/floor');
 const Project = require('../models/project');
+const ObjectId = require('mongodb').ObjectID;
+const CommonService = require('../models/commonService');
 
 router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
@@ -408,7 +410,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
     console.log(req.body);
     
 
-    let project = req.body.projectId;
+    let project = req.body.project;
     let task = req.body.task;
     let department = req.body.department;
     let floor = req.body.floor;
@@ -437,7 +439,10 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
         }
      ).exec(function ( e, d ) {
         if(d){
+            console.log(d);
+            
             totalSubtask = d[0].total/d[0].cantidad;
+            console.log('total totalSubtask es ', totalSubtask,' cantidad ' ,d[0].cantidad);
             
             DepartmentTask.update(
                 { $and: [{ "task": ObjectId(task) },
@@ -467,10 +472,9 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                     ).exec(function ( e, r ) {
                         if(r){
                             totalTask = r[0].total/r[0].cantidad;
+                            console.log('total totalTask es ', totalTask);
                             Department.update(
-                                { $and: [{ "_id": ObjectId(department) },
-                                         { "project": ObjectId(project)},
-                                         { "floor": ObjectId(floor) } ]}
+                                 { "_id": ObjectId(department) }                                         
                                 ,{
                                     $set: {
                                         status: totalTask
@@ -480,8 +484,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                                 if(dt){
                                     Department.aggregate(
                                         { $match: 
-                                            { $and: [{ "project": ObjectId(project)},
-                                                     { "floor": ObjectId(floor) } ]}                     
+                                            { $and: [{ "floor": ObjectId(floor) } ]}                     
                                          },
                                          { $group: {        
                                              _id: null,
@@ -490,8 +493,9 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                                              }
                                          }
                                     ).exec(function ( e, f ) {
-                                        totalDepartment = f[0].total/f[0].cantidad;
                                         if(f){
+                                            totalDepartment = f[0].total/f[0].cantidad;
+                                            console.log('total totalDepartment es ', totalDepartment);
                                             Floor.update(
                                                 { $and: [{ "project": ObjectId(project)},
                                                          { "_id": ObjectId(floor) } ]}
@@ -515,7 +519,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                                                 ).exec(function ( er, resc ) {
                                                     if(resc){
                                                         totalCommonService  = resc[0].total;
-                                        
+                                                        console.log('total totalCommonService es ', totalCommonService);
                                                         Floor.aggregate(
                                                             {$match: { "project": ObjectId(project)}},
                                                             { $group: {
@@ -528,8 +532,9 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                                                             if(resd){
                                                                 
                                                                 totalFloor = resd[0].total/resd[0].cantidad;
+                                                                console.log('total totalFloor es ', totalFloor);
                                                                 let total = ((totalCommonService + totalFloor)/(resd[0].cantidad+resc[0].cantidad));
-                                                               
+                                                                console.log('total es ', total);
                                                                 //Actualizo el total del proyecto
                                                                 Project.update(
                                                                     { "_id": ObjectId(project)},{
