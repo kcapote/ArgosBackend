@@ -124,6 +124,42 @@ router.get('/task/:idProject/:idTask', [authentication.verifyToken, authenticati
             });
 });
 
+router.get('/task/:idProject/:idTask/:idSubTask', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    let idProject = req.params.idProject;
+    let idTask = req.params.idTask;
+    let idSubTask = req.params.idSubTask;
+
+    DepartmentSubTask.find({ 'project': idProject, 'task': idTask, 'subTask': idSubTask, 'recordActive': true })
+        .populate('department')
+        .populate('task')
+        .populate('subTask')
+        .populate('floor')
+        .populate('project')
+        .exec(
+            (err, departmentSubTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar la información',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    DepartmentSubTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            departmentSubTasks: departmentSubTasks,
+                            totalRecords: totalRecords,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
 router.get('/department/:idProject/:idDepartment', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
