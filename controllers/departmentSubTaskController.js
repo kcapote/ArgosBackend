@@ -4,6 +4,10 @@ const constants = require('../config/constants');
 const jwt = require('jsonwebtoken');
 const DepartmentSubTask = require('../models/departmentSubTask');
 const authentication = require('../middlewares/authentication');
+const DepartmentTask = require('../models/departmentTask');
+const Department = require('../models/department');
+const Floor = require('../models/floor');
+const Project = require('../models/project');
 
 router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
@@ -404,24 +408,25 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
     console.log(req.body);
     
 
-    let projectId = req.body.projectId;
-    let idTask = req.body.idTask;
-    let commonService = req.body.commonService;
-    // let projectId = '5b15fa31a3a8711d8011557a';
-    // let idTask = '5b00976acdb619173b5c13e4';        
-    // let commonService = '5b15fa59a3a8711d80115648';
-    
-    console.log('projectId:',projectId,' idTask:', idTask, ' commonService:',commonService  );
-    
+    let project = req.body.projectId;
+    let task = req.body.task;
+    let department = req.body.department;
+    let floor = req.body.floor;
+   
 
-let totalSubTaskCommon = 0;
-    
-    
-     CommonServiceSubTask.aggregate(
+    let totalTask = 0;
+    let totalSubtask = 0;
+    let totalDepartment = 0;
+    let totalFloor = 0;
+    let totalCommonService = 0;
+
+
+    DepartmentSubTask.aggregate(
         { $match: 
-           { $and: [{ "task": ObjectId(idTask) },
-                    { "commonService": ObjectId(commonService) },
-                    { "project": ObjectId(projectId)} ]}
+           { $and: [{ "task": ObjectId(task) },
+                    { "department": ObjectId(department) },
+                    { "project": ObjectId(project)},
+                    { "floor": ObjectId(floor) } ]}
     
         },
         { $group: {
@@ -431,67 +436,138 @@ let totalSubTaskCommon = 0;
             }
         }
      ).exec(function ( e, d ) {
-         if(d){
-             console.log('el d es ', d);
-             
-             d.totalTask = d[0].total/d[0].cantidad;
-             totalSubTaskCommon = d[0].total/d[0].cantidad;             
-
-             console.log('***',totalSubTaskCommon);
-
-             //Actualizo la tarea con el total de subtask**************************************************
-             CommonServicesTask.update(
-                { $and: [{ "task": ObjectId(idTask) },
-                { "commonService": ObjectId(commonService) },
-                { "project": ObjectId(projectId)} ]}
+        if(d){
+            totalSubtask = d[0].total/d[0].cantidad;
+            
+            DepartmentTask.update(
+                { $and: [{ "task": ObjectId(task) },
+                { "department": ObjectId(department) },
+                { "project": ObjectId(project)},
+                { "floor": ObjectId(floor) } ]}
                ,{
                     $set: {
-                        status: totalSubTaskCommon
+                        status: totalSubtask
                     } 
                 }
-             ).exec(function ( er, r ) {
-                 if(r){
-                    console.log(r);
+            ).exec(function ( e, t ) {
+                if(t){
+                    DepartmentTask.aggregate(
+                        { $match: 
+                            { $and: [{ "department": ObjectId(department) },
+                                     { "project": ObjectId(project)},
+                                     { "floor": ObjectId(floor) } ]}                     
+                         },
+                         { $group: {
+                             _id: null,
+                             total: { $sum: '$status'},
+                             cantidad: {$sum: 1} 
+                             }
+                         }
                     
+                    ).exec(function ( e, r ) {
+                        if(r){
+                            totalTask = r[0].total/r[0].cantidad;
+                            Department.update(
+                                { $and: [{ "_id": ObjectId(department) },
+                                         { "project": ObjectId(project)},
+                                         { "floor": ObjectId(floor) } ]}
+                                ,{
+                                    $set: {
+                                        status: totalTask
+                                    } 
+                                }
+                            ).exec(function ( e, dt ) {
+                                if(dt){
+                                    Department.aggregate(
+                                        { $match: 
+                                            { $and: [{ "project": ObjectId(project)},
+                                                     { "floor": ObjectId(floor) } ]}                     
+                                         },
+                                         { $group: {        
+                                             _id: null,
+                                             total: { $sum: '$status'},
+                                             cantidad: {$sum: 1} 
+                                             }
+                                         }
+                                    ).exec(function ( e, f ) {
+                                        totalDepartment = f[0].total/f[0].cantidad;
+                                        if(f){
+                                            Floor.update(
+                                                { $and: [{ "project": ObjectId(project)},
+                                                         { "_id": ObjectId(floor) } ]}
+                                                ,{
+                                                    $set: {
+                                                        status: totalDepartment
+                                                    } 
+                                                }
+                                            ).exec(function ( e, ft ) {
+                                                if(ft){
+                                                ///////************* */
+                                                CommonService.aggregate( 
+                                                    {$match: { "project": ObjectId(project)}},
+                                                    { $group: {
+                                                        _id: null,
+                                                        total: { $sum: '$status'},
+                                                        cantidad: {$sum: 1} 
+                                                        }
+                                                    }                                           
+                                                
+                                                ).exec(function ( er, resc ) {
+                                                    if(resc){
+                                                        totalCommonService  = resc[0].total;
+                                        
+                                                        Floor.aggregate(
+                                                            {$match: { "project": ObjectId(project)}},
+                                                            { $group: {
+                                                                _id: null,
+                                                                total: { $sum: '$status'},
+                                                                cantidad: {$sum: 1} 
+                                                                }
+                                                            }
+                                                        ).exec(function(er, resd ){
+                                                            if(resd){
+                                                                
+                                                                totalFloor = resd[0].total/resd[0].cantidad;
+                                                                let total = ((totalCommonService + totalFloor)/(resd[0].cantidad+resc[0].cantidad));
+                                                               
+                                                                //Actualizo el total del proyecto
+                                                                Project.update(
+                                                                    { "_id": ObjectId(project)},{
+                                                                        $set: {
+                                                                            status: total
+                                                                        } 
+                                                                    }                                                
+                                                                ).exec(function(er, resd ){
+                                                                    console.log('termine con', total);
+                                                                    
+                                                                })
+                                                            }
+            
+                                                        }
+                                                        ); 
+            
+                                                    }
+                                                                                                 
+                                                
+                                                })
 
-                    //Sumo El total de subtask por departamento **********************************
-                    // DepartmentSubTask.aggregate(
-                    //     { $match: 
-                    //         { $and: [{ "task": ObjectId(idTask) },
-                    //                  { "commonService": ObjectId(commonService) },
-                    //                  { "project": ObjectId(projectId)} ]}
-                     
-                    //      },
-                    //      { $group: {
-                    //          _id: null,
-                    //          total: { $sum: '$status'},
-                    //          cantidad: {$sum: 1} 
-                    //          }
-                    //      }
-                    // ).exec(function ( e, dep ) {
-                    //     if(dep){
-                    //         console.log('El numero de departamento ', dep);
-                    //     }
-                    // })
+                                                ////********************    
+                                                }
+                                            })
+                                        }    
+                                    });
+                                }    
+                            });
+                        }        
+                    });
+                }
+            });
+            
 
-                     
-                 }
+        }
 
-             });
+     });   
 
-
-
-         }else {
-             console.log(e);
-             
-         }
-        
-    });
-
-
-     console.log('---',totalSubTaskCommon);
-    
-   
 
 });
 
