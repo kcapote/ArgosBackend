@@ -15,6 +15,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
         .populate('supervisor2')
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ startDate: -1 })
         .exec(
             (err, projects) => {
                 if (err) {
@@ -46,6 +47,7 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
     Project.find({ 'recordActive': true })
         .populate('supervisor1')
         .populate('supervisor2')
+        .sort({ startDate: -1 })
         .exec(
             (err, projects) => {
                 if (err) {
@@ -84,6 +86,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
         .populate('supervisor2')
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ startDate: -1 })
         .exec(
             (err, projects) => {
                 if (err) {
@@ -125,6 +128,7 @@ router.get('/search/:term', [authentication.verifyToken, authentication.refreshT
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ startDate: -1 })
         .exec(
             (err, projects) => {
                 if (err) {
@@ -169,6 +173,7 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
         .or([{ 'name': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ startDate: -1 })
         .exec(
             (err, projects) => {
                 if (err) {
