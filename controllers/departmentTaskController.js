@@ -115,6 +115,43 @@ router.get('/task/:idProject/:idTask', [authentication.verifyToken, authenticati
             });
 });
 
+
+router.get('/taskstatus/:idProject/:idFloor/:idTask', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+
+    let idProject = req.params.idProject;
+    let idFloor = req.params.idFloor;
+    let idTask = req.params.idTask;
+
+    DepartmentTask.find({ 'project': idProject, 'floor': idFloor, 'task': idTask, 'recordActive': true })
+        .populate('department')
+        .populate('task')
+        .populate('floor')
+        .populate('project')
+        .exec(
+            (err, departmentTasks) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar la información',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    let statusTask = 0;
+                    departmentTasks.forEach(element => {
+                        statusTask += element.status;
+                    });
+                    statusTask = statusTask / departmentTasks.length;
+                    res.status(200).write(JSON.stringify({
+                        success: true,
+                        statusTask: statusTask,
+                        user: req.user
+                    }, null, 2));
+                    res.end();
+                }
+            });
+});
+
 router.get('/project/:idProject', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
