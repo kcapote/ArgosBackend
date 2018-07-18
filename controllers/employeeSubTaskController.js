@@ -93,6 +93,8 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
 router.get('/project/:idProject', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let idProject = req.params.idProject;
+    let pagination = req.query.pagination || 0;
+    pagination = Number(pagination);
 
     EmployeeSubTask.find({ 'project': idProject, 'recordActive': true })
         .populate('employee')
@@ -102,6 +104,8 @@ router.get('/project/:idProject', [authentication.verifyToken, authentication.re
         .populate('department')
         .populate('commonService')
         .populate('project')
+        .skip(pagination)
+        .limit(constants.PAGINATION)
         .sort({ recordDate: -1 })
         .exec(
             (err, employeeSubTasks) => {
@@ -118,6 +122,7 @@ router.get('/project/:idProject', [authentication.verifyToken, authentication.re
                             success: true,
                             employeeSubTasks: employeeSubTasks,
                             totalRecords: totalRecords,
+                            pagination: pagination,
                             user: req.user
                         }, null, 2));
                         res.end();
