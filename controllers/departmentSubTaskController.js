@@ -481,7 +481,7 @@ router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
 
 router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
-    console.log(req.body);
+    //console.log(req.body);
 
 
     let project = req.body.project;
@@ -514,10 +514,10 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
         }
     }).exec(function(e, d) {
         if (d) {
-            console.log(d);
+            //console.log(d);
 
             totalSubtask = d[0].total / d[0].cantidad;
-            console.log('total totalSubtask es ', totalSubtask, ' cantidad ', d[0].cantidad);
+            //console.log('total totalSubtask es ', totalSubtask, ' cantidad ', d[0].cantidad);
 
             DepartmentTask.update({
                 $and: [{ "task": ObjectId(task) },
@@ -549,7 +549,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                     ).exec(function(e, r) {
                         if (r) {
                             totalTask = r[0].total / r[0].cantidad;
-                            console.log('total totalTask es ', totalTask);
+                            //console.log('total totalTask es ', totalTask);
                             Department.update({ "_id": ObjectId(department) }, {
                                 $set: {
                                     status: totalTask
@@ -567,7 +567,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                                     }).exec(function(e, f) {
                                         if (f) {
                                             totalDepartment = f[0].total / f[0].cantidad;
-                                            console.log('total totalDepartment es ', totalDepartment);
+                                            //console.log('total totalDepartment es ', totalDepartment);
                                             Floor.update({
                                                 $and: [{ "project": ObjectId(project) },
                                                     { "_id": ObjectId(floor) }
@@ -590,7 +590,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                                                     ).exec(function(er, resc) {
                                                         if (resc) {
                                                             totalCommonService = resc[0].total;
-                                                            console.log('total totalCommonService es ', totalCommonService);
+                                                            //console.log('total totalCommonService es ', totalCommonService);
                                                             Floor.aggregate({ $match: { "project": ObjectId(project) } }, {
                                                                 $group: {
                                                                     _id: null,
@@ -601,16 +601,16 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                                                                 if (resd) {
 
                                                                     totalFloor = resd[0].total / resd[0].cantidad;
-                                                                    console.log('total totalFloor es ', totalFloor);
+                                                                    //console.log('total totalFloor es ', totalFloor);
                                                                     let total = ((totalCommonService + totalFloor) / (resd[0].cantidad + resc[0].cantidad));
-                                                                    console.log('total es ', total);
+                                                                    //console.log('total es ', total);
                                                                     //Actualizo el total del proyecto
                                                                     Project.update({ "_id": ObjectId(project) }, {
                                                                         $set: {
                                                                             status: total
                                                                         }
                                                                     }).exec(function(er, resd) {
-                                                                        console.log('termine con', total);
+                                                                        //console.log('termine con', total);
 
                                                                     })
                                                                 }

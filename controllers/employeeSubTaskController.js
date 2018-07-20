@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const EmployeeSubTask = require('../models/employeeSubTask');
 const Employee = require('../models/employee');
 const authentication = require('../middlewares/authentication');
+const Project = require('../models/project');
 
 router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
@@ -837,5 +838,115 @@ router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
         }
     })
 });
+
+
+router.get('/find/top10', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+   
+
+    Project.find({ 'recordActive': true })
+    .sort({'startDate': 'desc'})  
+    .limit(10)
+    .exec((err, projects) => {
+         if (err) {
+             return res.status(500).json({
+                 success: false,
+                 message: 'No se pueden consultar las obras',
+                 errors: err,
+                 user: req.user
+             });
+         }
+
+         if (!projects) {
+             return res.status(400).json({
+                 success: false,
+                 message: 'No existen registros ',
+                 errors: { message: 'No hay registros guardados' },
+                 user: req.user
+             });
+         } else {
+            cond = []; 
+            collection = [];
+            collection = projects;
+            for (let c  of collection){
+                cond.push(
+                    {'project': c._id}
+                )
+
+            }
+            
+            //console.log(cond);
+            
+            EmployeeSubTask.aggregate({
+                $match: {
+                    $or: cond
+                }
+
+            },
+            {
+            $group: {
+                _id: '$project',
+                total: { $sum: '$hoursWorked' },
+                cantidad: { $sum: 1 }
+            }
+            }).exec(function(e, d) {
+                 if(d){
+                    //console.log(d);
+                    let arrayCollection = [];
+                    for(let o of d){
+
+                        //let obj = projects[o.id] ;
+                        //let x = projects[o.id];
+                        //console.log('el x es --------', o['_id']);
+                        let col = [];
+                        col = projects;
+                        let temp = {
+                            id: o._id,
+                            total: o.total,
+                            proName: projects.find(function (obj) { return ( (obj._id+"") == (o['_id']+"") ); }).name
+
+                        }
+                        arrayCollection.push(temp);
+                        
+                    }    
+
+                    
+                    res.status(200).json({
+                        success: true,
+                        message: 'Operación realizada de forma exitosa.',
+                        donuts: arrayCollection,
+                        user: req.user
+                        
+       
+                     });
+
+                 }   
+
+            });
+
+            // $match: {
+            //     $and: [{ "task": ObjectId(idTask) },
+            //         { "commonService": ObjectId(commonService) },
+            //         { "project": ObjectId(projectId) }
+            //     ]
+            // }
+
+
+            //  res.status(200).json({
+            //      success: true,
+            //      message: 'Operación realizada de forma exitosa.',
+            //      projects: projects,
+            //      user: req.user
+                 
+
+            //   });
+
+         }  
+
+
+    });
+
+
+    
+     });
 
 module.exports = router;
