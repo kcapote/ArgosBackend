@@ -1,1 +1,1 @@
-web: node app.js
+web: bin/start-nginx --minUptime 10000 --spinSleepTime 1000 app.js
