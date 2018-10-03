@@ -15,9 +15,7 @@
         "mongodb": "^3.1.6",
         "mongoose": "~4.13.7",
         "mongoose-unique-validator": "^2.0.0",
-        "rand-token": "^0.4.0",
-        "@angular/cli": "^6.2.4",
-        "@angular/compiler-cli": "^6.1.9"
+        "rand-token": "^0.4.0"
     },
     "author": "Kerbyt Capote/Kenny Capote",
     "license": "ISC",
