@@ -19,7 +19,5 @@
     },
     "author": "Kerbyt Capote/Kenny Capote",
     "license": "ISC",
-    "devDependencies": {
-        "nodemon": "^1.17.3"
-    }
+    "devDependencies": {}
 }
