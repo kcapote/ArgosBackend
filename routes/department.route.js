@@ -1,37 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const User = require('../models/user');
 const constants = require('../config/constants');
 const jwt = require('jsonwebtoken');
+const Department = require('../models/department');
 const authentication = require('../middlewares/authentication');
 
-//router.get('/', [authentication.verifyToken, authentication.refreshToken], 
-
-const find = (req, res, next) => {
+router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
-    User.find({}, 'name lastName email role')
+    Department.find()
+        .populate('floor')
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ number: 1 })
         .exec(
-            (err, users) => {
+            (err, departments) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar las tareas',
+                        message: 'No se pueden consultar los departamentos',
                         errors: err,
                         user: req.user
                     });
                 } else {
-
-                    User.count({}, (err, totalRecords) => {
+                    Department.count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            users: users,
-                            totalRecords: users.length,
+                            departments: departments,
+                            totalRecords: departments.length,
                             pagination: pagination,
                             user: req.user
                         }, null, 2));
@@ -40,27 +38,27 @@ const find = (req, res, next) => {
                     });
                 }
             });
-};
+});
 
-//router.get('/all', [authentication.verifyToken, authentication.refreshToken], 
-const findAll = (req, res, next) => {
+router.get('/all', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
-    User.find({ 'recordActive': true }, 'name lastName email role')
+    Department.find({ 'recordActive': true })
+        .populate('floor')
+        .sort({ number: 1 })
         .exec(
-            (err, users) => {
+            (err, departments) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se pueden consultar las tareas',
+                        message: 'No se pueden consultar los departamentos',
                         errors: err,
                         user: req.user
                     });
                 } else {
-
-                    User.find({ 'recordActive': true }).count({}, (err, totalRecords) => {
+                    Department.find({ 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            users: users,
+                            departments: departments,
                             totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
@@ -69,75 +67,34 @@ const findAll = (req, res, next) => {
                     });
                 }
             });
-};
+});
 
-//router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], 
-const findByRecordActive = (req, res, next) => {
-
-    let pagination = req.query.pagination || 0;
-    pagination = Number(pagination);
-    let recordActive = req.params.recordActive;
-    recordActive = Boolean(recordActive);
-
-    User.find({ 'recordActive': recordActive }, 'name lastName email role')
-        .skip(pagination)
-        .limit(constants.PAGINATION)
-        .exec(
-            (err, users) => {
-                if (err) {
-                    return res.status(500).json({
-                        success: false,
-                        message: 'No se pueden consultar las tareas',
-                        errors: err,
-                        user: req.user
-                    });
-                } else {
-
-                    User.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
-                        res.status(200).write(JSON.stringify({
-                            success: true,
-                            users: users,
-                            totalRecords: totalRecords,
-                            pagination: pagination,
-                            user: req.user
-                        }, null, 2));
-                        res.end();
-
-                    });
-                }
-            });
-};
-
-//router.get('/search/:term/:recordActive', [authentication.verifyToken, authentication.refreshToken], 
-const findByTerm = (req, res, next) => {
-
-    let term = req.params.term;
-    var regex = new RegExp(term, 'i');
+router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
     let recordActive = req.params.recordActive;
     recordActive = Boolean(recordActive);
 
-    User.find({ 'recordActive': recordActive }, 'name lastName email role')
-        .or([{ 'name': regex }, { 'lastName': regex }, { 'email': regex }]) //arreglo de campos a tomar en cuenta para la busqueda
+    Department.find({ 'recordActive': recordActive })
+        .populate('floor')
         .skip(pagination)
         .limit(constants.PAGINATION)
+        .sort({ number: 1 })
         .exec(
-            (err, users) => {
+            (err, departments) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se encontraron resultados',
+                        message: 'No se pueden consultar los departamentos',
                         errors: err,
                         user: req.user
                     });
                 } else {
-
-                    User.find({ 'recordActive': recordActive }).or([{ 'name': regex }, { 'lastName': regex }, { 'email': regex }]).count({}, (err, totalRecords) => {
+                    Department.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            users: users,
+                            departments: departments,
                             totalRecords: totalRecords,
                             pagination: pagination,
                             user: req.user
@@ -147,28 +104,30 @@ const findByTerm = (req, res, next) => {
                     });
                 }
             });
-};
+});
 
-//router.get('/:id', [authentication.verifyToken, authentication.refreshToken], 
-const findById = (req, res, next) => {
+router.get('/floor/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
-    User.find({ '_id': id }, 'name lastName email role')
+
+    Department.find({ 'floor': id, 'recordActive': true })
+        .populate('floor')
+        .sort({ number: 1 })
         .exec(
-            (err, users) => {
+            (err, departments) => {
                 if (err) {
                     return res.status(500).json({
                         success: false,
-                        message: 'No se encontraron resultados',
+                        message: 'No se pueden consultar los departamentos',
                         errors: err,
                         user: req.user
                     });
                 } else {
-                    User.count({}, (err, totalRecords) => {
+                    Department.find({ 'floor': id, 'recordActive': true }).count({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
-                            users: users,
-                            totalRecords: users.length,
+                            departments: departments,
+                            totalRecords: totalRecords,
                             user: req.user
                         }, null, 2));
                         res.end();
@@ -176,24 +135,50 @@ const findById = (req, res, next) => {
                     });
                 }
             });
-};
+});
 
-//router.post('/', [authentication.verifyToken, authentication.refreshToken], 
-const saveUser = (req, res, next) => {
+router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
-    let user = new User({
-        name: req.body.name,
-        lastName: req.body.lastName,
-        email: req.body.email,
-        password: bcrypt.hashSync(req.body.password, 10),
-        role: req.body.role,
-        token: ''
+    let id = req.params.id;
+
+    Department.find({ '_id': id })
+        .populate('floor')
+        .sort({ number: 1 })
+        .exec(
+            (err, departments) => {
+                if (err) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'No se pueden consultar los departamentos',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    Department.count({}, (err, totalRecords) => {
+                        res.status(200).write(JSON.stringify({
+                            success: true,
+                            departments: departments,
+                            totalRecords: departments.length,
+                            user: req.user
+                        }, null, 2));
+                        res.end();
+
+                    });
+                }
+            });
+});
+
+router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+    let department = new Department({
+        floor: req.body.floor,
+        number: req.body.number,
+        status: req.body.status
     });
-    user.save((err, userSave) => {
+    department.save((err, department) => {
         if (err) {
             return res.status(400).json({
                 success: false,
-                message: 'No se puede crear el usuario',
+                message: 'No se puede crear el departamento',
                 errors: err,
                 user: req.user
             });
@@ -201,48 +186,46 @@ const saveUser = (req, res, next) => {
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
-                userSave: userSave,
+                department: department,
                 user: req.user
             });
         }
     });
-};
+});
 
-//router.put('/:id', [authentication.verifyToken, authentication.refreshToken], 
-const updateUser = (req, res, next) => {
+router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
-    User.findById(id, (err, user) => {
+    Department.findById(id, (err, department) => {
         if (err) {
             return res.status(500).json({
                 success: false,
-                message: 'No se puede actualizar el usuario',
+                message: 'No se puede actualizar el departamento',
                 errors: err,
                 user: req.user
             });
         }
 
-        if (!user) {
+        if (!department) {
             return res.status(400).json({
                 success: false,
-                message: 'No existe un usuario con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el usuario para actualizar' },
+                message: 'No existe un departamento con el id: ' + id,
+                errors: { message: 'No se pudo encontrar el departamento para actualizar' },
                 user: req.user
             });
         } else {
-            user.name = req.body.name;
-            user.lastName = req.body.lastName;
-            user.email = req.body.email;
-            user.password = bcrypt.hashSync(req.body.password, 10) || user.password;
-            user.role = req.body.role;
-            user.recordActive = req.body.recordActive || true;
 
-            user.save((err, userSave) => {
+            department.floor = req.body.floor;
+            department.number = req.body.number;
+            department.status = req.body.status;
+            department.recordActive = req.body.recordActive || true;
+
+            department.save((err, department) => {
                 if (err) {
                     return res.status(400).json({
                         success: false,
-                        message: 'No se puede actualizar el usuario',
+                        message: 'No se puede actualizar el departamento',
                         errors: err,
                         user: req.user
                     });
@@ -250,7 +233,7 @@ const updateUser = (req, res, next) => {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        userSave: userSave,
+                        department: department,
                         user: req.user
                     });
                 }
@@ -258,40 +241,39 @@ const updateUser = (req, res, next) => {
 
         }
     })
-};
+});
 
 
-//router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], 
-const deleteUser = (req, res, next) => {
+router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
 
-    User.findById(id, (err, user) => {
+    Department.findById(id, (err, department) => {
         if (err) {
             return res.status(500).json({
                 success: false,
-                message: 'No se puede eliminar el usuario',
+                message: 'No se puede eliminar el departamento',
                 errors: err,
                 user: req.user
             });
         }
 
-        if (!user) {
+        if (!department) {
             return res.status(400).json({
                 success: false,
-                message: 'No existe un usuario con el id: ' + id,
-                errors: { message: 'No se pudo encontrar el usuario para eliminar' },
+                message: 'No existe un departamento con el id: ' + id,
+                errors: { message: 'No se pudo encontrar el departamento para eliminar' },
                 user: req.user
             });
         } else {
 
-            user.recordActive = false;
+            department.recordActive = false;
 
-            user.save((err, userSave) => {
+            department.save((err, department) => {
                 if (err) {
                     return res.status(400).json({
                         success: false,
-                        message: 'No se puede eliminar el usuario',
+                        message: 'No se puede eliminar el departamento',
                         errors: err,
                         user: req.user
                     });
@@ -299,7 +281,7 @@ const deleteUser = (req, res, next) => {
                     res.status(200).json({
                         success: true,
                         message: 'Operación realizada de forma exitosa.',
-                        userSave: userSave,
+                        department: department,
                         user: req.user
                     });
                 }
@@ -307,15 +289,6 @@ const deleteUser = (req, res, next) => {
 
         }
     })
-};
+});
 
-module.exports = {
-    find,
-    findAll,
-    findByRecordActive,
-    findByTerm,
-    findById,
-    saveUser,
-    updateUser,
-    deleteUser
-};
+module.exports = router;
