@@ -1,11 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const constants = require('../config/constants');
-const jwt = require('jsonwebtoken');
-const SubTask = require('../models/subTask');
-const authentication = require('../middlewares/authentication');
 
-router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+const constants = require('../config/constants');
+const { SubTask } = require('../models');
+
+//router.get('/', [authentication.verifyToken, authentication.refreshToken], 
+const find = (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -38,9 +36,10 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                     });
                 }
             });
-});
+};
 
-router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], 
+const findByRecordActive = (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -75,9 +74,10 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                     });
                 }
             });
-});
+};
 
-router.get('/all', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/all', [authentication.verifyToken, authentication.refreshToken], 
+const findByAll = (req, res, next) => {
 
     SubTask.find({ 'recordActive': true })
         .populate('task')
@@ -104,9 +104,10 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                     });
                 }
             });
-});
+};
 
-router.get('/search/:term', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/search/:term', [authentication.verifyToken, authentication.refreshToken], 
+const findByTerm = (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -144,9 +145,10 @@ router.get('/search/:term', [authentication.verifyToken, authentication.refreshT
                     });
                 }
             });
-});
+};
 
-router.get('/search/:term/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/search/:term/:recordActive', [authentication.verifyToken, authentication.refreshToken], 
+const findByTermAndRecordActive = (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -186,10 +188,11 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
                     });
                 }
             });
-});
+};
 
 
-router.get('/task/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/task/:id', [authentication.verifyToken, authentication.refreshToken], 
+const findByTaskId = (req, res, next) => {
 
     let id = req.params.id;
 
@@ -217,9 +220,10 @@ router.get('/task/:id', [authentication.verifyToken, authentication.refreshToken
                     });
                 }
             });
-});
+};
 
-router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/:id', [authentication.verifyToken, authentication.refreshToken], 
+const findById = (req, res, next) => {
 
     let id = req.params.id;
 
@@ -247,9 +251,10 @@ router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (r
                     });
                 }
             });
-});
+};
 
-router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.post('/', [authentication.verifyToken, authentication.refreshToken], 
+const saveSubTask = (req, res, next) => {
     let subTask = new SubTask({
         name: req.body.name,
         task: req.body.task,
@@ -272,9 +277,10 @@ router.post('/', [authentication.verifyToken, authentication.refreshToken], (req
             });
         }
     });
-});
+};
 
-router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.put('/:id', [authentication.verifyToken, authentication.refreshToken],
+const updateSubTask = (req, res, next) => {
 
     let id = req.params.id;
 
@@ -322,10 +328,11 @@ router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (r
 
         }
     })
-});
+};
 
 
-router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
+const deleteSubTask = (req, res, next) => {
 
     let id = req.params.id;
 
@@ -370,6 +377,17 @@ router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
 
         }
     })
-});
+};
 
-module.exports = router;
+module.exports = {
+    find,
+    findByRecordActive,
+    findByAll,
+    findByTerm,
+    findByTermAndRecordActive,
+    findByTaskId,
+    findById,
+    saveSubTask,
+    updateSubTask,
+    deleteSubTask
+};

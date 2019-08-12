@@ -1,11 +1,8 @@
-const express = require('express');
-const router = express.Router();
 const constants = require('../config/constants');
-const jwt = require('jsonwebtoken');
-const Position = require('../models/position');
-const authentication = require('../middlewares/authentication');
+const { Position } = require('../models');
 
-router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/', [authentication.verifyToken, authentication.refreshToken],
+const find = (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -37,9 +34,10 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                     });
                 }
             });
-});
+};
 
-router.get('/all', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/all', [authentication.verifyToken, authentication.refreshToken],
+const findAll = (req, res, next) => {
 
     Position.find({ 'recordActive': true })
         .exec(
@@ -65,9 +63,10 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                     });
                 }
             });
-});
+};
 
-router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], 
+const findByRecordActive = (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -101,9 +100,10 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                     });
                 }
             });
-});
+};
 
-router.get('/search/:term', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/search/:term', [authentication.verifyToken, authentication.refreshToken],
+const findByTerm = (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -139,9 +139,10 @@ router.get('/search/:term', [authentication.verifyToken, authentication.refreshT
                     });
                 }
             });
-});
+};
 
-router.get('/search/:term/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/search/:term/:recordActive', [authentication.verifyToken, authentication.refreshToken],
+const findByTermAndRecordActive = (req, res, next) => {
 
     let term = req.params.term;
     var regex = new RegExp(term, 'i');
@@ -179,9 +180,10 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
                     });
                 }
             });
-});
+};
 
-router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/:id', [authentication.verifyToken, authentication.refreshToken],
+const findById = (req, res, next) => {
 
     let id = req.params.id;
 
@@ -213,10 +215,13 @@ router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (r
 
         }
     })
-});
+};
 
 
-router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.post('/', [authentication.verifyToken, authentication.refreshToken],
+
+const savePosition = (req, res, next) => {
+
     let position = new Position({
         name: req.body.name,
         code: req.body.code,
@@ -240,9 +245,10 @@ router.post('/', [authentication.verifyToken, authentication.refreshToken], (req
             });
         }
     });
-});
+};
 
-router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.put('/:id', [authentication.verifyToken, authentication.refreshToken],
+const updatePosition = (req, res, next) => {
 
     let id = req.params.id;
 
@@ -290,10 +296,11 @@ router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (r
 
         }
     })
-});
+};
 
 
-router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], 
+const deletePosition = (req, res, next) => {
 
     let id = req.params.id;
 
@@ -338,6 +345,16 @@ router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
 
         }
     })
-});
+};
 
-module.exports = router;
+module.exports = {
+    find,
+    findAll,
+    findByRecordActive,
+    findByTerm,
+    findByTermAndRecordActive,
+    findById,
+    savePosition,
+    updatePosition,
+    deletePosition
+};

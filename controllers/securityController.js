@@ -1,12 +1,11 @@
-const express = require('express');
-const router = express.Router();
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const constants = require('../config/constants');
 
 
-router.post('/login/', (req, res, next) => {
+//router.post('/login/', 
+const login = (req, res, next) => {
 
     if (req.body.email == null) {
         return res.status(400).json({
@@ -76,9 +75,10 @@ router.post('/login/', (req, res, next) => {
         });
     });
 
-});
+};
 
-router.get('/logon/:id', (req, res, next) => {
+//router.get('/logon/:id', 
+const logout = (req, res, next) => {
 
     let id = req.params.id;
 
@@ -118,6 +118,9 @@ router.get('/logon/:id', (req, res, next) => {
         });
     });
 
-});
+};
 
-module.exports = router;
+module.exports = {
+    login,
+    logout
+};

@@ -17,24 +17,43 @@ const task = require('./task.route');
 const user = require('./user.route');
 
 
-module.exports = {
 
-    collection,
-    commonService,
-    commonServiceSubTask,
-    department,
-    departmentSubTask,
-    departmentTask,
-    employee,
-    employeeProject,
-    employeeSubTask,
-    floor,
-    position,
-    project,
-    projectEstructure,
-    security,
-    subTask,
-    task,
-    user
+
+module.exports = (router) => {
+
+    //router.use('/',collection),
+    //router.use('/',commonService),
+    //router.use('/',commonServiceSubTask),
+    //router.use('/',department    //router.use('/',collection),
+    //router.use('/',commonService),
+    //router.use('/',commonServiceSubTask),
+    //router.use('/',department),
+    //router.use('/',departmentSubTask),
+    //router.use('/',departmentTask),
+    //router.use('/',employee),
+    //router.use('/',employeeProject),
+    //router.use('/',employeeSubTask),
+    //router.use('/',floor),
+    //router.use('/',position),
+    //router.use('/',project),
+    //router.use('/',projectEstructure),
+    //router.use('/',security),
+    //router.use('/',subTask),),
+    //router.use('/',departmentSubTask),
+    //router.use('/',departmentTask),
+    //router.use('/',employee),
+    //router.use('/',employeeProject),
+    //router.use('/',employeeSubTask),
+    //router.use('/',floor),
+    router.use('/',position),
+    router.use('/',project),
+    router.use('/',projectEstructure),
+    router.use('/',security),
+    router.use('/',subTask),
+    router.use('/',task);
+    router.use('/',user);
+
+    return router;
     
 }
+

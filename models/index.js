@@ -1,40 +1,36 @@
-const collection = require('./collection');
-const commonService = require('./commonService');
-const commonServiceSubTask = require('./commonServiceSubTask');
-const department = require('./department');
-const departmentSubTask = require('./departmentSubTask');
-const departmentTask = require('./departmentTask');
-const employee = require('./employee');
-const employeeProject = require('./employeeProject');
-const employeeSubTask = require('./employeeSubTask');
-const floor = require('./floor');
-const position = require('./position');
-const project = require('./project');
-const projectEstructure = require('./projectEstructure');
-const security = require('./security');
-const subTask = require('./subTask');
-const task = require('./task');
-const user = require('./user');
+const Collection = require('./collection');
+const CommonService = require('./commonService');
+const CommonServiceSubTask = require('./commonServiceSubTask');
+const Department = require('./department');
+const DepartmentSubTask = require('./departmentSubTask');
+const DepartmentTask = require('./departmentTask');
+const Employee = require('./employee');
+const EmployeeProject = require('./employeeProject');
+const EmployeeSubTask = require('./employeeSubTask');
+const Floor = require('./floor');
+const Position = require('./position');
+const Project = require('./project');
+const SubTask = require('./subTask');
+const Task = require('./task');
+const User = require('./user');
 
 
 module.exports = {
 
-    collection,
-    commonService,
-    commonServiceSubTask,
-    department,
-    departmentSubTask,
-    departmentTask,
-    employee,
-    employeeProject,
-    employeeSubTask,
-    floor,
-    position,
-    project,
-    projectEstructure,
-    security,
-    subTask,
-    task,
-    user
+    Collection,
+    CommonService,
+    CommonServiceSubTask,
+    Department,
+    DepartmentSubTask,
+    DepartmentTask,
+    Employee,
+    EmployeeProject,
+    EmployeeSubTask,
+    Floor,
+    Position,
+    Project,
+    SubTask,
+    Task,
+    User
     
 }

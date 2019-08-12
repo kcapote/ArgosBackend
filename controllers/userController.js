@@ -1,10 +1,6 @@
-const express = require('express');
-const router = express.Router();
 const bcrypt = require('bcryptjs');
-const User = require('../models/user');
+const { User } = require('../models');
 const constants = require('../config/constants');
-const jwt = require('jsonwebtoken');
-const authentication = require('../middlewares/authentication');
 
 //router.get('/', [authentication.verifyToken, authentication.refreshToken], 
 

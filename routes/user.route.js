@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authentication = require('../middlewares/authentication');
-import { userController } from '../controllers';
+const { userController } = require('../controllers');
 
 router.get('/', [authentication.verifyToken, authentication.refreshToken],userController.find );
 

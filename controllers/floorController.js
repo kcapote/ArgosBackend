@@ -1,11 +1,8 @@
-const express = require('express');
-const router = express.Router();
 const constants = require('../config/constants');
-const jwt = require('jsonwebtoken');
-const Floor = require('../models/floor');
-const authentication = require('../middlewares/authentication');
+const { Floor } = require('../models');
 
-router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/', [authentication.verifyToken, authentication.refreshToken],
+const find = (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -42,9 +39,10 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                     });
                 }
             });
-});
+};
 
-router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+///router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken],
+const findByRecordActive = (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
@@ -84,9 +82,10 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                     });
                 }
             });
-});
+};
 
-router.get('/all', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/all', [authentication.verifyToken, authentication.refreshToken],
+const findByAll = (req, res, next) => {
 
     Floor.find({ 'recordActive': true })
         .populate('project')
@@ -113,9 +112,10 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                     });
                 }
             });
-});
+};
 
-router.get('/project/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/project/:id', [authentication.verifyToken, authentication.refreshToken],
+const findByProjectId = (req, res, next) => {
 
     let id = req.params.id;
 
@@ -144,9 +144,10 @@ router.get('/project/:id', [authentication.verifyToken, authentication.refreshTo
                     });
                 }
             });
-});
+};
 
-router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.get('/:id', [authentication.verifyToken, authentication.refreshToken],
+const findById = (req, res, next) => {
 
     let id = req.params.id;
 
@@ -175,9 +176,10 @@ router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (r
                     });
                 }
             });
-});
+};
 
-router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.post('/', [authentication.verifyToken, authentication.refreshToken],
+const saveFloor = (req, res, next) => {
     let floor = new Floor({
         project: req.body.project,
         number: req.body.number,
@@ -202,9 +204,10 @@ router.post('/', [authentication.verifyToken, authentication.refreshToken], (req
             });
         }
     });
-});
+};
 
-router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.put('/:id', [authentication.verifyToken, authentication.refreshToken],
+const updateFloor = (req, res, next) => {
 
     let id = req.params.id;
 
@@ -254,10 +257,11 @@ router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (r
 
         }
     })
-});
+};
 
 
-router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+//router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
+const deleteFloor = (req, res, next) => {
 
     let id = req.params.id;
 
@@ -302,6 +306,15 @@ router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
 
         }
     })
-});
+};
 
-module.exports = router;
+module.exports = {
+    find,
+    findByRecordActive,
+    findByAll,
+    findByProjectId,
+    findById,
+    saveFloor,
+    updateFloor,
+    deleteFloor
+};
