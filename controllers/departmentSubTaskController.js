@@ -34,7 +34,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.count({}, (err, totalRecords) => {
+                    DepartmentSubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
@@ -74,7 +74,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
@@ -110,7 +110,7 @@ router.get('/task/:idProject/:idTask', [authentication.verifyToken, authenticati
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
@@ -146,7 +146,7 @@ router.get('/task/:idProject/:idTask/:idSubTask', [authentication.verifyToken, a
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
@@ -184,7 +184,7 @@ router.get('/task/:idProject/:idFloor/:idDepartment/:idTask/:idSubTask', [authen
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
@@ -219,7 +219,7 @@ router.get('/department/:idProject/:idDepartment', [authentication.verifyToken, 
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.find({ 'project': idProject, 'department': idDepartment, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'project': idProject, 'department': idDepartment, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
@@ -257,7 +257,7 @@ router.get('/department/:idProject/:idDepartment/:idTask', [authentication.verif
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.find({ 'project': idProject, 'department': idDepartment, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'project': idProject, 'department': idDepartment, 'task': idTask, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
@@ -292,7 +292,7 @@ router.get('/floor/:idProject/:idFloor', [authentication.verifyToken, authentica
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.find({ 'project': idProject, 'floor': idFloor, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'project': idProject, 'floor': idFloor, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
@@ -328,7 +328,7 @@ router.get('/floor/:idProject/:idFloor/:idTask', [authentication.verifyToken, au
                         user: req.user
                     });
                 } else {
-                    DepartmentSubTask.find({ 'project': idProject, 'floor': idFloor, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    DepartmentSubTask.find({ 'project': idProject, 'floor': idFloor, 'task': idTask, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentSubTasks: departmentSubTasks,
@@ -481,9 +481,6 @@ router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
 
 router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
-    //console.log(req.body);
-
-
     let project = req.body.project;
     let task = req.body.task;
     let department = req.body.department;
@@ -497,7 +494,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
     let totalCommonService = 0;
 
 
-    DepartmentSubTask.aggregate({
+    DepartmentSubTask.aggregate([{
         $match: {
             $and: [{ "task": ObjectId(task) },
                 { "department": ObjectId(department) },
@@ -512,13 +509,10 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
             total: { $sum: '$status' },
             cantidad: { $sum: 1 }
         }
-    }).exec(function(e, d) {
+    }]).exec(function(e, d) {
         if (d) {
-            //console.log(d);
 
             totalSubtask = d[0].total / d[0].cantidad;
-            //console.log('total totalSubtask es ', totalSubtask, ' cantidad ', d[0].cantidad);
-
             DepartmentTask.update({
                 $and: [{ "task": ObjectId(task) },
                     { "department": ObjectId(department) },
@@ -531,7 +525,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                 }
             }).exec(function(e, t) {
                 if (t) {
-                    DepartmentTask.aggregate({
+                    DepartmentTask.aggregate([{
                             $match: {
                                 $and: [{ "department": ObjectId(department) },
                                     { "project": ObjectId(project) },
@@ -546,17 +540,16 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                             }
                         }
 
-                    ).exec(function(e, r) {
+                    ]).exec(function(e, r) {
                         if (r) {
                             totalTask = r[0].total / r[0].cantidad;
-                            //console.log('total totalTask es ', totalTask);
                             Department.update({ "_id": ObjectId(department) }, {
                                 $set: {
                                     status: totalTask
                                 }
                             }).exec(function(e, dt) {
                                 if (dt) {
-                                    Department.aggregate({
+                                    Department.aggregate([{
                                         $match: { $and: [{ "floor": ObjectId(floor) }] }
                                     }, {
                                         $group: {
@@ -564,10 +557,9 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                                             total: { $sum: '$status' },
                                             cantidad: { $sum: 1 }
                                         }
-                                    }).exec(function(e, f) {
+                                    }]).exec(function(e, f) {
                                         if (f) {
                                             totalDepartment = f[0].total / f[0].cantidad;
-                                            //console.log('total totalDepartment es ', totalDepartment);
                                             Floor.update({
                                                 $and: [{ "project": ObjectId(project) },
                                                     { "_id": ObjectId(floor) }
@@ -578,8 +570,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                                                 }
                                             }).exec(function(e, ft) {
                                                 if (ft) {
-                                                    ///////************* */
-                                                    CommonService.aggregate({ $match: { "project": ObjectId(project) } }, {
+                                                    CommonService.aggregate([{ $match: { "project": ObjectId(project) } }, {
                                                             $group: {
                                                                 _id: null,
                                                                 total: { $sum: '$status' },
@@ -587,31 +578,25 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                                                             }
                                                         }
 
-                                                    ).exec(function(er, resc) {
+                                                    ]).exec(function(er, resc) {
                                                         if (resc) {
                                                             totalCommonService = resc[0].total;
-                                                            //console.log('total totalCommonService es ', totalCommonService);
-                                                            Floor.aggregate({ $match: { "project": ObjectId(project) } }, {
+                                                            Floor.aggregate([{ $match: { "project": ObjectId(project) } }, {
                                                                 $group: {
                                                                     _id: null,
                                                                     total: { $sum: '$status' },
                                                                     cantidad: { $sum: 1 }
                                                                 }
-                                                            }).exec(function(er, resd) {
+                                                            }]).exec(function(er, resd) {
                                                                 if (resd) {
 
                                                                     totalFloor = resd[0].total / resd[0].cantidad;
-                                                                    //console.log('total totalFloor es ', totalFloor);
                                                                     let total = ((totalCommonService + totalFloor) / (resd[0].cantidad + resc[0].cantidad));
-                                                                    //console.log('total es ', total);
-                                                                    //Actualizo el total del proyecto
                                                                     Project.update({ "_id": ObjectId(project) }, {
                                                                         $set: {
                                                                             status: total
                                                                         }
                                                                     }).exec(function(er, resd) {
-                                                                        //console.log('termine con', total);
-
                                                                     })
                                                                 }
 
@@ -621,8 +606,6 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
 
 
                                                     })
-
-                                                    ////********************    
                                                 }
                                             })
                                         }

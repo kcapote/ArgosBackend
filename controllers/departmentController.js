@@ -25,7 +25,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                         user: req.user
                     });
                 } else {
-                    Department.count({}, (err, totalRecords) => {
+                    Department.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departments: departments,
@@ -55,7 +55,7 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                         user: req.user
                     });
                 } else {
-                    Department.find({ 'recordActive': true }).count({}, (err, totalRecords) => {
+                    Department.find({ 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departments: departments,
@@ -91,7 +91,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    Department.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    Department.find({ 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departments: departments,
@@ -123,7 +123,7 @@ router.get('/floor/:id', [authentication.verifyToken, authentication.refreshToke
                         user: req.user
                     });
                 } else {
-                    Department.find({ 'floor': id, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    Department.find({ 'floor': id, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departments: departments,
@@ -154,7 +154,7 @@ router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (r
                         user: req.user
                     });
                 } else {
-                    Department.count({}, (err, totalRecords) => {
+                    Department.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departments: departments,

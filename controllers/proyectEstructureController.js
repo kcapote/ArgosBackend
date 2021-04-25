@@ -14,7 +14,6 @@ const authentication = require('../middlewares/authentication');
 router.post('/floors', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let collection = req.body;
-    console.log(req.body);
 
     for (let k = 0; k < collection.length; k++) {
         let floor = new Floor({

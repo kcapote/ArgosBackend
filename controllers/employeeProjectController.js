@@ -26,7 +26,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                         user: req.user
                     });
                 } else {
-                    EmployeeProject.count({}, (err, totalRecords) => {
+                    EmployeeProject.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,
@@ -56,7 +56,7 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                         user: req.user
                     });
                 } else {
-                    EmployeeProject.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    EmployeeProject.find({ 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,
@@ -92,7 +92,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    EmployeeProject.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    EmployeeProject.find({ 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,
@@ -124,7 +124,7 @@ router.get('/project/:idProject', [authentication.verifyToken, authentication.re
                         user: req.user
                     });
                 } else {
-                    EmployeeProject.find({ 'project': idProject, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    EmployeeProject.find({ 'project': idProject, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,
@@ -218,7 +218,7 @@ router.get('/project/:idProject/:recordActive', [authentication.verifyToken, aut
                         user: req.user
                     });
                 } else {
-                    EmployeeProject.find({ 'project': idProject, 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    EmployeeProject.find({ 'project': idProject, 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,
@@ -249,7 +249,7 @@ router.get('/employee/:idEmployee', [authentication.verifyToken, authentication.
                         user: req.user
                     });
                 } else {
-                    EmployeeProject.find({ 'employee': idEmployee }).count({}, (err, totalRecords) => {
+                    EmployeeProject.find({ 'employee': idEmployee }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeProjects: employeeProjects,

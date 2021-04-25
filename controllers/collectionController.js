@@ -23,7 +23,7 @@ router.get('/', authentication.verifyToken, (req, res, next) => {
                         errors: err
                     });
                 } else {
-                    Collection.count({}, (err, totalRecords) => {
+                    Collection.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             collections: collections,
@@ -55,7 +55,7 @@ router.get('/rides/', authentication.verifyToken, (req, res, next) => {
                         errors: err
                     });
                 } else {
-                    Collection.count({}, (err, totalRecords) => {
+                    Collection.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             collections: collections,

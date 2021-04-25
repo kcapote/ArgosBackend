@@ -25,7 +25,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                     });
                 } else {
 
-                    User.count({}, (err, totalRecords) => {
+                    User.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             users: users,
@@ -54,7 +54,7 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                     });
                 } else {
 
-                    User.find({ 'recordActive': true }).count({}, (err, totalRecords) => {
+                    User.find({ 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             users: users,
@@ -89,7 +89,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                     });
                 } else {
 
-                    User.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    User.find({ 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             users: users,
@@ -129,7 +129,7 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
                     });
                 } else {
 
-                    User.find({ 'recordActive': recordActive }).or([{ 'name': regex }, { 'lastName': regex }, { 'email': regex }]).count({}, (err, totalRecords) => {
+                    User.find({ 'recordActive': recordActive }).or([{ 'name': regex }, { 'lastName': regex }, { 'email': regex }]).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             users: users,
@@ -144,32 +144,28 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
             });
 });
 
-router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/:id', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
+    
+    try {
+        let id = req.params.id;
+        const user = await User.find({ '_id': id }, 'name lastName email role').exec();
+        const totalUsers = await User.countDocuments({});
+        res.status(200).write(JSON.stringify({
+            success: true,
+            users: user,
+            totalRecords: totalUsers,
+            user: req.user
+        }, null, 2));
+        res.end();
 
-    let id = req.params.id;
-    User.find({ '_id': id }, 'name lastName email role')
-        .exec(
-            (err, users) => {
-                if (err) {
-                    return res.status(500).json({
-                        success: false,
-                        message: 'No se encontraron resultados',
-                        errors: err,
-                        user: req.user
-                    });
-                } else {
-                    User.count({}, (err, totalRecords) => {
-                        res.status(200).write(JSON.stringify({
-                            success: true,
-                            users: users,
-                            totalRecords: users.length,
-                            user: req.user
-                        }, null, 2));
-                        res.end();
-
-                    });
-                }
-            });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'No se encontraron resultados',
+            errors: error,
+            user: req.user
+        });
+    }
 });
 
 router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {

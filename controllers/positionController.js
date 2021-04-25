@@ -24,7 +24,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                     });
                 } else {
 
-                    Position.count({}, (err, totalRecords) => {
+                    Position.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             positions: positions,
@@ -53,7 +53,7 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                     });
                 } else {
 
-                    Position.find({ 'recordActive': true }).count({}, (err, totalRecords) => {
+                    Position.find({ 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             positions: positions,
@@ -88,7 +88,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                     });
                 } else {
 
-                    Position.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    Position.find({ 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             positions: positions,
@@ -126,7 +126,7 @@ router.get('/search/:term', [authentication.verifyToken, authentication.refreshT
                     });
                 } else {
 
-                    Position.find().or([{ 'name': regex }]).count({}, (err, totalRecords) => {
+                    Position.find().or([{ 'name': regex }]).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             positions: positions,
@@ -166,7 +166,7 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
                     });
                 } else {
 
-                    Position.find({ 'recordActive': recordActive }).or([{ 'name': regex }]).count({}, (err, totalRecords) => {
+                    Position.find({ 'recordActive': recordActive }).or([{ 'name': regex }]).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             positions: positions,

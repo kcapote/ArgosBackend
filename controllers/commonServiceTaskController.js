@@ -26,7 +26,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                         user: req.user
                     });
                 } else {
-                    CommonServiceTask.count({}, (err, totalRecords) => {
+                    CommonServiceTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,
@@ -64,7 +64,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    CommonServiceTask.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    CommonServiceTask.find({ 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,
@@ -99,7 +99,7 @@ router.get('/task/:idProject/:idTask/:type', [authentication.verifyToken, authen
                         user: req.user
                     });
                 } else {
-                    CommonServiceTask.find({ 'project': idProject, 'task': idTask, 'type': type, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    CommonServiceTask.find({ 'project': idProject, 'task': idTask, 'type': type, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,
@@ -132,7 +132,7 @@ router.get('/task/:idProject/:idTask', [authentication.verifyToken, authenticati
                         user: req.user
                     });
                 } else {
-                    CommonServiceTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    CommonServiceTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,
@@ -165,7 +165,7 @@ router.get('/commonservice/:idProject/:idcommonService', [authentication.verifyT
                         user: req.user
                     });
                 } else {
-                    CommonServiceTask.find({ 'project': idProject, 'commonService': idcommonService, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    CommonServiceTask.find({ 'project': idProject, 'commonService': idcommonService, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,
@@ -197,7 +197,7 @@ router.get('/project/:idProject', [authentication.verifyToken, authentication.re
                         user: req.user
                     });
                 } else {
-                    CommonServiceTask.find({ 'project': idProject, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    CommonServiceTask.find({ 'project': idProject, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,
@@ -230,7 +230,7 @@ router.get('/project/:idProject/:type', [authentication.verifyToken, authenticat
                         user: req.user
                     });
                 } else {
-                    CommonServiceTask.find({ 'project': idProject, 'type': type, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    CommonServiceTask.find({ 'project': idProject, 'type': type, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceTasks: commonServiceTasks,

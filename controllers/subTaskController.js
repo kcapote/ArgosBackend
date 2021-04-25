@@ -25,7 +25,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                         user: req.user
                     });
                 } else {
-                    SubTask.count({}, (err, totalRecords) => {
+                    SubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
@@ -62,7 +62,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    SubTask.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    SubTask.find({ 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
@@ -92,7 +92,7 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                         user: req.user
                     });
                 } else {
-                    SubTask.find({ 'recordActive': true }).count({}, (err, totalRecords) => {
+                    SubTask.find({ 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
@@ -131,7 +131,7 @@ router.get('/search/:term', [authentication.verifyToken, authentication.refreshT
                     });
                 } else {
 
-                    SubTask.find().or([{ 'name': regex }]).count({}, (err, totalRecords) => {
+                    SubTask.find().or([{ 'name': regex }]).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
@@ -173,7 +173,7 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
                     });
                 } else {
 
-                    SubTask.find({ 'recordActive': recordActive }).or([{ 'name': regex }]).count({}, (err, totalRecords) => {
+                    SubTask.find({ 'recordActive': recordActive }).or([{ 'name': regex }]).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
@@ -205,7 +205,7 @@ router.get('/task/:id', [authentication.verifyToken, authentication.refreshToken
                         user: req.user
                     });
                 } else {
-                    SubTask.find({ 'task': id, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    SubTask.find({ 'task': id, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,
@@ -235,7 +235,7 @@ router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (r
                         user: req.user
                     });
                 } else {
-                    SubTask.count({}, (err, totalRecords) => {
+                    SubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             subTasks: subTasks,

@@ -37,7 +37,7 @@ router.get('/', [
                         user: req.user
                     });
                 } else {
-                    CommonServiceSubTask.count({}, (err, totalRecords) => {
+                    CommonServiceSubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceSubTasks: commonServiceSubTasks,
@@ -76,7 +76,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    CommonServiceSubTask.count({}, (err, totalRecords) => {
+                    CommonServiceSubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceSubTasks: commonServiceSubTasks,
@@ -113,7 +113,7 @@ router.get('/subtask/:idProject/:idSubTask', [authentication.verifyToken, authen
                         user: req.user
                     });
                 } else {
-                    CommonServiceSubTask.count({}, (err, totalRecords) => {
+                    CommonServiceSubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceSubTasks: commonServiceSubTasks,
@@ -148,7 +148,7 @@ router.get('/subtask/:idProject/:idSubTask/:type', [authentication.verifyToken, 
                         user: req.user
                     });
                 } else {
-                    CommonServiceSubTask.count({}, (err, totalRecords) => {
+                    CommonServiceSubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceSubTasks: commonServiceSubTasks,
@@ -185,7 +185,7 @@ router.get('/subtask/:idProject/:idFloor/:idTask/:idSubTask/:type', [authenticat
                         user: req.user
                     });
                 } else {
-                    CommonServiceSubTask.count({}, (err, totalRecords) => {
+                    CommonServiceSubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceSubTasks: commonServiceSubTasks,
@@ -219,7 +219,7 @@ router.get('/task/:idProject/:idTask', [authentication.verifyToken, authenticati
                         user: req.user
                     });
                 } else {
-                    CommonServiceSubTask.count({}, (err, totalRecords) => {
+                    CommonServiceSubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceSubTasks: commonServiceSubTasks,
@@ -254,7 +254,7 @@ router.get('/task/:idProject/:idTask/:type', [authentication.verifyToken, authen
                         user: req.user
                     });
                 } else {
-                    CommonServiceSubTask.count({}, (err, totalRecords) => {
+                    CommonServiceSubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceSubTasks: commonServiceSubTasks,
@@ -274,12 +274,6 @@ router.get('/task/:idProject/:idTask/:type/:idCommonService', [authentication.ve
     let idTask = req.params.idTask;
     let idCommonService = req.params.idCommonService;
     let type = req.params.type;
-    // console.log("********************");
-    // console.log(idProject);
-    // console.log(idTask);
-    // console.log(idCommonService);
-    // console.log(type);
-    // console.log("********************");
 
     CommonServiceSubTask.find({ 'project': idProject, 'task': idTask, 'commonService': idCommonService, 'type': type, 'recordActive': true })
         .populate('commonService')
@@ -296,7 +290,7 @@ router.get('/task/:idProject/:idTask/:type/:idCommonService', [authentication.ve
                         user: req.user
                     });
                 } else {
-                    CommonServiceSubTask.count({}, (err, totalRecords) => {
+                    CommonServiceSubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceSubTasks: commonServiceSubTasks,
@@ -330,7 +324,7 @@ router.get('/commonservice/:idProject/:idCommonservice', [authentication.verifyT
                         user: req.user
                     });
                 } else {
-                    CommonServiceSubTask.count({}, (err, totalRecords) => {
+                    CommonServiceSubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceSubTasks: commonServiceSubTasks,
@@ -363,7 +357,7 @@ router.get('/project/:idProject', [authentication.verifyToken, authentication.re
                         user: req.user
                     });
                 } else {
-                    CommonServiceSubTask.count({}, (err, totalRecords) => {
+                    CommonServiceSubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             commonServiceSubTasks: commonServiceSubTasks,
@@ -398,15 +392,12 @@ router.post('/', [authentication.verifyToken, authentication.refreshToken], (req
                 user: req.user
             });
         } else {
-            console.log('****************************');
-
             res.status(201).json({
                 success: true,
                 message: 'Operación realizada de forma exitosa.',
                 commonServiceSubTask: commonServiceSubTask,
                 user: req.user
             });
-            //sumTask(task);
         }
     });
 });
@@ -530,7 +521,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
     let totalCommonService = 0;
     let totalFloor = 0;
 
-    CommonServiceSubTask.aggregate({
+    CommonServiceSubTask.aggregate([{
         $match: {
             $and: [{ "task": ObjectId(idTask) },
                 { "commonService": ObjectId(commonService) },
@@ -544,7 +535,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
             total: { $sum: '$status' },
             cantidad: { $sum: 1 }
         }
-    }).exec(function(e, d) {
+    }]).exec(function(e, d) {
         if (d) {
             totalSubTaskCommon = d[0].total / d[0].cantidad;
             //Actualizo la tarea con el total de subtask**************************************************
@@ -559,7 +550,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                 }
             }).exec(function(er, r) {
                 if (r) {
-                    CommonServicesTask.aggregate({
+                    CommonServicesTask.aggregate([{
                         $match: {
                             $and: [
                                 { "commonService": ObjectId(commonService) },
@@ -573,7 +564,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                             total: { $sum: '$status' },
                             cantidad: { $sum: 1 }
                         }
-                    }).exec(function(er, res) {
+                    }]).exec(function(er, res) {
                         if (res) {
                             totalTaskCommon = res[0].total / res[0].cantidad;
                             //Actualizo el monto en commonServices************************************************                            
@@ -588,7 +579,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                             }).exec(function(er, common) {
                                 if (common) {
                                     //Sumo el total de common service***********************************************
-                                    CommonService.aggregate({ $match: { "project": ObjectId(projectId) } }, {
+                                    CommonService.aggregate([{ $match: { "project": ObjectId(projectId) } }, {
                                             $group: {
                                                 _id: null,
                                                 total: { $sum: '$status' },
@@ -596,7 +587,7 @@ router.put('/sum/:idTask', [authentication.verifyToken, authentication.refreshTo
                                             }
                                         }
 
-                                    ).exec(function(er, resc) {
+                                    ]).exec(function(er, resc) {
                                         if (resc) {
                                             totalCommonService = resc[0].total;
                                             Floor.aggregate({ $match: { "project": ObjectId(projectId) } }, {

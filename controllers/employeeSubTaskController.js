@@ -33,7 +33,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.count({}, (err, totalRecords) => {
+                    EmployeeSubTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -76,7 +76,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -118,7 +118,7 @@ router.get('/project/:idProject', [authentication.verifyToken, authentication.re
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'project': idProject, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -156,7 +156,7 @@ router.get('/employee/:idEmployee', [authentication.verifyToken, authentication.
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'employee': idEmployee, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'employee': idEmployee, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -194,7 +194,7 @@ router.get('/employee/:idProject/:idEmployee', [authentication.verifyToken, auth
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -232,7 +232,7 @@ router.get('/employee/calendar/:idEmployee', [authentication.verifyToken, authen
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -271,7 +271,7 @@ router.get('/employee/calendar/:idEmployee/:initDate/:endDate', [authentication.
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'employee': idEmployee, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'employee': idEmployee, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -311,7 +311,7 @@ router.get('/employee/calendar/project/:idProject/:idEmployee/:initDate/:endDate
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'employee': idEmployee, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -350,7 +350,7 @@ router.get('/employee/calendar/project/:idProject/:initDate/:endDate', [authenti
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'project': idProject, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'recordActive': true, "$and": [{ "recordDate": { "$gte": initDate } }, { "recordDate": { "$lte": endDate } }] }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -390,7 +390,7 @@ router.get('/employee/:idProject/:idFloor/:idDepartment/:idEmployee', [authentic
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'project': idProject, 'floor': idFloor, 'department': idDepartment, 'employee': idEmployee, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'floor': idFloor, 'department': idDepartment, 'employee': idEmployee, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -429,7 +429,7 @@ router.get('/employee/:idProject/:idCommonService/:idEmployee', [authentication.
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'project': idProject, 'commonService': idCommonService, 'employee': idEmployee, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'commonService': idCommonService, 'employee': idEmployee, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -468,7 +468,7 @@ router.get('/department/:idProject/:idFloor/:idDepartment', [authentication.veri
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'project': idProject, 'floor': idFloor, 'department': idDepartment, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'floor': idFloor, 'department': idDepartment, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -508,7 +508,7 @@ router.get('/department/:idProject/:idFloor/:idDepartment/:idTask', [authenticat
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'project': idProject, 'floor': idFloor, 'department': idDepartment, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'floor': idFloor, 'department': idDepartment, 'task': idTask, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -549,7 +549,7 @@ router.get('/department/:idProject/:idFloor/:idDepartment/:idTask/:idSubTask', [
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'project': idProject, 'floor': idFloor, 'department': idDepartment, 'task': idTask, 'subTask': idSubTask, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'floor': idFloor, 'department': idDepartment, 'task': idTask, 'subTask': idSubTask, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -587,7 +587,7 @@ router.get('/commonService/:idProject/:idCommonService', [authentication.verifyT
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'project': idProject, 'commonService': idCommonService, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'commonService': idCommonService, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -626,7 +626,7 @@ router.get('/commonService/:idProject/:idCommonService/:idTask', [authentication
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'project': idProject, 'commonService': idCommonService, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'commonService': idCommonService, 'task': idTask, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -666,7 +666,7 @@ router.get('/commonService/:idProject/:idCommonService/:idTask/:idSubTask', [aut
                         user: req.user
                     });
                 } else {
-                    EmployeeSubTask.find({ 'project': idProject, 'commonService': idCommonService, 'task': idTask, 'subTask': idSubTask, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    EmployeeSubTask.find({ 'project': idProject, 'commonService': idCommonService, 'task': idTask, 'subTask': idSubTask, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             employeeSubTasks: employeeSubTasks,
@@ -845,47 +845,32 @@ router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
 });
 
 
-router.get('/find/top10', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/find/top10', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
    
+    try {
+        const projects = await Project.find({ 'recordActive': true }).sort({'startDate': 'desc'}).limit(10).exec();
+        if (!projects || projects.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No existen registros ',
+                errors: { message: 'No hay registros guardados' },
+                user: req.user
+            });
+        }
 
-    Project.find({ 'recordActive': true })
-    .sort({'startDate': 'desc'})  
-    .limit(10)
-    .exec((err, projects) => {
-         if (err) {
-             return res.status(500).json({
-                 success: false,
-                 message: 'No se pueden consultar las obras',
-                 errors: err,
-                 user: req.user
-             });
-         }
-
-         if (!projects) {
-             return res.status(400).json({
-                 success: false,
-                 message: 'No existen registros ',
-                 errors: { message: 'No hay registros guardados' },
-                 user: req.user
-             });
-         } else {
-            cond = []; 
-            collection = [];
-            collection = projects;
-            for (let c  of collection){
-                cond.push(
-                    {'project': c._id}
-                )
-
-            }
-            
-            //console.log(cond);
-            
-            EmployeeSubTask.aggregate({
+        cond = []; 
+        collection = [];
+        collection = projects;
+        for (let c  of collection){
+            cond.push(
+                {'project': c._id}
+            )
+        }
+        const employeeSubTask = await EmployeeSubTask
+            .aggregate([{
                 $match: {
                     $or: cond
                 }
-
             },
             {
             $group: {
@@ -893,65 +878,44 @@ router.get('/find/top10', [authentication.verifyToken, authentication.refreshTok
                 total: { $sum: '$hoursWorked' },
                 cantidad: { $sum: 1 }
             }
-            }).exec(function(e, d) {
-                 if(d){
-                    //console.log(d);
-                    let arrayCollection = [];
-                    for(let o of d){
-
-                        //let obj = projects[o.id] ;
-                        //let x = projects[o.id];
-                        //console.log('el x es --------', o['_id']);
-                        let col = [];
-                        col = projects;
-                        let temp = {
-                            id: o._id,
-                            total: o.total,
-                            proName: projects.find(function (obj) { return ( (obj._id+"") == (o['_id']+"") ); }).name
-
-                        }
-                        arrayCollection.push(temp);
-                        
-                    }    
-
-                    
-                    res.status(200).json({
-                        success: true,
-                        message: 'Operación realizada de forma exitosa.',
-                        donuts: arrayCollection,
-                        user: req.user
-                        
-       
-                     });
-
-                 }   
-
+            }]).exec();
+            
+        if(!employeeSubTask){
+            return res.status(400).json({
+                success: false,
+                message: 'No existen registros ',
+                errors: { message: 'No hay registros guardados' },
+                user: req.user
             });
+        } 
 
-            // $match: {
-            //     $and: [{ "task": ObjectId(idTask) },
-            //         { "commonService": ObjectId(commonService) },
-            //         { "project": ObjectId(projectId) }
-            //     ]
-            // }
+        let arrayCollection = [];
+        for(let o of d){
+            let col = [];
+            col = projects;
+            let temp = {
+                id: o._id,
+                total: o.total,
+                proName: projects.find(function (obj) { return ( (obj._id+"") == (o['_id']+"") ); }).name
+            }
+            arrayCollection.push(temp);
+        }    
+        
+        res.status(200).json({
+            success: true,
+            message: 'Operación realizada de forma exitosa.',
+            donuts: arrayCollection,
+            user: req.user
+        });
 
-
-            //  res.status(200).json({
-            //      success: true,
-            //      message: 'Operación realizada de forma exitosa.',
-            //      projects: projects,
-            //      user: req.user
-                 
-
-            //   });
-
-         }  
-
-
-    });
-
-
-    
-     });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'No se pueden consultar las obras',
+            errors: err,
+            user: req.user
+        });
+    }
+});
 
 module.exports = router;

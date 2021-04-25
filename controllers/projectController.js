@@ -27,7 +27,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                     });
                 } else {
 
-                    Project.count({}, (err, totalRecords) => {
+                    Project.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             projects: projects,
@@ -60,7 +60,7 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                 } else {
 
                     Project.find({ 'recordActive': recordActive })
-                        .count({}, (err, totalRecords) => {
+                        .countDocuments({}, (err, totalRecords) => {
                             res.status(200).write(JSON.stringify({
                                 success: true,
                                 projects: projects,
@@ -74,44 +74,41 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
             });
 });
 
-router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/recordActive/:recordActive', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
 
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
     let recordActive = req.params.recordActive;
     recordActive = Boolean(recordActive);
-
-    Project.find({ 'recordActive': recordActive })
+    
+    try {
+        const projects = await Project.find({ 'recordActive': recordActive })
         .populate('supervisor1')
         .populate('supervisor2')
         .skip(pagination)
         .limit(constants.PAGINATION)
         .sort({ startDate: -1 })
-        .exec(
-            (err, projects) => {
-                if (err) {
-                    return res.status(500).json({
-                        success: false,
-                        message: 'No se pueden consultar las obras',
-                        errors: err,
-                        user: req.user
-                    });
-                } else {
+        .exec();
 
-                    Project.find({ 'recordActive': recordActive })
-                        .count({}, (err, totalRecords) => {
-                            res.status(200).write(JSON.stringify({
-                                success: true,
-                                projects: projects,
-                                totalRecords: totalRecords,
-                                pagination: pagination,
-                                user: req.user
-                            }, null, 2));
-                            res.end();
+        const projectTotal = await Project.find({ 'recordActive': recordActive }).countDocuments({});
 
-                        });
-                }
-            });
+        res.status(200).write(JSON.stringify({
+            success: true,
+            projects: projects,
+            totalRecords: projectTotal,
+            pagination: pagination,
+            user: req.user
+        }, null, 2));
+        res.end();
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'No se pueden consultar las obras',
+            errors: error,
+            user: req.user
+        });
+    }
 });
 
 router.get('/search/:term', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
@@ -142,7 +139,7 @@ router.get('/search/:term', [authentication.verifyToken, authentication.refreshT
 
                     Project.find()
                         .or([{ 'name': regex }])
-                        .count({}, (err, totalRecords) => {
+                        .countDocuments({}, (err, totalRecords) => {
                             res.status(200).write(JSON.stringify({
                                 success: true,
                                 projects: projects,
@@ -187,7 +184,7 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
 
                     Project.find({ 'recordActive': recordActive })
                         .or([{ 'name': regex }])
-                        .count({}, (err, totalRecords) => {
+                        .countDocuments({}, (err, totalRecords) => {
                             res.status(200).write(JSON.stringify({
                                 success: true,
                                 projects: projects,
@@ -380,45 +377,39 @@ router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
 });
 
 
-router.get('/find/top10', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/find/top10', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
    
-Project.find({ 'recordActive': true })
-       .sort({'startDate': 'desc'})  
-       .limit(10)
-       .exec((err, projects) => {
-            if (err) {
-                return res.status(500).json({
-                    success: false,
-                    message: 'No se pueden consultar las obras',
-                    errors: err,
-                    user: req.user
-                });
-            }
+    try {
 
-            if (!projects) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'No existen registros ',
-                    errors: { message: 'No hay registros guardados' },
-                    user: req.user
-                });
-            } else {
+        const projects = await Project.find({ 'recordActive': true }).sort({'startDate': 'desc'}).limit(10).exec();
 
-                res.status(200).json({
-                    success: true,
-                    message: 'Operación realizada de forma exitosa.',
-                    projects: projects,
-                    user: req.user
-                });
+        if (!projects) {
+            return res.status(400).json({
+                success: false,
+                message: 'No existen registros ',
+                errors: { message: 'No hay registros guardados' },
+                user: req.user
+            });
+        }
 
-            }  
-
-
-       });
-
-
+        res.status(200).json({
+            success: true,
+            message: 'Operación realizada de forma exitosa.',
+            projects: projects,
+            user: req.user
+        });
+         
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'No se pueden consultar las obras',
+            errors: error,
+            user: req.user
+        });
+    }
 });
 
+/*
 router.get('/find/top10', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
    
     Project.find({ 'recordActive': true })
@@ -456,7 +447,7 @@ router.get('/find/top10', [authentication.verifyToken, authentication.refreshTok
            });
     
     
-    });
-    
+});
+*/ 
 
 module.exports = router;

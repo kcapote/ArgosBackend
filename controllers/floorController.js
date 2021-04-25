@@ -29,7 +29,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                         user: req.user
                     });
                 } else {
-                    Floor.count({}, (err, totalRecords) => {
+                    Floor.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             floors: floors,
@@ -71,7 +71,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    Floor.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    Floor.find({ 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             floors: floors,
@@ -101,7 +101,7 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                         user: req.user
                     });
                 } else {
-                    Floor.find({ 'recordActive': true }).count({}, (err, totalRecords) => {
+                    Floor.find({ 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             floors: floors,
@@ -132,7 +132,7 @@ router.get('/project/:id', [authentication.verifyToken, authentication.refreshTo
                         user: req.user
                     });
                 } else {
-                    Floor.find({ 'project': id, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    Floor.find({ 'project': id, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             floors: floors,
@@ -163,7 +163,7 @@ router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (r
                         user: req.user
                     });
                 } else {
-                    Floor.count({}, (err, totalRecords) => {
+                    Floor.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             floors: floors,

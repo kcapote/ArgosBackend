@@ -27,7 +27,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                         user: req.user
                     });
                 } else {
-                    DepartmentTask.count({}, (err, totalRecords) => {
+                    DepartmentTask.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
@@ -66,7 +66,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    DepartmentTask.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    DepartmentTask.find({ 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
@@ -101,7 +101,7 @@ router.get('/task/:idProject/:idTask', [authentication.verifyToken, authenticati
                         user: req.user
                     });
                 } else {
-                    DepartmentTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    DepartmentTask.find({ 'project': idProject, 'task': idTask, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
@@ -171,7 +171,7 @@ router.get('/project/:idProject', [authentication.verifyToken, authentication.re
                         user: req.user
                     });
                 } else {
-                    DepartmentTask.find({ 'project': idProject, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    DepartmentTask.find({ 'project': idProject, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
@@ -205,7 +205,7 @@ router.get('/department/:idProject/:idDepartment', [authentication.verifyToken, 
                         user: req.user
                     });
                 } else {
-                    DepartmentTask.find({ 'project': idProject, 'department': idDepartment, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    DepartmentTask.find({ 'project': idProject, 'department': idDepartment, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,
@@ -239,7 +239,7 @@ router.get('/floor/:idProject/:idFloor', [authentication.verifyToken, authentica
                         user: req.user
                     });
                 } else {
-                    DepartmentTask.find({ 'project': idProject, 'floor': idFloor, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    DepartmentTask.find({ 'project': idProject, 'floor': idFloor, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             departmentTasks: departmentTasks,

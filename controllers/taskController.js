@@ -11,8 +11,6 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
     let pagination = req.query.pagination || 0;
     pagination = Number(pagination);
 
-    console.log(req.user);
-
     Task.find()
         .skip(pagination)
         .limit(constants.PAGINATION)
@@ -27,7 +25,7 @@ router.get('/', [authentication.verifyToken, authentication.refreshToken], (req,
                         user: req.user
                     });
                 } else {
-                    Task.count({}, (err, totalRecords) => {
+                    Task.countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             tasks: tasks,
@@ -56,7 +54,7 @@ router.get('/all', [authentication.verifyToken, authentication.refreshToken], (r
                         user: req.user
                     });
                 } else {
-                    Task.find({ 'recordActive': true }).count({}, (err, totalRecords) => {
+                    Task.find({ 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             tasks: tasks,
@@ -92,7 +90,7 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
                         user: req.user
                     });
                 } else {
-                    Task.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    Task.find({ 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             tasks: tasks,
@@ -123,7 +121,7 @@ router.get('/type/:type', [authentication.verifyToken, authentication.refreshTok
                         user: req.user
                     });
                 } else {
-                    Task.find({ 'type': type, 'recordActive': true }).count({}, (err, totalRecords) => {
+                    Task.find({ 'type': type, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             tasks: tasks,
@@ -161,7 +159,7 @@ router.get('/search/:term', [authentication.verifyToken, authentication.refreshT
                     });
                 } else {
 
-                    Task.find().or([{ 'name': regex }]).count({}, (err, totalRecords) => {
+                    Task.find().or([{ 'name': regex }]).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             tasks: tasks,
@@ -202,7 +200,7 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
                     });
                 } else {
 
-                    Task.find({ 'recordActive': recordActive }).count({}, (err, totalRecords) => {
+                    Task.find({ 'recordActive': recordActive }).countDocuments({}, (err, totalRecords) => {
                         res.status(200).write(JSON.stringify({
                             success: true,
                             tasks: tasks,
@@ -221,8 +219,6 @@ router.get('/search/:term/:recordActive', [authentication.verifyToken, authentic
 router.get('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
-
-    console.log(id);
 
     Task.findById(id, (err, task) => {
         if (err) {
