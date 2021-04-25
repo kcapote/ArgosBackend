@@ -11,124 +11,115 @@ const CommonServiceTask = require('../models/commonServiceTask');
 const CommonServiceSubTask = require('../models/commonServiceSubTask');
 const authentication = require('../middlewares/authentication');
 
-router.post('/floors', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.post('/floors', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
 
-    let collection = req.body;
-
-    for (let k = 0; k < collection.length; k++) {
-        let floor = new Floor({
-            project: collection[k].project,
-            number: collection[k].number,
-            quantityDepartment: collection[k].quantityDepartment,
-            type: collection[k].type,
-            status: 0
-        });
-        floor.save((err, floor) => {
-            if (err) {
+    try {
+        let collection = req.body;
+        const tasks = await Task.find({ 'type': 'DEPARTAMENTOS', 'recordActive': true }).sort({ position: 1 }).exec();
+        if(!tasks) {
+            return res.status(400).json({
+                success: false,
+                message: 'No se pueden consultar las tareas',
+                errors: 'No se pueden consultar las tareas',
+                user: req.user
+            });
+        };
+        for (let k = 0; k < collection.length; k++) {
+            let floorTemp = new Floor({
+                project: collection[k].project,
+                number: collection[k].number,
+                quantityDepartment: collection[k].quantityDepartment,
+                type: collection[k].type,
+                status: 0
+            });
+            let floor = await floorTemp.save();
+            if(!floor) {
                 return res.status(400).json({
                     success: false,
                     message: 'No se puede crear el piso',
-                    errors: err,
+                    errors: 'No se puede crear el piso',
                     user: req.user
                 });
-            } else {
-                for (let i = 0; i < floor.quantityDepartment; i++) {
-                    let department = new Department({
+            };
+            for (let i = 0; i < floor.quantityDepartment; i++) {
+                let departmentTemp = new Department({
+                    floor: floor._id,
+                    number: i + 1,
+                    status: 0
+                });
+                let department = await departmentTemp.save();
+                if(!department) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'No se puede crear el departamento',
+                        errors: 'No se puede crear el departamento',
+                        user: req.user
+                    });
+                };
+                for (let t = 0; t < tasks.length; t++) {
+                    let task = tasks[t];
+                    let departmentTaskTemp = new DepartmentTask({
+                        department: department._id,
+                        task: task._id,
                         floor: floor._id,
-                        number: i + 1,
+                        project: floor.project,
                         status: 0
                     });
-                    department.save((err, department) => {
-                        if (err) {
+                    let departmentTask = await departmentTaskTemp.save();
+                    if (!departmentTask) {
+                        return res.status(400).json({
+                            success: false,
+                            message: 'No se puede guardar el registro',
+                            errors: 'No se puede guardar el registro',
+                            user: req.user
+                        });
+                    };
+                    let subtasks = await SubTask.find({ 'task': task._id, 'recordActive': true }).populate('task').exec();
+                    if (!subtasks) {
+                        return res.status(400).json({
+                            success: false,
+                            message: 'No se pueden consultar las tareas',
+                            errors: 'No se pueden consultar las tareas',
+                            user: req.user
+                        });
+                    };
+                    for (let m = 0; m < subtasks.length; m++) {
+                        let subTask = subtasks[m];
+                        let departmentSubTaskTemp = new DepartmentSubTask({
+                            department: department._id,
+                            subTask: subTask._id,
+                            task: task._id,
+                            floor: floor._id,
+                            project: floor.project,
+                            status: 0
+                        });
+                        let departmentSubTask = await departmentSubTaskTemp.save();
+                        if (!departmentSubTask) {
                             return res.status(400).json({
                                 success: false,
-                                message: 'No se puede crear el departamento',
-                                errors: err,
+                                message: 'No se puede guardar el registro',
+                                errors: 'No se puede guardar el registro',
                                 user: req.user
                             });
-                        } else {
-                            Task.find({ 'type': 'DEPARTAMENTOS', 'recordActive': true })
-                                .sort({ position: 1 })
-                                .exec(
-                                    (err, tasks) => {
-                                        if (err) {
-                                            return res.status(500).json({
-                                                success: false,
-                                                message: 'No se pueden consultar las tareas',
-                                                errors: err,
-                                                user: req.user
-                                            });
-                                        } else {
-                                            tasks.forEach(task => {
-                                                let departmentTask = new DepartmentTask({
-                                                    department: department._id,
-                                                    task: task._id,
-                                                    floor: floor._id,
-                                                    project: floor.project,
-                                                    status: 0
-                                                });
-                                                departmentTask.save((err, departmentTask) => {
-                                                    if (err) {
-                                                        return res.status(400).json({
-                                                            success: false,
-                                                            message: 'No se puede guardar el registro',
-                                                            errors: err,
-                                                            user: req.user
-                                                        });
-                                                    } else {
-                                                        SubTask.find({ 'task': task._id, 'recordActive': true })
-                                                            .populate('task')
-                                                            .exec(
-                                                                (err, subTasks) => {
-                                                                    if (err) {
-                                                                        return res.status(500).json({
-                                                                            success: false,
-                                                                            message: 'No se pueden consultar las tareas',
-                                                                            errors: err,
-                                                                            user: req.user
-                                                                        });
-                                                                    } else {
-                                                                        subTasks.forEach(subTaskElement => {
-                                                                            let departmentSubTask = new DepartmentSubTask({
-                                                                                department: department._id,
-                                                                                subTask: subTaskElement._id,
-                                                                                task: task._id,
-                                                                                floor: floor._id,
-                                                                                project: floor.project,
-                                                                                status: 0
-                                                                            });
-                                                                            departmentSubTask.save((err, departmentSubTask) => {
-                                                                                if (err) {
-                                                                                    return res.status(400).json({
-                                                                                        success: false,
-                                                                                        message: 'No se puede guardar el registro',
-                                                                                        errors: err,
-                                                                                        user: req.user
-                                                                                    });
-                                                                                } else {
-
-                                                                                }
-                                                                            });
-                                                                        });
-                                                                    }
-                                                                });
-                                                    }
-                                                });
-                                            });
-                                        }
-                                    });
-                        }
-                    });
-                }
+                        };
+                    };
+                };
             }
+        }
+        res.status(200).json({
+            success: true,
+            message: 'Operación realizada de forma exitosa.',
+            user: req.user
+        });
+    } catch (error) {
+        console.log("ERROR:", error)
+        return res.status(500).json({
+            success: false,
+            message: 'No se pudo completar la operación',
+            errors: error,
+            user: req.user
         });
     }
-
-    res.status(200).json({
-        success: true,
-        message: 'Operación realizada de forma exitosa.',
-        user: req.user
-    });
 
 });
 

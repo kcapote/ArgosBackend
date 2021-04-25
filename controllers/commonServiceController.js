@@ -106,35 +106,33 @@ router.get('/recordActive/:recordActive', [authentication.verifyToken, authentic
             });
 });
 
-router.get('/project/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
+router.get('/project/:id', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
 
-    let id = req.params.id;
+    try {
+        let id = req.params.id;
+        const commonService = await CommonService.find({ 'project': id, 'recordActive': true })
+            .populate('project')
+            .sort({ number: 1 })
+            .exec();
 
-    CommonService.find({ 'project': id, 'recordActive': true })
-        .populate('project')
-        .sort({ number: 1 })
-        .exec(
-            (err, commonServices) => {
-                if (err) {
-                    return res.status(500).json({
-                        success: false,
-                        message: 'No se pueden consultar los registros',
-                        errors: err,
-                        user: req.user
-                    });
-                } else {
-                    CommonService.find({ 'project': id, 'recordActive': true }).countDocuments({}, (err, totalRecords) => {
-                        res.status(200).write(JSON.stringify({
-                            success: true,
-                            commonServices: commonServices,
-                            totalRecords: totalRecords,
-                            user: req.user
-                        }, null, 2));
-                        res.end();
+        const totalCommonService = await CommonService.find({ 'project': id, 'recordActive': true }).countDocuments({});
+       
+        res.status(200).write(JSON.stringify({
+            success: true,
+            commonServices: commonService,
+            totalRecords: totalCommonService,
+            user: req.user
+        }, null, 2));
+        res.end();
 
-                    });
-                }
-            });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'No se pueden consultar los registros',
+            errors: err,
+            user: req.user
+        });
+    }
 });
 
 router.get('/project/:id/:type', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
