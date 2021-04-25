@@ -890,7 +890,7 @@ router.get('/find/top10', [authentication.verifyToken, authentication.refreshTok
         } 
 
         let arrayCollection = [];
-        for(let o of d){
+        for(let o of employeeSubTask){
             let col = [];
             col = projects;
             let temp = {
