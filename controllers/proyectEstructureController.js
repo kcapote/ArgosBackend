@@ -111,12 +111,11 @@ router.post('/commonServices', [authentication.verifyToken, authentication.refre
             }
      
             const savedCommonTasks =  await saveMany(commonTasks, CommonServiceTask);
-            
             for(let k = 0; k < savedCommonTasks.length; k++) {      
-                const task = tasks[k];
+                const task = savedCommonTasks[k];
                 const subTasks = await SubTask.find({ 'task': task._id, 'recordActive': true }).populate('task').exec();
                 for(let l = 0; l < subTasks.length; l++){
-                    const subTaskElement = subTasksp[l];
+                    const subTaskElement = subTasks[l];
                     commonSubTask.push({
                         commonService: commonService._id,
                         subTask: subTaskElement._id,
@@ -138,6 +137,7 @@ router.post('/commonServices', [authentication.verifyToken, authentication.refre
         });
 
     }catch(err){
+        console.log(err)
         return res.status(500).json({
             success: false,
             message: 'No se puede crear la estructura',
@@ -152,6 +152,7 @@ saveMany = async  (arraObject, Schema) => {
     try{
         return await Schema.insertMany(arraObject);
     }catch(err){
+        console.log(err)
         throw new Error( `Error saving  ${Schema.modelName}`) 
     }
 
