@@ -97,9 +97,7 @@ router.post('/commonServices', [authentication.verifyToken, authentication.refre
             
             const commonService = savedCommonsServices[i];
 
-            const tasks = await Task.find({ 'type': commonService.type, 'recordActive': true })
-                                    .sort({ position: 1 })
-                                    .exec();
+            const tasks = await Task.find({ 'type': commonService.type, 'recordActive': true }).sort({ position: 1 }).exec();
 
             for(let j = 0; j < tasks.length; j++) {      
                 const task = tasks[j]; 
@@ -116,9 +114,7 @@ router.post('/commonServices', [authentication.verifyToken, authentication.refre
             
             for(let k = 0; k < savedCommonTasks.length; k++) {      
                 const task = tasks[k];
-                const subTasks = SubTask.find({ 'task': task._id, 'recordActive': true })
-                    .populate('task')
-                    .exec();
+                const subTasks = await SubTask.find({ 'task': task._id, 'recordActive': true }).populate('task').exec();
                 for(let l = 0; l < subTasks.length; l++){
                     const subTaskElement = subTasksp[l];
                     commonSubTask.push({
