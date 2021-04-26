@@ -41,7 +41,7 @@ router.post('/floors', [authentication.verifyToken, authentication.refreshToken]
                         project: floor.project,
                         status: 0
                     });
-                    let departmentTask = await departmentTaskTemp.save();
+                    await departmentTaskTemp.save();
                     let subtasks = await SubTask.find({ 'task': task._id, 'recordActive': true }).populate('task').exec();
                     for (let m = 0; m < subtasks.length; m++) {
                         let subTask = subtasks[m];
