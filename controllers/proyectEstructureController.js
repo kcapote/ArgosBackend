@@ -112,7 +112,6 @@ router.post('/floors', [authentication.verifyToken, authentication.refreshToken]
             user: req.user
         });
     } catch (error) {
-        console.log("ERROR:", error)
         return res.status(500).json({
             success: false,
             message: 'No se pudo completar la operación',
@@ -123,7 +122,152 @@ router.post('/floors', [authentication.verifyToken, authentication.refreshToken]
 
 });
 
+router.post('/commonServices', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
 
+    try {
+        let collection = req.body;
+        for (let k = 0; k < collection.length; k++) {
+            let commonServiceTemp = new CommonService({
+                project: collection[k].project,
+                number: collection[k].number,
+                type: collection[k].type,
+                status: 0
+            });
+           let commonService = await commonServiceTemp.save();
+           let tasks = Task.find({ 'type': commonService.type, 'recordActive': true }) .sort({ position: 1 }) .exec();
+           for (let l = 0; l < tasks.length; l++) {
+                let task = tasks[l];
+                let commonTaskTemp = new CommonServiceTask({
+                    commonService: commonService._id,
+                    task: task._id,
+                    type: commonService.type,
+                    project: commonService.project,
+                    status: 0
+                });
+                await commonTaskTemp.save();
+                let subtasks = SubTask.find({ 'task': task._id, 'recordActive': true }).populate('task').exec();
+                for (let m = 0; m < subtasks.length; m++) {
+                    let subtask = subtasks[l];
+                    let commonServiceSubTaskTemp = new CommonServiceSubTask({
+                        commonService: commonService._id,
+                        subTask: subtask._id,
+                        task: task._id,
+                        type: commonService.type,
+                        project: commonService.project,
+                        status: 0
+                    });
+                    await commonServiceSubTaskTemp.save();
+                }
+            }
+        }
+
+        for (let k = 0; k < collection.length; k++) {
+            let commonService = new CommonService({
+                project: collection[k].project,
+                number: collection[k].number,
+                type: collection[k].type,
+                status: 0
+            });
+            commonService.save((err, commonService) => {
+                if (err) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'No se puede crear el piso',
+                        errors: err,
+                        user: req.user
+                    });
+                } else {
+                    Task.find({ 'type': commonService.type, 'recordActive': true })
+                        .sort({ position: 1 })
+                        .exec(
+                            (err, tasks) => {
+                                if (err) {
+                                    return res.status(500).json({
+                                        success: false,
+                                        message: 'No se pueden consultar las tareas',
+                                        errors: err,
+                                        user: req.user
+                                    });
+                                } else {
+                                    tasks.forEach(task => {
+                                        let commonTask = new CommonServiceTask({
+                                            commonService: commonService._id,
+                                            task: task._id,
+                                            type: commonService.type,
+                                            project: commonService.project,
+                                            status: 0
+                                        });
+                                        commonTask.save((err, commonTask) => {
+                                            if (err) {
+                                                return res.status(400).json({
+                                                    success: false,
+                                                    message: 'No se puede guardar el registro',
+                                                    errors: err,
+                                                    user: req.user
+                                                });
+                                            } else {
+                                                SubTask.find({ 'task': task._id, 'recordActive': true })
+                                                    .populate('task')
+                                                    .exec(
+                                                        (err, subTasks) => {
+                                                            if (err) {
+                                                                return res.status(500).json({
+                                                                    success: false,
+                                                                    message: 'No se pueden consultar las tareas',
+                                                                    errors: err,
+                                                                    user: req.user
+                                                                });
+                                                            } else {
+                                                                subTasks.forEach(subTaskElement => {
+                                                                    let commonServiceSubTask = new CommonServiceSubTask({
+                                                                        commonService: commonService._id,
+                                                                        subTask: subTaskElement._id,
+                                                                        task: task._id,
+                                                                        type: commonService.type,
+                                                                        project: commonService.project,
+                                                                        status: 0
+                                                                    });
+                                                                    commonServiceSubTask.save((err, commonServiceSubTask) => {
+                                                                        if (err) {
+                                                                            return res.status(400).json({
+                                                                                success: false,
+                                                                                message: 'No se puede guardar el registro',
+                                                                                errors: err,
+                                                                                user: req.user
+                                                                            });
+                                                                        } else {
+    
+                                                                        }
+                                                                    });
+                                                                });
+                                                            }
+                                                        });
+                                            }
+                                        });
+                                    });
+                                }
+                            });
+                }
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Operación realizada de forma exitosa.',
+            user: req.user
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'No se pudo completar la operación',
+            errors: error,
+            user: req.user
+        });
+    }
+});
+
+/*
 router.post('/commonServices', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
     try{
         let collection = req.body;
@@ -210,6 +354,6 @@ saveMany = async  (arraObject, Schema) => {
     }
 
 } 
-
+*/
 
 module.exports = router;
