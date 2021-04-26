@@ -16,14 +16,6 @@ router.post('/floors', [authentication.verifyToken, authentication.refreshToken]
     try {
         let collection = req.body;
         const tasks = await Task.find({ 'type': 'DEPARTAMENTOS', 'recordActive': true }).sort({ position: 1 }).exec();
-        if(!tasks) {
-            return res.status(400).json({
-                success: false,
-                message: 'No se pueden consultar las tareas',
-                errors: 'No se pueden consultar las tareas',
-                user: req.user
-            });
-        };
         for (let k = 0; k < collection.length; k++) {
             let floorTemp = new Floor({
                 project: collection[k].project,
@@ -33,14 +25,6 @@ router.post('/floors', [authentication.verifyToken, authentication.refreshToken]
                 status: 0
             });
             let floor = await floorTemp.save();
-            if(!floor) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'No se puede crear el piso',
-                    errors: 'No se puede crear el piso',
-                    user: req.user
-                });
-            };
             for (let i = 0; i < floor.quantityDepartment; i++) {
                 let departmentTemp = new Department({
                     floor: floor._id,
@@ -48,14 +32,6 @@ router.post('/floors', [authentication.verifyToken, authentication.refreshToken]
                     status: 0
                 });
                 let department = await departmentTemp.save();
-                if(!department) {
-                    return res.status(400).json({
-                        success: false,
-                        message: 'No se puede crear el departamento',
-                        errors: 'No se puede crear el departamento',
-                        user: req.user
-                    });
-                };
                 for (let t = 0; t < tasks.length; t++) {
                     let task = tasks[t];
                     let departmentTaskTemp = new DepartmentTask({
@@ -66,23 +42,7 @@ router.post('/floors', [authentication.verifyToken, authentication.refreshToken]
                         status: 0
                     });
                     let departmentTask = await departmentTaskTemp.save();
-                    if (!departmentTask) {
-                        return res.status(400).json({
-                            success: false,
-                            message: 'No se puede guardar el registro',
-                            errors: 'No se puede guardar el registro',
-                            user: req.user
-                        });
-                    };
                     let subtasks = await SubTask.find({ 'task': task._id, 'recordActive': true }).populate('task').exec();
-                    if (!subtasks) {
-                        return res.status(400).json({
-                            success: false,
-                            message: 'No se pueden consultar las tareas',
-                            errors: 'No se pueden consultar las tareas',
-                            user: req.user
-                        });
-                    };
                     for (let m = 0; m < subtasks.length; m++) {
                         let subTask = subtasks[m];
                         let departmentSubTaskTemp = new DepartmentSubTask({
@@ -93,15 +53,7 @@ router.post('/floors', [authentication.verifyToken, authentication.refreshToken]
                             project: floor.project,
                             status: 0
                         });
-                        let departmentSubTask = await departmentSubTaskTemp.save();
-                        if (!departmentSubTask) {
-                            return res.status(400).json({
-                                success: false,
-                                message: 'No se puede guardar el registro',
-                                errors: 'No se puede guardar el registro',
-                                user: req.user
-                            });
-                        };
+                        await departmentSubTaskTemp.save();
                     };
                 };
             }
@@ -121,62 +73,6 @@ router.post('/floors', [authentication.verifyToken, authentication.refreshToken]
     }
 
 });
-/*
-router.post('/commonServices', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
-
-    try {
-        let collection = req.body;
-        for (let k = 0; k < collection.length; k++) {
-            let commonServiceTemp = new CommonService({
-                project: collection[k].project,
-                number: collection[k].number,
-                type: collection[k].type,
-                status: 0
-            });
-           let commonService = await commonServiceTemp.save();
-           let tasks = Task.find({ 'type': commonService.type, 'recordActive': true }) .sort({ position: 1 }) .exec();
-           for (let l = 0; l < tasks.length; l++) {
-                let task = tasks[l];
-                let commonTaskTemp = new CommonServiceTask({
-                    commonService: commonService._id,
-                    task: task._id,
-                    type: commonService.type,
-                    project: commonService.project,
-                    status: 0
-                });
-                await commonTaskTemp.save();
-                let subtasks = SubTask.find({ 'task': task._id, 'recordActive': true }).populate('task').exec();
-                for (let m = 0; m < subtasks.length; m++) {
-                    let subtask = subtasks[m];
-                    let commonServiceSubTaskTemp = new CommonServiceSubTask({
-                        commonService: commonService._id,
-                        subTask: subtask._id,
-                        task: task._id,
-                        type: commonService.type,
-                        project: commonService.project,
-                        status: 0
-                    });
-                    await commonServiceSubTaskTemp.save();
-                }
-            }
-        }
-
-        res.status(200).json({
-            success: true,
-            message: 'Operación realizada de forma exitosa.',
-            user: req.user
-        });
-
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: 'No se pudo completar la operación',
-            errors: error,
-            user: req.user
-        });
-    }
-});*/
-
 
 router.post('/commonServices', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
     try{
