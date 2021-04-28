@@ -77,55 +77,16 @@ router.post('/floors', [authentication.verifyToken, authentication.refreshToken]
 router.post('/commonServices', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
     try{
         let collection = req.body;
-        let commonsServices = [];
-        let commonTasks = [];
-        let commonSubTask = [];
-
-        for (let i = 0; i < collection.length; i++) {
-            commonsServices.push({
-                project: collection[i].project,
-                number: collection[i].number,
-                type: collection[i].type,
-                status: 0
-            });
-        }    
-        const savedCommonsServices = await saveMany(commonsServices, CommonService);
-
-        console.log(savedCommonsServices);
+        
+        const savedCommonsServices = await createCommonsServices(collection);
 
         for(let i = 0; i < savedCommonsServices.length; i++){
             
-            const commonService = savedCommonsServices[i];
+            const savedCommonTasks = await createCommonTasks(savedCommonsServices[i]);
 
-            const tasks = await Task.find({ 'type': commonService.type, 'recordActive': true }).sort({ position: 1 }).exec();
-
-            for(let j = 0; j < tasks.length; j++) {      
-                const task = tasks[j]; 
-                commonTasks.push({
-                    commonService: commonService._id,
-                    task: task._id,
-                    type: commonService.type,
-                    project: commonService.project,
-                    status: 0 
-                });
-            }
-     
-            const savedCommonTasks =  await saveMany(commonTasks, CommonServiceTask);
             for(let k = 0; k < savedCommonTasks.length; k++) {      
                 const task = savedCommonTasks[k];
-                const subTasks = await SubTask.find({ 'task': task._id, 'recordActive': true }).populate('task').exec();
-                for(let l = 0; l < subTasks.length; l++){
-                    const subTaskElement = subTasks[l];
-                    commonSubTask.push({
-                        commonService: commonService._id,
-                        subTask: subTaskElement._id,
-                        task: task._id,
-                        type: commonService.type,
-                        project: commonService.project,
-                        status: 0 
-                    });
-                }
-                await saveMany(commonSubTask, CommonServiceSubTask);
+                await createCommonSubtask(task, savedCommonsServices[i]);
             }
 
         }        
@@ -146,7 +107,8 @@ router.post('/commonServices', [authentication.verifyToken, authentication.refre
         });
     }
 
-})
+});
+
 
 saveMany = async  (arraObject, Schema) => {
     try{
@@ -158,5 +120,55 @@ saveMany = async  (arraObject, Schema) => {
 
 } 
 
+
+const createCommonsServices = async (collection) => {
+    let commonsServices = [];
+    for (let i = 0; i < collection.length; i++) {
+        commonsServices.push({
+            project: collection[i].project,
+            number: collection[i].number,
+            type: collection[i].type,
+            status: 0
+        });
+    }    
+    return await saveMany(commonsServices, CommonService);
+}
+
+createCommonTasks = async (commonService) => {
+    let commonTasks = [];
+    const tasks = await Task.find({ 'type': commonService.type, 'recordActive': true }).sort({ position: 1 }).exec();
+
+    for(let j = 0; j < tasks.length; j++) {      
+        const task = tasks[j]; 
+        commonTasks.push({
+            commonService: commonService._id,
+            task: task._id,
+            type: commonService.type,
+            project: commonService.project,
+            status: 0 
+        });
+    }
+
+    return savedCommonTasks =  await saveMany(commonTasks, CommonServiceTask);
+}
+
+const createCommonSubtask = async (task, commonService) => {
+    let commonSubTask = [];
+
+    const subTasks = await SubTask.find({ 'task': task._id, 'recordActive': true }).populate('task').exec();
+    for(let l = 0; l < subTasks.length; l++){
+        const subTaskElement = subTasks[l];
+        commonSubTask.push({
+            commonService: commonService._id,
+            subTask: subTaskElement._id,
+            task: task._id,
+            type: commonService.type,
+            project: commonService.project,
+            status: 0 
+        });
+    }
+    return await saveMany(commonSubTask, CommonServiceSubTask);
+
+}
 
 module.exports = router;
