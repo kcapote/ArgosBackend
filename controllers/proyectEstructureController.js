@@ -10,59 +10,45 @@ const CommonService = require('../models/commonService');
 const CommonServiceTask = require('../models/commonServiceTask');
 const CommonServiceSubTask = require('../models/commonServiceSubTask');
 const authentication = require('../middlewares/authentication');
+const task = require('../models/task');
 
 router.post('/floors', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
 
     try {
         let collection = req.body;
         const tasks = await Task.find({ 'type': 'DEPARTAMENTOS', 'recordActive': true }).sort({ position: 1 }).exec();
-        for (let k = 0; k < collection.length; k++) {
-            let floorTemp = new Floor({
-                project: collection[k].project,
-                number: collection[k].number,
-                quantityDepartment: collection[k].quantityDepartment,
-                type: collection[k].type,
-                status: 0
-            });
-            let floor = await floorTemp.save();
-            for (let i = 0; i < floor.quantityDepartment; i++) {
-                let departmentTemp = new Department({
-                    floor: floor._id,
-                    number: i + 1,
-                    status: 0
-                });
-                let department = await departmentTemp.save();
-                for (let t = 0; t < tasks.length; t++) {
-                    let task = tasks[t];
-                    let departmentTaskTemp = new DepartmentTask({
-                        department: department._id,
-                        task: task._id,
-                        floor: floor._id,
-                        project: floor.project,
-                        status: 0
-                    });
-                    await departmentTaskTemp.save();
-                    let subtasks = await SubTask.find({ 'task': task._id, 'recordActive': true }).populate('task').exec();
-                    for (let m = 0; m < subtasks.length; m++) {
-                        let subTask = subtasks[m];
-                        let departmentSubTaskTemp = new DepartmentSubTask({
-                            department: department._id,
-                            subTask: subTask._id,
-                            task: task._id,
-                            floor: floor._id,
-                            project: floor.project,
-                            status: 0
-                        });
-                        await departmentSubTaskTemp.save();
-                    };
-                };
+        const subtasks = await SubTask.find({ 'recordActive': true }).exec();
+
+        const savedFloors = await createFloors(collection);
+
+        for(let i = 0; i < savedFloors.length; i++){
+
+            const currentFloor = savedFloors[i];
+            const savedDepartments = await createDepartments(currentFloor);
+
+            for(let j = 0; j < savedDepartments.length; j++){
+
+                const currentDepartment = savedDepartments[j];
+                await createDepartmentTasks(currentFloor, currentDepartment, tasks);
+                
+                for(let k = 0; k < tasks.length; k++){
+
+                    const currentTask = tasks[k];
+                    const subTasksTemp = subtasks.filter( subTask => subTask.task === task._id )
+                    await createDepartmentSubTasks({currentFloor, currentDepartment, currentTask, subTasksTemp});
+
+                }
+
             }
-        }
+
+        }    
+       
         res.status(200).json({
             success: true,
             message: 'Operación realizada de forma exitosa.',
             user: req.user
         });
+
     } catch (error) {
         return res.status(500).json({
             success: false,
@@ -110,7 +96,7 @@ router.post('/commonServices', [authentication.verifyToken, authentication.refre
 });
 
 
-saveMany = async  (arraObject, Schema) => {
+const saveMany = async  (arraObject, Schema) => {
     try{
         return await Schema.insertMany(arraObject);
     }catch(err){
@@ -169,6 +155,68 @@ const createCommonSubtask = async (task, commonService) => {
     }
     return await saveMany(commonSubTask, CommonServiceSubTask);
 
+}
+
+
+/////Floors creation
+
+const createFloors = async (collection) => {
+    let floors = [];
+    for (let k = 0; k < collection.length; k++) {
+        floors.push({
+            project: collection[k].project,
+            number: collection[k].number,
+            quantityDepartment: collection[k].quantityDepartment,
+            type: collection[k].type,
+            status: 0
+        });
+    } 
+    return await saveMany(floors, Floor);
+}
+
+const createDepartments = async (floor) => {
+    let departments = [];
+    for (let i = 0; i < floor.quantityDepartment; i++) {
+        departments.push({
+            floor: floor._id,
+            number: i + 1,
+            status: 0
+        });
+    }   
+    return await saveMany(departments, Department);
+}
+
+
+const createDepartmentTasks = async (floor, department, tasks) => {
+    let departmentTasks = [];
+    for (let t = 0; t < tasks.length; t++) {
+        departmentTasks.push({
+            department: department._id,
+            task: task._id,
+            floor: floor._id,
+            project: floor.project,
+            status: 0
+        });
+    }
+    return await saveMany(departmentTasks, DepartmentTask);
+
+}
+
+const createDepartmentSubTasks = async ({floor, department, task, subTasksTemp}) =>{ //29.5 min 
+    let departmentSubTasks = [];
+
+    for (let m = 0; m < subTasksTemp.length; m++) {
+        let subTask = subTasksTemp[m];
+        departmentSubTasks.push({
+            department: department._id,
+            subTask: subTask._id,
+            task: task._id,
+            floor: floor._id,
+            project: floor.project,
+            status: 0
+        });
+    };
+    return await saveMany(departmentSubTasks, DepartmentSubTask);
 }
 
 module.exports = router;
