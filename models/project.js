@@ -39,7 +39,11 @@ const ProjectSchema = mongoose.Schema({
     recordActive: {
         type: Boolean,
         default: true
-    }
+    },
+    creationFinished: {
+        type: Boolean,
+        default: false
+    },
 });
 
 const Project = module.exports = mongoose.model('Project', ProjectSchema);
