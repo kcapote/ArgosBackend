@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Floor = require('../models/floor');
 const Department = require('../models/department');
+const Project = require('../models/project');
 const Task = require('../models/task');
 const SubTask = require('../models/subTask');
 const DepartmentTask = require('../models/departmentTask');
@@ -34,8 +35,10 @@ router.post('/floors', [authentication.verifyToken, authentication.refreshToken]
                 for(let k = 0; k < tasks.length; k++){
 
                     const currentTask = tasks[k];
-                    const subTasksTemp = subtasks.filter( subTask => subTask.task === task._id )
-                    await createDepartmentSubTasks({currentFloor, currentDepartment, currentTask, subTasksTemp});
+
+                    const subTasksTemp = subtasks.filter( subTask => subTask.task.toString() === currentTask._id.toString());
+
+                    await createDepartmentSubTasks(currentFloor, currentDepartment, currentTask, subTasksTemp);
 
                 }
 
@@ -63,19 +66,24 @@ router.post('/floors', [authentication.verifyToken, authentication.refreshToken]
 router.post('/commonServices', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
     try{
         let collection = req.body;
+
+        const tasks = await Task.find({ 'recordActive': true }).sort({ position: 1 }).exec();
+        const subTasks = await SubTask.find({'recordActive': true }).exec();
         
         const savedCommonsServices = await createCommonsServices(collection);
 
         for(let i = 0; i < savedCommonsServices.length; i++){
             
-            const savedCommonTasks = await createCommonTasks(savedCommonsServices[i]);
+            const savedCommonTasks = await createCommonTasks(savedCommonsServices[i], tasks);
 
             for(let k = 0; k < savedCommonTasks.length; k++) {      
-                const task = savedCommonTasks[k];
-                await createCommonSubtask(task, savedCommonsServices[i]);
+                const task = savedCommonTasks[k].task;
+                await createCommonSubtask(task, savedCommonsServices[i], subTasks);
             }
 
-        }        
+        }     
+
+        await updateProject(collection[0].project);
 
         res.status(200).json({
             success: true,
@@ -95,7 +103,6 @@ router.post('/commonServices', [authentication.verifyToken, authentication.refre
 
 });
 
-
 const saveMany = async  (arraObject, Schema) => {
     try{
         return await Schema.insertMany(arraObject);
@@ -105,7 +112,6 @@ const saveMany = async  (arraObject, Schema) => {
     }
 
 } 
-
 
 const createCommonsServices = async (collection) => {
     let commonsServices = [];
@@ -120,12 +126,13 @@ const createCommonsServices = async (collection) => {
     return await saveMany(commonsServices, CommonService);
 }
 
-createCommonTasks = async (commonService) => {
+const createCommonTasks = async (commonService, tasks) => {
     let commonTasks = [];
-    const tasks = await Task.find({ 'type': commonService.type, 'recordActive': true }).sort({ position: 1 }).exec();
+    const tasksFilter = tasks.filter( task => task.type === commonService.type);
+    //await Task.find({ 'type': commonService.type, 'recordActive': true }).sort({ position: 1 }).exec();
 
-    for(let j = 0; j < tasks.length; j++) {      
-        const task = tasks[j]; 
+    for(let j = 0; j < tasksFilter.length; j++) {      
+        const task = tasksFilter[j]; 
         commonTasks.push({
             commonService: commonService._id,
             task: task._id,
@@ -138,16 +145,17 @@ createCommonTasks = async (commonService) => {
     return savedCommonTasks =  await saveMany(commonTasks, CommonServiceTask);
 }
 
-const createCommonSubtask = async (task, commonService) => {
+const createCommonSubtask = async (taskId, commonService, subTasks) => {
     let commonSubTask = [];
 
-    const subTasks = await SubTask.find({ 'task': task._id, 'recordActive': true }).populate('task').exec();
-    for(let l = 0; l < subTasks.length; l++){
-        const subTaskElement = subTasks[l];
+    const subTasksFilter = subTasks.filter( subTask => subTask.task.toString() === taskId.toString());
+
+    for(let l = 0; l < subTasksFilter.length; l++){
+        const subTaskElement = subTasksFilter[l];
         commonSubTask.push({
             commonService: commonService._id,
             subTask: subTaskElement._id,
-            task: task._id,
+            task: taskId,
             type: commonService.type,
             project: commonService.project,
             status: 0 
@@ -156,7 +164,6 @@ const createCommonSubtask = async (task, commonService) => {
     return await saveMany(commonSubTask, CommonServiceSubTask);
 
 }
-
 
 /////Floors creation
 
@@ -186,13 +193,12 @@ const createDepartments = async (floor) => {
     return await saveMany(departments, Department);
 }
 
-
 const createDepartmentTasks = async (floor, department, tasks) => {
     let departmentTasks = [];
     for (let t = 0; t < tasks.length; t++) {
         departmentTasks.push({
             department: department._id,
-            task: task._id,
+            task: tasks[t]._id,
             floor: floor._id,
             project: floor.project,
             status: 0
@@ -202,7 +208,7 @@ const createDepartmentTasks = async (floor, department, tasks) => {
 
 }
 
-const createDepartmentSubTasks = async ({floor, department, task, subTasksTemp}) =>{ //29.5 min 
+const createDepartmentSubTasks = async ( floor, department, task, subTasksTemp ) =>{ //29.5 min 
     let departmentSubTasks = [];
 
     for (let m = 0; m < subTasksTemp.length; m++) {
@@ -218,5 +224,19 @@ const createDepartmentSubTasks = async ({floor, department, task, subTasksTemp})
     };
     return await saveMany(departmentSubTasks, DepartmentSubTask);
 }
+
+const updateProject = async (projectID) => {
+    let id = projectID;
+    let project = await Project.findById(id);
+    if (!project) {
+        return false;
+    }
+    project.creationFinished = true;
+    const projectSave = await project.save();
+    if (!projectSave) {
+        return false;
+    }
+    return true;
+};
 
 module.exports = router;

@@ -328,51 +328,6 @@ router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (r
     })
 });
 
-router.put('/creationFinished/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
-
-    let id = req.params.id;
-
-    Project.findById(id, (err, project) => {
-        if (err) {
-            return res.status(500).json({
-                success: false,
-                message: 'No se puede actualizar la obra',
-                errors: err,
-                user: req.user
-            });
-        }
-
-        if (!project) {
-            return res.status(400).json({
-                success: false,
-                message: 'No existe una obra con el id: ' + id,
-                errors: { message: 'No se pudo encontrar la obra para actualizar' },
-                user: req.user
-            });
-        } else {
-            project.creationFinished = req.body.creationFinished || true;
-            project.save((err, project) => {
-                if (err) {
-                    return res.status(400).json({
-                        success: false,
-                        message: 'No se puede actualizar la obra',
-                        errors: err,
-                        user: req.user
-                    });
-                } else {
-                    res.status(200).json({
-                        success: true,
-                        message: 'Operación realizada de forma exitosa.',
-                        project: project,
-                        user: req.user
-                    });
-                }
-            });
-
-        }
-    })
-});
-
 router.delete('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
     let id = req.params.id;
