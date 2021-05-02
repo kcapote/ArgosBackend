@@ -267,31 +267,35 @@ router.get('/employee/:idEmployee', [authentication.verifyToken, authentication.
 
 
 
-router.post('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
-    let employeeProject = new EmployeeProject({
-        employee: req.body.employee,
-        project: req.body.project,
-        startDate: req.body.startDate,
-        endDate: req.body.endDate,
-        recordActive: req.body.recordActive
+router.post('/', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
+    let collection = req.body;
+    let employeeProjects = [];
+    for (let i = 0; i < collection.length; i++) {
+        employeeProjects.push({
+            employee: collection[i].employee,
+            project: collection[i].project,
+            startDate: collection[i].startDate,
+            endDate: collection[i].endDate,
+            recordActive: collection[i].recordActive
+        });
+    }    
+    const employees = await EmployeeProject.insertMany(employeeProjects);
+    if (!employees) {
+        return res.status(400).json({
+            success: false,
+            message: 'No se puede crear el registro',
+            errors: err,
+            user: req.user
+        });
+    }
+
+    res.status(201).json({
+        success: true,
+        message: 'Operación realizada de forma exitosa.',
+        employeeProject: employees,
+        user: req.user
     });
-    employeeProject.save((err, employeeProject) => {
-        if (err) {
-            return res.status(400).json({
-                success: false,
-                message: 'No se puede crear el registro',
-                errors: err,
-                user: req.user
-            });
-        } else {
-            res.status(201).json({
-                success: true,
-                message: 'Operación realizada de forma exitosa.',
-                employeeProject: employeeProject,
-                user: req.user
-            });
-        }
-    });
+
 });
 
 router.put('/:id', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
