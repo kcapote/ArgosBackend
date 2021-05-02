@@ -111,7 +111,7 @@ router.get('/project/:idProject', [authentication.verifyToken, authentication.re
 
     let idProject = req.params.idProject;
 
-    EmployeeProject.find({ 'project': idProject, 'recordActive': true })
+    EmployeeProject.find({ 'project': idProject })
         .populate('employee')
         .populate('project')
         .exec(
