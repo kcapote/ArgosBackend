@@ -4,6 +4,7 @@ const constants = require('../config/constants');
 const jwt = require('jsonwebtoken');
 const DepartmentTask = require('../models/departmentTask');
 const authentication = require('../middlewares/authentication');
+const { ObjectId } = require('bson');
 
 router.get('/', [authentication.verifyToken, authentication.refreshToken], (req, res, next) => {
 
@@ -386,5 +387,59 @@ router.delete('/:id', [authentication.verifyToken, authentication.refreshToken],
         }
     })
 });
+
+router.get('/taskstatus/:idProject', [authentication.verifyToken, authentication.refreshToken], async (req, res, next) => {
+
+    try{
+        let idProject = req.params.idProject;
+    
+        const departmentTasks = await  DepartmentTask
+            .aggregate([
+                {
+                    $match: {
+                        $and: [
+                            {"project": ObjectId(idProject)},
+                            {"recordActive": true}
+                        ]
+                    }
+                },
+                {
+                    $group: {
+                        _id: {
+                                floor: '$floor',
+                                task: '$task'
+                            },
+                        status: { $sum: '$status' }, 
+                        count: {$sum: 1 }    
+                    }
+                }
+
+            ])
+            .exec();
+
+        const statusTaskByFloors = departmentTasks.map( depTask => ({
+            task: depTask._id.task,
+            floor: depTask._id.floor,
+            status: depTask.status / depTask.count
+        }));
+
+        res.status(200).json({
+            success: true,
+            statusTaskByFloors,
+            user: req.user
+        });
+        res.end();
+        
+    }catch(err){
+        return res.status(500).json({
+            success: false,
+            message: 'No se pueden consultar la información',
+            errors: err,
+            user: req.user
+        });
+    }
+
+});
+
 
 module.exports = router;
